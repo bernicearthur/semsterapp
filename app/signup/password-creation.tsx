@@ -74,6 +74,7 @@ export default function PasswordCreationScreen() {
       const { error } = await signUp(signUpData.email || '', password);
       
       if (error) {
+        console.error('Error creating account:', error);
         Alert.alert('Error', error.message || 'Failed to create account');
         setIsLoading(false);
         return;
@@ -82,7 +83,7 @@ export default function PasswordCreationScreen() {
       // Account created successfully
       setIsSuccess(true);
       
-      // Show success message and redirect to login page
+      // Show success message and redirect to login page after a delay
       setTimeout(() => {
         Alert.alert(
           'Account Created Successfully!',
@@ -95,9 +96,9 @@ export default function PasswordCreationScreen() {
           ]
         );
       }, 1500);
-    } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
-      console.error(error);
+    } catch (error: any) {
+      console.error('Error creating account:', error);
+      Alert.alert('Error', error.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
