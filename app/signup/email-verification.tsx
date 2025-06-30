@@ -61,9 +61,12 @@ export default function EmailVerificationScreen() {
             updateSignUpData({ school: schoolName });
           }
         }
+        setError(''); // Clear any previous errors
       }
     } catch (err) {
       console.error('Error checking school email:', err);
+      // Don't show error to user for network issues, just log it
+      // The validation will happen again on continue
     } finally {
       setIsCheckingEmail(false);
     }
@@ -79,16 +82,24 @@ export default function EmailVerificationScreen() {
       return;
     }
 
-    // Final check if it's a school email
-    const isSchoolEmail = await validateSchoolEmail(email);
-    if (!isSchoolEmail) {
-      setError('Please use your school email address');
-      return;
-    }
-
     setIsLoading(true);
+    setError(''); // Clear any previous errors
 
     try {
+      // Final check if it's a school email
+      const isSchoolEmail = await validateSchoolEmail(email);
+      if (!isSchoolEmail) {
+        setError('Please use your school email address');
+        setIsLoading(false);
+        return;
+      }
+
+      // Get school name and update signup data
+      const schoolName = await getSchoolFromEmail(email);
+      if (schoolName) {
+        updateSignUpData({ school: schoolName });
+      }
+
       // Store the email in sign up data
       updateSignUpData({ email });
       
