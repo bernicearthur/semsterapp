@@ -201,8 +201,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: { username, password },
       });
 
-      if (lookupError || !data || data.error) {
-        return { error: { message: lookupError?.message || data?.error || 'Invalid username or password' } };
+      if (lookupError || data.error) {
+        return { error: { message: lookupError?.message || data.error || 'Invalid username or password' } };
       }
 
       if (!data.email) {
