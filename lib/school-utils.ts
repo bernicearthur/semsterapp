@@ -13,20 +13,27 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
       return false;
     }
 
-    const { data, error } = await supabase.rpc('validate_school_email_domain', {
-      email
-    });
-    
-    if (error) {
-      console.error('Error validating school email:', error);
-      // Fallback: check if it's a common educational domain
+    // Try to use the RPC function first
+    try {
+      const { data, error } = await supabase.rpc('validate_school_email_domain', {
+        email
+      });
+      
+      if (error) {
+        console.error('Error calling validate_school_email_domain RPC:', error);
+        // Fall back to client-side validation
+        return isCommonEducationalDomain(email);
+      }
+      
+      return data || false;
+    } catch (error) {
+      console.error('Exception calling validate_school_email_domain RPC:', error);
+      // Fall back to client-side validation
       return isCommonEducationalDomain(email);
     }
-    
-    return data || false;
   } catch (error) {
     console.error('Error validating school email:', error);
-    // Fallback: check if it's a common educational domain
+    // Fall back to client-side validation
     return isCommonEducationalDomain(email);
   }
 }
@@ -38,20 +45,27 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
  */
 export async function getSchoolFromEmail(email: string): Promise<string | null> {
   try {
-    const { data, error } = await supabase.rpc('get_school_from_email', {
-      email
-    });
-    
-    if (error) {
-      console.error('Error getting school from email:', error);
-      // Fallback: extract school name from domain
+    // Try to use the RPC function first
+    try {
+      const { data, error } = await supabase.rpc('get_school_from_email', {
+        email
+      });
+      
+      if (error) {
+        console.error('Error calling get_school_from_email RPC:', error);
+        // Fall back to client-side extraction
+        return extractSchoolNameFromDomain(email);
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('Exception calling get_school_from_email RPC:', error);
+      // Fall back to client-side extraction
       return extractSchoolNameFromDomain(email);
     }
-    
-    return data;
   } catch (error) {
     console.error('Error getting school from email:', error);
-    // Fallback: extract school name from domain
+    // Fall back to client-side extraction
     return extractSchoolNameFromDomain(email);
   }
 }
@@ -115,7 +129,17 @@ function isCommonEducationalDomain(email: string): boolean {
     /\.edu\.[a-z]{2}$/  // Educational institutions (international)
   ];
 
-  return eduPatterns.some(pattern => pattern.test(domain));
+  // Specific known educational domains
+  const knownEduDomains = [
+    'ashesi.edu.gh',
+    'ug.edu.gh',
+    'knust.edu.gh',
+    'ucc.edu.gh',
+    'gimpa.edu.gh'
+  ];
+
+  return eduPatterns.some(pattern => pattern.test(domain)) || 
+         knownEduDomains.includes(domain);
 }
 
 /**
@@ -127,6 +151,19 @@ function extractSchoolNameFromDomain(email: string): string | null {
   const domain = email.split('@')[1];
   if (!domain) return null;
 
+  // Map specific domains to school names
+  const domainSchoolMap: Record<string, string> = {
+    'ashesi.edu.gh': 'Ashesi University',
+    'ug.edu.gh': 'University of Ghana',
+    'knust.edu.gh': 'Kwame Nkrumah University of Science and Technology',
+    'ucc.edu.gh': 'University of Cape Coast',
+    'gimpa.edu.gh': 'Ghana Institute of Management and Public Administration'
+  };
+
+  if (domainSchoolMap[domain]) {
+    return domainSchoolMap[domain];
+  }
+
   // Remove common educational suffixes and format as school name
   const schoolPart = domain
     .replace(/\.(edu|ac\.[a-z]{2}|edu\.[a-z]{2})$/, '')
@@ -134,5 +171,5 @@ function extractSchoolNameFromDomain(email: string): string | null {
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
-  return schoolPart || null;
+  return schoolPart ? `${schoolPart} University` : null;
 }

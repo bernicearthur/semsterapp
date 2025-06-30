@@ -87,7 +87,16 @@ export default function EmailVerificationScreen() {
 
     try {
       // Final check if it's a school email
-      const isSchoolEmail = await validateSchoolEmail(email);
+      let isSchoolEmail = true;
+      try {
+        isSchoolEmail = await validateSchoolEmail(email);
+      } catch (err) {
+        console.error('Error validating school email on continue:', err);
+        // Continue anyway if there's an error checking the email
+        // This allows users to proceed even if the RPC function fails
+        isSchoolEmail = true;
+      }
+      
       if (!isSchoolEmail) {
         setError('Please use your school email address');
         setIsLoading(false);
@@ -95,18 +104,26 @@ export default function EmailVerificationScreen() {
       }
 
       // Get school name and update signup data
-      const schoolName = await getSchoolFromEmail(email);
-      if (schoolName) {
-        updateSignUpData({ school: schoolName });
+      try {
+        const schoolName = await getSchoolFromEmail(email);
+        if (schoolName) {
+          updateSignUpData({ school: schoolName });
+        }
+      } catch (err) {
+        console.error('Error getting school from email:', err);
+        // Continue anyway if there's an error getting the school name
       }
 
       // Store the email in sign up data
       updateSignUpData({ email });
       
       // Try to sign up with a temporary password
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
+        options: {
+          emailRedirectTo: window.location.origin + '/signup/otp-verification'
+        }
       });
       
       if (error) {
