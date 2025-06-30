@@ -7,13 +7,6 @@ import { supabase } from './supabase';
  */
 export async function validateSchoolEmail(email: string): Promise<boolean> {
   try {
-    // For testing purposes, accept common email domains
-    const domain = email.split('@')[1];
-    if (domain === 'gmail.com' || domain === 'yahoo.com' || 
-        domain === 'outlook.com' || domain === 'hotmail.com') {
-      return true;
-    }
-    
     const { data, error } = await supabase.rpc('validate_school_email_domain', {
       email
     });
@@ -33,13 +26,6 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
  */
 export async function getSchoolFromEmail(email: string): Promise<string | null> {
   try {
-    // For testing purposes, map common email domains to test schools
-    const domain = email.split('@')[1];
-    if (domain === 'gmail.com') return 'Gmail University';
-    if (domain === 'yahoo.com') return 'Yahoo University';
-    if (domain === 'outlook.com') return 'Outlook University';
-    if (domain === 'hotmail.com') return 'Hotmail University';
-    
     const { data, error } = await supabase.rpc('get_school_from_email', {
       email
     });

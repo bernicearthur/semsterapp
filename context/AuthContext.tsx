@@ -134,43 +134,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error('Error fetching user profile:', error);
         
-        // If we've tried less than 5 times and got a "no rows returned" error,
+        // If we've tried less than 3 times and got a "no rows returned" error,
         // it might be because the profile hasn't been created yet by the trigger
-        if (profileFetchAttempts < 5 && error.code === 'PGRST116') {
+        if (profileFetchAttempts < 3 && error.code === 'PGRST116') {
           console.log('Profile not found, retrying in 1 second...');
           // Wait a second and try again
           setTimeout(() => fetchUserProfile(userId), 1000);
           return;
-        }
-        
-        // If we've tried 5 times and still no profile, try to create one manually
-        if (profileFetchAttempts >= 5 && error.code === 'PGRST116') {
-          console.log('Profile not found after multiple attempts, trying to create manually...');
-          
-          // Get user email
-          const { data: userData } = await supabase.auth.getUser();
-          if (userData?.user?.email) {
-            // Call the RPC function to create a profile
-            const { data: createResult, error: createError } = await supabase.rpc(
-              'create_profile_if_not_exists',
-              { 
-                user_id: userId,
-                user_email: userData.user.email,
-                user_full_name: signUpData.fullName || '',
-                user_username: signUpData.username || '',
-                user_avatar_url: signUpData.avatarUrl || null,
-                user_school: signUpData.school || ''
-              }
-            );
-            
-            if (createError) {
-              console.error('Error creating profile manually:', createError);
-            } else {
-              console.log('Profile created manually:', createResult);
-              // Try fetching again
-              setTimeout(() => fetchUserProfile(userId), 500);
-            }
-          }
         }
         
         return;
@@ -237,9 +207,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           
           console.log('Profile created successfully');
-          
-          // Fetch the profile to ensure it was created
-          await fetchUserProfile(authData.user.id);
         } catch (profileError) {
           console.error('Exception creating profile:', profileError);
           return { error: profileError };
