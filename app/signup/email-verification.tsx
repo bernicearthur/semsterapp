@@ -61,12 +61,9 @@ export default function EmailVerificationScreen() {
             updateSignUpData({ school: schoolName });
           }
         }
-        setError(''); // Clear any previous errors
       }
     } catch (err) {
       console.error('Error checking school email:', err);
-      // Don't show error to user for network issues, just log it
-      // The validation will happen again on continue
     } finally {
       setIsCheckingEmail(false);
     }
@@ -82,36 +79,44 @@ export default function EmailVerificationScreen() {
       return;
     }
 
+    // Final check if it's a school email
+    const isSchoolEmail = await validateSchoolEmail(email);
+    if (!isSchoolEmail) {
+      setError('Please use your school email address');
+      return;
+    }
+
     setIsLoading(true);
-    setError(''); // Clear any previous errors
 
     try {
-      // Final check if it's a school email
-      const isSchoolEmail = await validateSchoolEmail(email);
-      if (!isSchoolEmail) {
-        setError('Please use your school email address');
-        setIsLoading(false);
-        return;
-      }
-
-      // Get school name and update signup data
-      const schoolName = await getSchoolFromEmail(email);
-      if (schoolName) {
-        updateSignUpData({ school: schoolName });
-      }
-
       // Store the email in sign up data
       updateSignUpData({ email });
       
-      // Try to sign up with a temporary password
+      // First, check if the email is already registered
+      const { data: { users }, error: checkError } = await supabase.auth.admin.listUsers({
+        filter: {
+          email: email
+        }
+      }).catch(() => ({ data: { users: [] }, error: null }));
+      
+      if (users && users.length > 0) {
+        setError('This email is already registered. Please sign in or use a different email.');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Send OTP verification using Supabase's signUp with email
       const { error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
+        options: {
+          emailRedirectTo: 'https://your-app-url.com/auth/callback',
+        }
       });
       
       if (error) {
-        // If the user already exists but is not confirmed, resend the confirmation email
         if (error.message.includes('already registered')) {
+          // If the user exists but is not confirmed, resend the confirmation email
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
             email,
