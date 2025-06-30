@@ -72,7 +72,20 @@ export default function PasswordCreationScreen() {
     // Attempt to create account with Supabase
     try {
       console.log('Creating account with email:', signUpData.email);
-      const { error } = await signUp(signUpData.email || '', password);
+      
+      // Add user metadata for profile creation
+      const metadata = {
+        full_name: signUpData.fullName || '',
+        username: signUpData.username || '',
+        avatar_url: signUpData.avatarUrl || null,
+        school: signUpData.school || ''
+      };
+      
+      const { error } = await signUp(
+        signUpData.email || '', 
+        password,
+        metadata
+      );
       
       if (error) {
         console.error('Error creating account:', error);

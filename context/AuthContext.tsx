@@ -8,7 +8,7 @@ type AuthContextType = {
   session: Session | null;
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   verifyOtp: (email: string, otp: string) => Promise<{ error: any }>;
@@ -161,21 +161,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
     try {
       console.log('Starting signup process for:', email);
+      console.log('With metadata:', metadata);
       
-      // First, create the auth user
+      // Create the auth user with metadata
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
+          data: metadata || {
             full_name: signUpData.fullName || '',
-            school: signUpData.school || '',
             username: signUpData.username || '',
-          },
-        },
+            school: signUpData.school || '',
+          }
+        }
       });
 
       if (authError) {
@@ -195,10 +196,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .from('profiles')
             .upsert({
               id: authData.user.id,
-              username: signUpData.username || '',
-              full_name: signUpData.fullName || '',
-              avatar_url: signUpData.avatarUrl || null,
-              school: signUpData.school || '',
+              username: metadata?.username || signUpData.username || '',
+              full_name: metadata?.full_name || signUpData.fullName || '',
+              avatar_url: metadata?.avatar_url || signUpData.avatarUrl || null,
+              school: metadata?.school || signUpData.school || '',
             });
 
           if (profileError) {
