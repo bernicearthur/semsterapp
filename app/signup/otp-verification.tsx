@@ -73,16 +73,18 @@ export default function OtpVerificationScreen() {
     }
 
     setIsLoading(true);
+    setError('');
 
     try {
       // Verify OTP with Supabase
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         email: signUpData.email || '',
         token: otpValue,
         type: 'signup',
       });
 
       if (error) {
+        console.error('OTP verification error:', error);
         setError(error.message || 'Invalid verification code');
         setIsLoading(false);
         return;
@@ -105,9 +107,10 @@ export default function OtpVerificationScreen() {
   const handleResendCode = async () => {
     if (resendCountdown > 0) return;
     
+    setIsLoading(true);
+    setError('');
+    
     try {
-      setIsLoading(true);
-      
       // Resend the verification email
       const { error } = await supabase.auth.resend({
         type: 'signup',
@@ -122,10 +125,10 @@ export default function OtpVerificationScreen() {
       
       setResendCountdown(60);
       Alert.alert('Code Sent', `A new verification code has been sent to ${signUpData.email}`);
-      setIsLoading(false);
     } catch (error: any) {
       console.error('Error resending code:', error);
       setError(error.message || 'Failed to resend verification code');
+    } finally {
       setIsLoading(false);
     }
   };
