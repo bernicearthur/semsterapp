@@ -61,7 +61,6 @@ export default function EmailVerificationScreen() {
             updateSignUpData({ school: schoolName });
           }
         }
-        setError(''); // Clear any previous errors
       }
     } catch (err) {
       console.error('Error checking school email:', err);
@@ -80,39 +79,61 @@ export default function EmailVerificationScreen() {
       return;
     }
 
+    // Final check if it's a school email
+    const isSchoolEmail = await validateSchoolEmail(email);
+    if (!isSchoolEmail) {
+      setError('Please use your school email address');
+      return;
+    }
+
     setIsLoading(true);
-    setError('');
 
     try {
       // Store the email in sign up data
       updateSignUpData({ email });
       
-      // Try to sign up with a temporary password to trigger email verification
-      const { data, error } = await supabase.auth.signUp({
+      // First, check if the email is already registered
+      const { data: { users }, error: checkError } = await supabase.auth.admin.listUsers({
+        filter: {
+          email: email
+        }
+      }).catch(() => ({ data: { users: [] }, error: null }));
+      
+      if (users && users.length > 0) {
+        setError('This email is already registered. Please sign in or use a different email.');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Send OTP verification using Supabase's signUp with email
+      const { error } = await supabase.auth.signUp({
         email,
-        password: 'TEMPORARY_PASSWORD_' + Math.random().toString(36).substring(2, 15),
+        password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: 'https://your-app-url.com/auth/callback',
         }
       });
       
       if (error) {
         if (error.message.includes('already registered')) {
-          // If user exists, send a new verification email
+          // If the user exists but is not confirmed, resend the confirmation email
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
             email,
           });
           
           if (resendError) {
-            throw resendError;
+            setError(resendError.message);
+            setIsLoading(false);
+            return;
           }
         } else {
-          throw error;
+          setError(error.message);
+          setIsLoading(false);
+          return;
         }
       }
       
-      // Navigate to OTP verification screen
       router.push('/signup/otp-verification');
     } catch (err: any) {
       console.error('Email verification error:', err);
