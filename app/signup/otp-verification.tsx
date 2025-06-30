@@ -133,7 +133,7 @@ export default function OtpVerificationScreen() {
       }
       
       setResendCountdown(60);
-      setSuccess(`A new verification code has been sent to ${signUpData.email}`);
+      setSuccess(`A new verification code has been sent to ${signUpData.email}. Please check your inbox and spam folder.`);
       setIsLoading(false);
     } catch (error: any) {
       console.error('Error resending code:', error);

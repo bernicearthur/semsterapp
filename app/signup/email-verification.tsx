@@ -111,7 +111,10 @@ export default function EmailVerificationScreen() {
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
         options: {
-          emailRedirectTo: window.location.origin + '/signup/otp-verification'
+          emailRedirectTo: window.location.origin + '/signup/otp-verification',
+          data: {
+            school: schoolName
+          }
         }
       });
       
@@ -132,14 +135,14 @@ export default function EmailVerificationScreen() {
             return;
           }
           
-          setSuccess('Verification email resent. Please check your inbox.');
+          setSuccess('Verification email resent. Please check your inbox and spam folder.');
         } else {
           setError(error.message);
           setIsLoading(false);
           return;
         }
       } else {
-        setSuccess('Verification email sent. Please check your inbox.');
+        setSuccess('Verification email sent. Please check your inbox and spam folder.');
       }
       
       router.push('/signup/otp-verification');

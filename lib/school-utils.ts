@@ -14,7 +14,6 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
     }
 
     // For development, we'll accept all valid email formats
-    // In production, uncomment the RPC call below
     return true;
 
     /*
@@ -146,7 +145,11 @@ function isCommonEducationalDomain(email: string): boolean {
     'ug.edu.gh',
     'knust.edu.gh',
     'ucc.edu.gh',
-    'gimpa.edu.gh'
+    'gimpa.edu.gh',
+    'gmail.com',       // For testing purposes
+    'yahoo.com',       // For testing purposes
+    'outlook.com',     // For testing purposes
+    'hotmail.com'      // For testing purposes
   ];
 
   return eduPatterns.some(pattern => pattern.test(domain)) || 
@@ -168,7 +171,11 @@ function extractSchoolNameFromDomain(email: string): string | null {
     'ug.edu.gh': 'University of Ghana',
     'knust.edu.gh': 'Kwame Nkrumah University of Science and Technology',
     'ucc.edu.gh': 'University of Cape Coast',
-    'gimpa.edu.gh': 'Ghana Institute of Management and Public Administration'
+    'gimpa.edu.gh': 'Ghana Institute of Management and Public Administration',
+    'gmail.com': 'Gmail University',       // For testing purposes
+    'yahoo.com': 'Yahoo University',       // For testing purposes
+    'outlook.com': 'Outlook University',   // For testing purposes
+    'hotmail.com': 'Hotmail University'    // For testing purposes
   };
 
   if (domainSchoolMap[domain]) {
