@@ -8,8 +8,64 @@ import { useAuth } from '@/context/AuthContext';
 
 // Comprehensive list of universities from around the world
 const allUniversities = [
+  // Top US Universities
   {
     id: '1',
+    name: 'Harvard University',
+    location: 'Cambridge, MA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 1636,
+    domains: ['harvard.edu']
+  },
+  {
+    id: '2',
+    name: 'Stanford University',
+    location: 'Stanford, CA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 1885,
+    domains: ['stanford.edu']
+  },
+  {
+    id: '3',
+    name: 'Massachusetts Institute of Technology',
+    location: 'Cambridge, MA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 1861,
+    domains: ['mit.edu']
+  },
+  {
+    id: '4',
+    name: 'University of Oxford',
+    location: 'Oxford, UK',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Europe',
+    established: 1096,
+    domains: ['ox.ac.uk']
+  },
+  {
+    id: '5',
+    name: 'University of Cambridge',
+    location: 'Cambridge, UK',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Europe',
+    established: 1209,
+    domains: ['cam.ac.uk']
+  },
+  // Top African Universities
+  {
+    id: '6',
+    name: 'University of Cape Town',
+    location: 'Cape Town, South Africa',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Africa',
+    established: 1829,
+    domains: ['uct.ac.za']
+  },
+  {
+    id: '7',
     name: 'University of Ghana',
     location: 'Accra, Ghana',
     logo: 'https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=100',
@@ -18,7 +74,7 @@ const allUniversities = [
     domains: ['ug.edu.gh']
   },
   {
-    id: '2',
+    id: '8',
     name: 'Kwame Nkrumah University of Science and Technology',
     location: 'Kumasi, Ghana',
     logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
@@ -27,7 +83,7 @@ const allUniversities = [
     domains: ['knust.edu.gh']
   },
   {
-    id: '3',
+    id: '9',
     name: 'University of Cape Coast',
     location: 'Cape Coast, Ghana',
     logo: 'https://images.pexels.com/photos/207692/pexels-photo-207692.jpeg?auto=compress&cs=tinysrgb&w=100',
@@ -36,7 +92,7 @@ const allUniversities = [
     domains: ['ucc.edu.gh']
   },
   {
-    id: '4',
+    id: '10',
     name: 'Ashesi University',
     location: 'Berekuso, Ghana',
     logo: 'https://images.pexels.com/photos/256520/pexels-photo-256520.jpeg?auto=compress&cs=tinysrgb&w=100',
@@ -45,7 +101,7 @@ const allUniversities = [
     domains: ['ashesi.edu.gh']
   },
   {
-    id: '5',
+    id: '11',
     name: 'Ghana Institute of Management and Public Administration',
     location: 'Accra, Ghana',
     logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
@@ -53,7 +109,89 @@ const allUniversities = [
     established: 1961,
     domains: ['gimpa.edu.gh']
   },
-  // More universities would be listed here...
+  {
+    id: '12',
+    name: 'University of Lagos',
+    location: 'Lagos, Nigeria',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Africa',
+    established: 1962,
+    domains: ['unilag.edu.ng']
+  },
+  {
+    id: '13',
+    name: 'University of Nairobi',
+    location: 'Nairobi, Kenya',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Africa',
+    established: 1956,
+    domains: ['uonbi.ac.ke']
+  },
+  // Top Asian Universities
+  {
+    id: '14',
+    name: 'University of Tokyo',
+    location: 'Tokyo, Japan',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Asia',
+    established: 1877,
+    domains: ['u-tokyo.ac.jp']
+  },
+  {
+    id: '15',
+    name: 'National University of Singapore',
+    location: 'Singapore',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Asia',
+    established: 1905,
+    domains: ['nus.edu.sg']
+  },
+  {
+    id: '16',
+    name: 'Tsinghua University',
+    location: 'Beijing, China',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'Asia',
+    established: 1911,
+    domains: ['tsinghua.edu.cn']
+  },
+  // For testing purposes
+  {
+    id: '17',
+    name: 'Gmail University',
+    location: 'Mountain View, CA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 2004,
+    domains: ['gmail.com']
+  },
+  {
+    id: '18',
+    name: 'Yahoo University',
+    location: 'Sunnyvale, CA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 1994,
+    domains: ['yahoo.com']
+  },
+  {
+    id: '19',
+    name: 'Outlook University',
+    location: 'Redmond, WA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 1996,
+    domains: ['outlook.com']
+  },
+  {
+    id: '20',
+    name: 'Hotmail University',
+    location: 'Redmond, WA, USA',
+    logo: 'https://images.pexels.com/photos/159490/yale-university-landscape-universities-schools-159490.jpeg?auto=compress&cs=tinysrgb&w=100',
+    continent: 'North America',
+    established: 1996,
+    domains: ['hotmail.com']
+  },
 ];
 
 export default function SchoolSelectionScreen() {
@@ -90,7 +228,8 @@ export default function SchoolSelectionScreen() {
         setIsLoading(false);
       }, 500);
     } else {
-      setSchools([]);
+      // Show popular schools when search is empty
+      setSchools(allUniversities.slice(0, 10)); // Show top 10 schools
       setHasSearched(false);
     }
   }, [searchQuery]);
@@ -230,11 +369,18 @@ export default function SchoolSelectionScreen() {
           <View style={styles.initialState}>
             <School size={64} color={isDark ? '#60A5FA' : '#3B82F6'} />
             <Text style={[styles.initialStateTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-              Find Your School
+              Popular Schools
             </Text>
             <Text style={[styles.initialStateText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-              Search for your university or college by name, location, or domain
+              Select from popular schools or search for your university
             </Text>
+            <FlatList
+              data={schools}
+              renderItem={renderSchoolItem}
+              keyExtractor={item => item.id}
+              contentContainerStyle={styles.schoolsList}
+              showsVerticalScrollIndicator={false}
+            />
           </View>
         )}
       </View>
@@ -427,12 +573,9 @@ const styles = StyleSheet.create({
   },
   initialState: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 48,
   },
   initialStateTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Inter-Bold',
     marginTop: 16,
     marginBottom: 8,
@@ -443,6 +586,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     textAlign: 'center',
     maxWidth: '80%',
+    alignSelf: 'center',
     lineHeight: 24,
     marginBottom: 24,
   },
