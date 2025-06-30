@@ -71,6 +71,7 @@ export default function PasswordCreationScreen() {
 
     // Attempt to create account with Supabase
     try {
+      console.log('Creating account with email:', signUpData.email);
       const { error } = await signUp(signUpData.email || '', password);
       
       if (error) {
