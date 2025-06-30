@@ -16,6 +16,7 @@ export default function PasswordCreationScreen() {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Password strength criteria
   const [hasMinLength, setHasMinLength] = useState(false);
@@ -79,9 +80,12 @@ export default function PasswordCreationScreen() {
       }
       
       // Account created successfully
+      setIsSuccess(true);
+      
+      // Show success message and redirect to login page
       Alert.alert(
-        'Account Created!',
-        'Your account has been created successfully. You can now sign in.',
+        'Account Created Successfully!',
+        'Your account has been created. You can now sign in with your email and password.',
         [
           {
             text: 'OK',
@@ -116,6 +120,22 @@ export default function PasswordCreationScreen() {
     if (strength === 'Medium') return '#F59E0B';
     return '#10B981';
   };
+
+  if (isSuccess) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+        <View style={styles.successContainer}>
+          <CheckCircle size={80} color="#10B981" />
+          <Text style={[styles.successTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+            Account Created!
+          </Text>
+          <Text style={[styles.successMessage, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+            Your account has been created successfully. You will be redirected to the sign in page.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
@@ -491,5 +511,25 @@ const styles = StyleSheet.create({
   createAccountButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
+  },
+  successContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+    marginTop: 24,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    textAlign: 'center',
+    lineHeight: 24,
+    maxWidth: '80%',
   },
 });
