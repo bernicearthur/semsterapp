@@ -74,7 +74,7 @@ export default function PasswordCreationScreen() {
       const { error } = await signUp(signUpData.email || '', password);
       
       if (error) {
-        Alert.alert('Error', error.message);
+        Alert.alert('Error', error.message || 'Failed to create account');
         setIsLoading(false);
         return;
       }

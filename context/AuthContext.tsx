@@ -147,11 +147,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: signUpData.fullName || '',
             school: signUpData.school || '',
+            username: signUpData.username || '',
           },
         },
       });
 
       if (authError) {
+        console.error('Auth signup error:', authError);
         return { error: authError };
       }
 
@@ -166,7 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: signUpData.fullName || '',
             avatar_url: signUpData.avatarUrl || null,
             school: signUpData.school || '',
-          });
+          }, { onConflict: 'id' });
 
         if (profileError) {
           console.error('Error creating profile:', profileError);
