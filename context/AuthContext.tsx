@@ -139,6 +139,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
+      // Check if email already exists and is confirmed
+      const { data: existingUser, error: checkError } = await supabase.auth.signInWithPassword({
+        email,
+        password: 'check-only' // This will fail, but we just want to check if the email exists
+      });
+      
+      // If we get here with no error or a different error than "Invalid login credentials",
+      // the email might already be in use
+      if (!checkError || (checkError && !checkError.message.includes('Invalid login credentials'))) {
+        return { error: { message: 'Email is already registered. Please sign in instead.' } };
+      }
+      
+      // Proceed with signup
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -146,7 +159,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: signUpData.fullName,
             school: signUpData.school,
-          },
+          }
         },
       });
 
@@ -177,7 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -201,8 +214,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: { username, password },
       });
 
-      if (lookupError || data.error) {
-        return { error: { message: lookupError?.message || data.error || 'Invalid username or password' } };
+      if (lookupError || !data || data.error) {
+        return { error: { message: lookupError?.message || data?.error || 'Invalid username or password' } };
       }
 
       if (!data.email) {
@@ -316,6 +329,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (!user) {
         return { error: { message: 'User not authenticated' } };
+      }
+
+      // Check if username is being updated and if it already exists
+      if (data.username && data.username !== userProfile?.username) {
+        const { data: existingUser, error: checkError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('username', data.username)
+          .single();
+          
+        if (!checkError && existingUser) {
+          return { error: { message: 'Username already taken' } };
+        }
       }
 
       const { error } = await supabase

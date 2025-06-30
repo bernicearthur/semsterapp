@@ -16,6 +16,7 @@ export default function PasswordCreationScreen() {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Password strength criteria
   const [hasMinLength, setHasMinLength] = useState(false);
@@ -73,12 +74,19 @@ export default function PasswordCreationScreen() {
       const { error } = await signUp(signUpData.email || '', password);
       
       if (error) {
-        Alert.alert('Error', error.message);
+        if (error.message.includes('already registered')) {
+          Alert.alert('Account Exists', 'An account with this email already exists. Please sign in instead.');
+        } else {
+          Alert.alert('Error', error.message || 'Failed to create account');
+        }
         setIsLoading(false);
         return;
       }
       
       // Account created successfully
+      setIsSuccess(true);
+      
+      // Show success message
       Alert.alert(
         'Account Created!',
         'Your account has been created successfully. You can now sign in.',
@@ -89,8 +97,8 @@ export default function PasswordCreationScreen() {
           }
         ]
       );
-    } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'An unexpected error occurred. Please try again.');
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -116,6 +124,22 @@ export default function PasswordCreationScreen() {
     if (strength === 'Medium') return '#F59E0B';
     return '#10B981';
   };
+
+  if (isSuccess) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+        <View style={styles.successContainer}>
+          <CheckCircle size={80} color="#10B981" />
+          <Text style={[styles.successTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+            Account Created Successfully!
+          </Text>
+          <Text style={[styles.successMessage, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+            Your account has been created. You will be redirected to the sign in page.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
@@ -281,6 +305,26 @@ export default function PasswordCreationScreen() {
                   ]}
                 >
                   At least one number
+                </Text>
+              </View>
+              
+              <View style={styles.requirementItem}>
+                {hasSpecialChar ? (
+                  <CheckCircle size={16} color="#10B981" />
+                ) : (
+                  <Shield size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                )}
+                <Text 
+                  style={[
+                    styles.requirementText, 
+                    { 
+                      color: hasSpecialChar ? 
+                        '#10B981' : 
+                        (isDark ? '#9CA3AF' : '#6B7280') 
+                    }
+                  ]}
+                >
+                  At least one special character
                 </Text>
               </View>
             </View>
@@ -491,5 +535,25 @@ const styles = StyleSheet.create({
   createAccountButtonText: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
+  },
+  successContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+    marginTop: 24,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    textAlign: 'center',
+    lineHeight: 24,
+    maxWidth: '80%',
   },
 });
