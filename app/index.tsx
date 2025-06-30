@@ -17,12 +17,6 @@ export default function SignInScreen() {
   const [isEmail, setIsEmail] = useState(true);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
 
-  // Pre-fill with test user credentials
-  useEffect(() => {
-    setIdentifier('test@stanford.edu');
-    setPassword('password123');
-  }, []);
-
   useEffect(() => {
     // Clear error when user types
     if (error && (identifier || password)) {
