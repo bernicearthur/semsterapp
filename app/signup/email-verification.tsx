@@ -101,27 +101,13 @@ export default function EmailVerificationScreen() {
       if (error) {
         // If the user already exists but is not confirmed, resend the confirmation email
         if (error.message.includes('already registered')) {
-          // Check if the user is already confirmed
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          const { error: resendError } = await supabase.auth.resend({
+            type: 'signup',
             email,
-            password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION'
           });
           
-          if (signInError && signInError.message.includes('Email not confirmed')) {
-            // Email exists but is not confirmed, resend confirmation
-            const { error: resendError } = await supabase.auth.resend({
-              type: 'signup',
-              email,
-            });
-            
-            if (resendError) {
-              setError(resendError.message);
-              setIsLoading(false);
-              return;
-            }
-          } else {
-            // Email exists and is confirmed
-            setError('This email is already registered and confirmed. Please sign in instead.');
+          if (resendError) {
+            setError(resendError.message);
             setIsLoading(false);
             return;
           }

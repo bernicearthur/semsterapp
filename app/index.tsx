@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Eye, EyeOff, Mail, Key, ArrowRight, GraduationCap } from 'lucide-react-native';
@@ -52,41 +52,7 @@ export default function SignInScreen() {
       }
       
       if (result.error) {
-        if (result.error.message.includes('Invalid login credentials')) {
-          setError('Invalid email/username or password');
-        } else if (result.error.message.includes('Email not confirmed')) {
-          Alert.alert(
-            'Email Not Verified',
-            'Please verify your email before signing in. Would you like us to resend the verification email?',
-            [
-              {
-                text: 'Cancel',
-                style: 'cancel'
-              },
-              {
-                text: 'Resend',
-                onPress: async () => {
-                  try {
-                    const { error: resendError } = await supabase.auth.resend({
-                      type: 'signup',
-                      email: identifier,
-                    });
-                    
-                    if (resendError) {
-                      Alert.alert('Error', resendError.message);
-                    } else {
-                      Alert.alert('Success', 'Verification email sent. Please check your inbox.');
-                    }
-                  } catch (err) {
-                    Alert.alert('Error', 'Failed to resend verification email');
-                  }
-                }
-              }
-            ]
-          );
-        } else {
-          setError(result.error.message || 'Invalid credentials');
-        }
+        setError(result.error.message || 'Invalid credentials');
         setIsLoading(false);
         return;
       }
