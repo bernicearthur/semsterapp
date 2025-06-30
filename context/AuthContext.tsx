@@ -147,7 +147,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: signUpData.fullName,
             school: signUpData.school,
           },
-          emailRedirectTo: 'https://your-app-url.com/auth/callback',
         },
       });
 

@@ -69,27 +69,9 @@ serve(async (req) => {
       );
     }
 
-    // Now sign in with the email and password
-    const { data: signInData, error: signInError } = await supabaseAdmin.auth.signInWithPassword({
-      email: authUser.user.email,
-      password,
-    });
-
-    if (signInError) {
-      return new Response(
-        JSON.stringify({ error: "Invalid username or password" }),
-        {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
+    // Return the email to be used for authentication on the client side
     return new Response(
-      JSON.stringify({ 
-        session: signInData.session,
-        user: signInData.user
-      }),
+      JSON.stringify({ email: authUser.user.email }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

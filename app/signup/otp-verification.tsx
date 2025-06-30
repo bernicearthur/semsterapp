@@ -106,6 +106,9 @@ export default function OtpVerificationScreen() {
     if (resendCountdown > 0) return;
     
     try {
+      setIsLoading(true);
+      
+      // Resend the verification email
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: signUpData.email || '',
@@ -113,14 +116,17 @@ export default function OtpVerificationScreen() {
       
       if (error) {
         setError(error.message || 'Failed to resend verification code');
+        setIsLoading(false);
         return;
       }
       
       setResendCountdown(60);
       Alert.alert('Code Sent', `A new verification code has been sent to ${signUpData.email}`);
+      setIsLoading(false);
     } catch (error: any) {
       console.error('Error resending code:', error);
       setError(error.message || 'Failed to resend verification code');
+      setIsLoading(false);
     }
   };
 
@@ -213,12 +219,12 @@ export default function OtpVerificationScreen() {
             </Text>
             <TouchableOpacity 
               onPress={handleResendCode}
-              disabled={resendCountdown > 0}
+              disabled={resendCountdown > 0 || isLoading}
             >
               <Text style={[
                 styles.resendButton,
                 { 
-                  color: resendCountdown > 0 ? 
+                  color: (resendCountdown > 0 || isLoading) ? 
                     (isDark ? '#9CA3AF' : '#6B7280') : 
                     (isDark ? '#60A5FA' : '#3B82F6') 
                 }
