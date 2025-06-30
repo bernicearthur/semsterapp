@@ -83,16 +83,18 @@ export default function PasswordCreationScreen() {
       setIsSuccess(true);
       
       // Show success message and redirect to login page
-      Alert.alert(
-        'Account Created Successfully!',
-        'Your account has been created. You can now sign in with your email and password.',
-        [
-          {
-            text: 'OK',
-            onPress: () => router.replace('/')
-          }
-        ]
-      );
+      setTimeout(() => {
+        Alert.alert(
+          'Account Created Successfully!',
+          'Your account has been created. You can now sign in with your email and password.',
+          [
+            {
+              text: 'OK',
+              onPress: () => router.replace('/')
+            }
+          ]
+        );
+      }, 1500);
     } catch (error) {
       Alert.alert('Error', 'An unexpected error occurred. Please try again.');
       console.error(error);

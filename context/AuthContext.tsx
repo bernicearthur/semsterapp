@@ -139,7 +139,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      // First, create the auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -150,12 +151,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (!error) {
+      if (authError) {
+        return { error: authError };
+      }
+
+      // Only create the profile if auth signup was successful
+      if (authData.user) {
         // Create profile entry
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
-            id: (await supabase.auth.getUser()).data.user?.id,
+            id: authData.user.id,
             username: signUpData.username,
             full_name: signUpData.fullName,
             avatar_url: signUpData.avatarUrl,
@@ -168,7 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      return { error };
+      return { error: null };
     } catch (error) {
       console.error('Error in signUp:', error);
       return { error };
