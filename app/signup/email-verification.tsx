@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, ArrowRight, Mail, CircleAlert as AlertCircle } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, Mail, CircleAlert as AlertCircle, CheckCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -13,6 +13,7 @@ export default function EmailVerificationScreen() {
   const [email, setEmail] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function EmailVerificationScreen() {
     
     // Clear error when user types
     if (error) setError('');
+    if (success) setSuccess('');
   }, [email]);
 
   const handleBack = () => {
@@ -42,6 +44,7 @@ export default function EmailVerificationScreen() {
 
     setIsLoading(true);
     setError(''); // Clear any previous errors
+    setSuccess(''); // Clear any previous success messages
 
     try {
       // Store the email in sign up data
@@ -69,11 +72,15 @@ export default function EmailVerificationScreen() {
             setIsLoading(false);
             return;
           }
+          
+          setSuccess('Verification email resent. Please check your inbox.');
         } else {
           setError(error.message);
           setIsLoading(false);
           return;
         }
+      } else {
+        setSuccess('Verification email sent. Please check your inbox.');
       }
       
       router.push('/signup/otp-verification');
@@ -127,7 +134,7 @@ export default function EmailVerificationScreen() {
           </Text>
 
           <View style={styles.formGroup}>
-            <Text style={[styles.label, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+            <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
               School Email *
             </Text>
             <View style={[
@@ -153,6 +160,10 @@ export default function EmailVerificationScreen() {
               <View style={styles.errorContainer}>
                 <AlertCircle size={16} color="#EF4444" />
                 <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : success ? (
+              <View style={styles.successContainer}>
+                <Text style={styles.successText}>{success}</Text>
               </View>
             ) : (
               <Text style={[styles.helperText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
@@ -263,7 +274,7 @@ const styles = StyleSheet.create({
   formGroup: {
     marginBottom: 24,
   },
-  label: {
+  inputLabel: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
     marginBottom: 8,
@@ -293,6 +304,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     marginLeft: 6,
+  },
+  successContainer: {
+    backgroundColor: '#D1FAE5',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 8,
+  },
+  successText: {
+    color: '#10B981',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
   helperText: {
     fontSize: 14,

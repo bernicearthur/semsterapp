@@ -15,6 +15,7 @@ export default function OtpVerificationScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const inputRefs = useRef<Array<TextInput | null>>([]);
   const screenWidth = Dimensions.get('window').width;
   const inputWidth = (screenWidth - 96) / 6; // Calculate width based on screen size
@@ -56,6 +57,9 @@ export default function OtpVerificationScreen() {
     if (error) {
       setError('');
     }
+    if (success) {
+      setSuccess('');
+    }
   };
 
   const handleKeyPress = (e: any, index: number) => {
@@ -73,6 +77,8 @@ export default function OtpVerificationScreen() {
     }
 
     setIsLoading(true);
+    setError('');
+    setSuccess('');
 
     try {
       // Verify OTP with Supabase
@@ -90,6 +96,7 @@ export default function OtpVerificationScreen() {
 
       setIsLoading(false);
       setIsVerified(true);
+      setSuccess('Email verified successfully!');
       
       // Navigate to next step after showing success state
       setTimeout(() => {
@@ -106,6 +113,8 @@ export default function OtpVerificationScreen() {
     if (resendCountdown > 0 || isLoading) return;
     
     setIsLoading(true);
+    setError('');
+    setSuccess('');
     
     try {
       // Resend the verification email
@@ -121,7 +130,7 @@ export default function OtpVerificationScreen() {
       }
       
       setResendCountdown(60);
-      Alert.alert('Code Sent', `A new verification code has been sent to ${signUpData.email}`);
+      setSuccess(`A new verification code has been sent to ${signUpData.email}`);
       setIsLoading(false);
     } catch (error: any) {
       console.error('Error resending code:', error);
@@ -174,6 +183,10 @@ export default function OtpVerificationScreen() {
           {error ? (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : success ? (
+            <View style={styles.successContainer}>
+              <Text style={styles.successText}>{success}</Text>
             </View>
           ) : null}
 
@@ -344,6 +357,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
   },
+  successContainer: {
+    backgroundColor: '#D1FAE5',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    width: '100%',
+  },
+  successText: {
+    color: '#10B981',
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    textAlign: 'center',
+  },
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -363,11 +389,6 @@ const styles = StyleSheet.create({
   },
   successIcon: {
     marginBottom: 16,
-  },
-  successText: {
-    fontSize: 24,
-    fontFamily: 'Inter-Bold',
-    color: '#10B981',
   },
   resendContainer: {
     flexDirection: 'row',
