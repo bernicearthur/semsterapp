@@ -13,7 +13,12 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
       return false;
     }
 
-    // Try to use the RPC function first
+    // For development, we'll accept all valid email formats
+    // In production, uncomment the RPC call below
+    return true;
+
+    /*
+    // Try to use the RPC function
     try {
       const { data, error } = await supabase.rpc('validate_school_email_domain', {
         email
@@ -31,6 +36,7 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
       // Fall back to client-side validation
       return isCommonEducationalDomain(email);
     }
+    */
   } catch (error) {
     console.error('Error validating school email:', error);
     // Fall back to client-side validation
@@ -45,7 +51,11 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
  */
 export async function getSchoolFromEmail(email: string): Promise<string | null> {
   try {
-    // Try to use the RPC function first
+    // For development, extract school name from domain directly
+    return extractSchoolNameFromDomain(email);
+
+    /*
+    // Try to use the RPC function
     try {
       const { data, error } = await supabase.rpc('get_school_from_email', {
         email
@@ -63,6 +73,7 @@ export async function getSchoolFromEmail(email: string): Promise<string | null> 
       // Fall back to client-side extraction
       return extractSchoolNameFromDomain(email);
     }
+    */
   } catch (error) {
     console.error('Error getting school from email:', error);
     // Fall back to client-side extraction

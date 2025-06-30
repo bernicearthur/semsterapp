@@ -6,7 +6,6 @@ import { ArrowLeft, ArrowRight, Mail, CircleAlert as AlertCircle } from 'lucide-
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { validateSchoolEmail, getSchoolFromEmail } from '@/lib/school-utils';
 
 export default function EmailVerificationScreen() {
   const { isDark } = useTheme();
@@ -15,7 +14,6 @@ export default function EmailVerificationScreen() {
   const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
   useEffect(() => {
     // Ensure we're on the correct step
@@ -30,47 +28,7 @@ export default function EmailVerificationScreen() {
     
     // Clear error when user types
     if (error) setError('');
-    
-    // Check if it's a school email when the user stops typing
-    if (isValidFormat) {
-      const timeoutId = setTimeout(() => {
-        checkSchoolEmail(email);
-      }, 500);
-      
-      return () => clearTimeout(timeoutId);
-    }
   }, [email]);
-
-  const checkSchoolEmail = async (emailToCheck: string) => {
-    if (!emailToCheck) return;
-    
-    setIsCheckingEmail(true);
-    
-    try {
-      const isSchoolEmail = await validateSchoolEmail(emailToCheck);
-      
-      if (!isSchoolEmail) {
-        setError('Please use your school email address');
-        setIsValid(false);
-      } else {
-        // Get the school name from the email
-        const schoolName = await getSchoolFromEmail(emailToCheck);
-        if (schoolName) {
-          // Update the school in sign up data if it's different
-          if (signUpData.school !== schoolName) {
-            updateSignUpData({ school: schoolName });
-          }
-        }
-        setError(''); // Clear any previous errors
-      }
-    } catch (err) {
-      console.error('Error checking school email:', err);
-      // Don't show error to user for network issues, just log it
-      // The validation will happen again on continue
-    } finally {
-      setIsCheckingEmail(false);
-    }
-  };
 
   const handleBack = () => {
     router.back();
@@ -86,38 +44,10 @@ export default function EmailVerificationScreen() {
     setError(''); // Clear any previous errors
 
     try {
-      // Final check if it's a school email
-      let isSchoolEmail = true;
-      try {
-        isSchoolEmail = await validateSchoolEmail(email);
-      } catch (err) {
-        console.error('Error validating school email on continue:', err);
-        // Continue anyway if there's an error checking the email
-        // This allows users to proceed even if the RPC function fails
-        isSchoolEmail = true;
-      }
-      
-      if (!isSchoolEmail) {
-        setError('Please use your school email address');
-        setIsLoading(false);
-        return;
-      }
-
-      // Get school name and update signup data
-      try {
-        const schoolName = await getSchoolFromEmail(email);
-        if (schoolName) {
-          updateSignUpData({ school: schoolName });
-        }
-      } catch (err) {
-        console.error('Error getting school from email:', err);
-        // Continue anyway if there's an error getting the school name
-      }
-
       // Store the email in sign up data
       updateSignUpData({ email });
       
-      // Try to sign up with a temporary password
+      // Try to sign up with a temporary password to trigger email verification
       const { data, error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
@@ -218,9 +148,6 @@ export default function EmailVerificationScreen() {
                 autoCapitalize="none"
                 autoComplete="email"
               />
-              {isCheckingEmail && (
-                <ActivityIndicator size="small" color={isDark ? '#60A5FA' : '#3B82F6'} />
-              )}
             </View>
             {error ? (
               <View style={styles.errorContainer}>
@@ -249,12 +176,12 @@ export default function EmailVerificationScreen() {
             style={[
               styles.continueButton, 
               { 
-                backgroundColor: isValid && !isCheckingEmail ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                opacity: isValid && !isCheckingEmail && !isLoading ? 1 : 0.5
+                backgroundColor: isValid ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                opacity: isValid && !isLoading ? 1 : 0.5
               }
             ]}
             onPress={handleContinue}
-            disabled={!isValid || isCheckingEmail || isLoading}
+            disabled={!isValid || isLoading}
           >
             {isLoading ? (
               <ActivityIndicator color="#FFFFFF" />
