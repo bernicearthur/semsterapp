@@ -143,6 +143,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return;
         }
         
+        // If we've tried 5 times and still no profile, try to create one manually
+        if (profileFetchAttempts >= 5 && error.code === 'PGRST116') {
+          console.log('Profile not found after multiple attempts, trying to create manually...');
+          
+          // Get user email
+          const { data: userData } = await supabase.auth.getUser();
+          if (userData?.user?.email) {
+            // Call the RPC function to create a profile
+            const { data: createResult, error: createError } = await supabase.rpc(
+              'create_profile_if_not_exists',
+              { 
+                user_id: userId,
+                user_email: userData.user.email,
+                user_full_name: signUpData.fullName || '',
+                user_username: signUpData.username || '',
+                user_avatar_url: signUpData.avatarUrl || null,
+                user_school: signUpData.school || ''
+              }
+            );
+            
+            if (createError) {
+              console.error('Error creating profile manually:', createError);
+            } else {
+              console.log('Profile created manually:', createResult);
+              // Try fetching again
+              setTimeout(() => fetchUserProfile(userId), 500);
+            }
+          }
+        }
+        
         return;
       }
 

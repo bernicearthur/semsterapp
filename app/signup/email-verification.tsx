@@ -47,6 +47,7 @@ export default function EmailVerificationScreen() {
     setIsCheckingEmail(true);
     
     try {
+      // For testing purposes, accept common email domains
       const isSchoolEmail = await validateSchoolEmail(emailToCheck);
       
       if (!isSchoolEmail) {
@@ -102,9 +103,18 @@ export default function EmailVerificationScreen() {
       const { data, error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            email: email,
+            school: schoolName || '',
+          }
+        }
       });
       
       if (error) {
+        console.error('Signup error:', error);
+        
         if (error.message.includes('already registered')) {
           // If the user already exists, resend the confirmation email
           const { error: resendError } = await supabase.auth.resend({
