@@ -13,6 +13,7 @@ export default function OtpVerificationScreen() {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isVerified, setIsVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
   const [error, setError] = useState('');
   const inputRefs = useRef<Array<TextInput | null>>([]);
@@ -105,9 +106,9 @@ export default function OtpVerificationScreen() {
   const handleResendCode = async () => {
     if (resendCountdown > 0) return;
     
+    setResendLoading(true);
+    
     try {
-      setIsLoading(true);
-      
       // Resend the verification email
       const { error } = await supabase.auth.resend({
         type: 'signup',
@@ -116,17 +117,17 @@ export default function OtpVerificationScreen() {
       
       if (error) {
         setError(error.message || 'Failed to resend verification code');
-        setIsLoading(false);
+        setResendLoading(false);
         return;
       }
       
       setResendCountdown(60);
       Alert.alert('Code Sent', `A new verification code has been sent to ${signUpData.email}`);
-      setIsLoading(false);
     } catch (error: any) {
       console.error('Error resending code:', error);
       setError(error.message || 'Failed to resend verification code');
-      setIsLoading(false);
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -219,18 +220,22 @@ export default function OtpVerificationScreen() {
             </Text>
             <TouchableOpacity 
               onPress={handleResendCode}
-              disabled={resendCountdown > 0 || isLoading}
+              disabled={resendCountdown > 0 || resendLoading}
             >
-              <Text style={[
-                styles.resendButton,
-                { 
-                  color: (resendCountdown > 0 || isLoading) ? 
-                    (isDark ? '#9CA3AF' : '#6B7280') : 
-                    (isDark ? '#60A5FA' : '#3B82F6') 
-                }
-              ]}>
-                {resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend Code'}
-              </Text>
+              {resendLoading ? (
+                <ActivityIndicator size="small" color={isDark ? '#60A5FA' : '#3B82F6'} />
+              ) : (
+                <Text style={[
+                  styles.resendButton,
+                  { 
+                    color: (resendCountdown > 0) ? 
+                      (isDark ? '#9CA3AF' : '#6B7280') : 
+                      (isDark ? '#60A5FA' : '#3B82F6') 
+                  }
+                ]}>
+                  {resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend Code'}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -373,11 +378,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 16,
+    gap: 8,
   },
   resendText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    marginRight: 4,
   },
   resendButton: {
     fontSize: 14,

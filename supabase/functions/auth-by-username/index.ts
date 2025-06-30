@@ -38,13 +38,13 @@ serve(async (req) => {
     );
 
     // Get the user's email from their username
-    const { data: userData, error: userError } = await supabaseAdmin
+    const { data: profileData, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("id")
       .eq("username", username)
       .single();
 
-    if (userError || !userData) {
+    if (profileError || !profileData) {
       return new Response(
         JSON.stringify({ error: "Invalid username or password" }),
         {
@@ -56,7 +56,7 @@ serve(async (req) => {
 
     // Get the user's email
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.getUserById(
-      userData.id
+      profileData.id
     );
 
     if (authError || !authUser?.user?.email) {

@@ -196,27 +196,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithUsername = async (username: string, password: string) => {
     try {
       // First, get the email associated with the username
-      const { data, error: lookupError } = await supabase.functions.invoke('auth-by-username', {
-        method: 'POST',
-        body: { username, password },
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username)
+        .single();
 
-      if (lookupError || data.error) {
-        return { error: { message: lookupError?.message || data.error || 'Invalid username or password' } };
+      if (error) {
+        return { error: { message: 'Invalid username or password' } };
       }
 
-      if (!data.email) {
-        return { error: { message: 'Username not found' } };
+      // Get the user's email from auth.users
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('email')
+        .eq('id', data.id)
+        .single();
+
+      if (userError || !userData?.email) {
+        return { error: { message: 'Invalid username or password' } };
       }
 
       // Now sign in with the email and password
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: userData.email,
         password,
       });
 
-      if (error) {
-        return { error };
+      if (signInError) {
+        return { error: signInError };
       }
 
       router.replace('/(app)');
