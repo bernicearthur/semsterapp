@@ -89,7 +89,10 @@ export default function EmailVerificationScreen() {
     setIsLoading(true);
 
     try {
-      // Check if email already exists by attempting to sign up with a temporary password
+      // Store the email in sign up data
+      updateSignUpData({ email });
+      
+      // Send OTP verification using Supabase's signup with email
       const { data, error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VALIDATION', // This will be changed later
@@ -98,15 +101,17 @@ export default function EmailVerificationScreen() {
         }
       });
       
-      if (error && error.message.includes('already registered')) {
-        setError('This email is already registered. Please sign in or use a different email.');
+      if (error) {
+        if (error.message.includes('already registered')) {
+          setError('This email is already registered. Please sign in or use a different email.');
+        } else {
+          setError(error.message);
+        }
         setIsLoading(false);
         return;
       }
       
       // If we get here, the email is valid and available
-      updateSignUpData({ email });
-      
       // Send OTP verification
       const { error: otpError } = await supabase.auth.resend({
         type: 'signup',
@@ -120,9 +125,9 @@ export default function EmailVerificationScreen() {
       }
       
       router.push('/signup/otp-verification');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Email verification error:', err);
-      setError('An unexpected error occurred. Please try again.');
+      setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }

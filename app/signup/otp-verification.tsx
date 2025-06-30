@@ -14,6 +14,7 @@ export default function OtpVerificationScreen() {
   const [isVerified, setIsVerified] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
+  const [error, setError] = useState('');
   const inputRefs = useRef<Array<TextInput | null>>([]);
   const screenWidth = Dimensions.get('window').width;
   const inputWidth = (screenWidth - 96) / 6; // Calculate width based on screen size
@@ -50,6 +51,11 @@ export default function OtpVerificationScreen() {
     if (text && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
+
+    // Clear any previous errors
+    if (error) {
+      setError('');
+    }
   };
 
   const handleKeyPress = (e: any, index: number) => {
@@ -62,7 +68,7 @@ export default function OtpVerificationScreen() {
   const handleVerify = async () => {
     const otpValue = otp.join('');
     if (otpValue.length !== 6) {
-      Alert.alert('Invalid Code', 'Please enter the complete 6-digit code');
+      setError('Please enter the complete 6-digit code');
       return;
     }
 
@@ -77,7 +83,7 @@ export default function OtpVerificationScreen() {
       });
 
       if (error) {
-        Alert.alert('Verification Failed', error.message);
+        setError(error.message || 'Invalid verification code');
         setIsLoading(false);
         return;
       }
@@ -89,9 +95,9 @@ export default function OtpVerificationScreen() {
       setTimeout(() => {
         router.push('/signup/profile-setup');
       }, 1500);
-    } catch (error) {
+    } catch (error: any) {
       console.error('OTP verification error:', error);
-      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+      setError(error.message || 'An unexpected error occurred. Please try again.');
       setIsLoading(false);
     }
   };
@@ -106,15 +112,15 @@ export default function OtpVerificationScreen() {
       });
       
       if (error) {
-        Alert.alert('Error', error.message);
+        setError(error.message || 'Failed to resend verification code');
         return;
       }
       
       setResendCountdown(60);
       Alert.alert('Code Sent', `A new verification code has been sent to ${signUpData.email}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error resending code:', error);
-      Alert.alert('Error', 'Failed to resend verification code');
+      setError(error.message || 'Failed to resend verification code');
     }
   };
 
@@ -158,6 +164,12 @@ export default function OtpVerificationScreen() {
           <Text style={[styles.subtitle, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
             Enter the 6-digit code sent to {signUpData.email || 'your email'}
           </Text>
+
+          {error ? (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          ) : null}
 
           {isVerified ? (
             <View style={styles.verificationSuccess}>
@@ -312,6 +324,19 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     textAlign: 'center',
     maxWidth: '80%',
+  },
+  errorContainer: {
+    backgroundColor: '#FEE2E2',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 20,
+    width: '100%',
+  },
+  errorText: {
+    color: '#EF4444',
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    textAlign: 'center',
   },
   otpContainer: {
     flexDirection: 'row',
