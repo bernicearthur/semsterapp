@@ -145,8 +145,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           data: {
-            full_name: signUpData.fullName,
-            school: signUpData.school,
+            full_name: signUpData.fullName || '',
+            school: signUpData.school || '',
           },
         },
       });
@@ -157,15 +157,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Only create the profile if auth signup was successful
       if (authData.user) {
-        // Create profile entry
+        // Create profile entry with proper defaults to avoid RLS violations
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
             id: authData.user.id,
-            username: signUpData.username,
-            full_name: signUpData.fullName,
-            avatar_url: signUpData.avatarUrl,
-            school: signUpData.school,
+            username: signUpData.username || '',
+            full_name: signUpData.fullName || '',
+            avatar_url: signUpData.avatarUrl || null,
+            school: signUpData.school || '',
           });
 
         if (profileError) {
