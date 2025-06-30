@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, ArrowRight, CircleCheck as CheckCircle, CircleAlert as AlertCircle } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, CircleCheck as CheckCircle, AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -57,6 +57,8 @@ export default function OtpVerificationScreen() {
     if (error) {
       setError('');
     }
+    
+    // Clear any previous success
     if (success) {
       setSuccess('');
     }
@@ -82,14 +84,15 @@ export default function OtpVerificationScreen() {
 
     try {
       // Verify OTP with Supabase
-      const { error } = await supabase.auth.verifyOtp({
+      const { data, error } = await supabase.auth.verifyOtp({
         email: signUpData.email || '',
         token: otpValue,
         type: 'signup',
       });
 
       if (error) {
-        setError(error.message || 'Invalid verification code');
+        console.error('OTP verification error:', error);
+        setError(error.message || 'Invalid verification code. Please try again.');
         setIsLoading(false);
         return;
       }
@@ -117,12 +120,18 @@ export default function OtpVerificationScreen() {
     setSuccess('');
     
     try {
+      if (!signUpData.email) {
+        setError('Email address is missing. Please go back and enter your email.');
+        setIsLoading(false);
+        return;
+      }
+      
       // Resend the verification email
       const { error } = await supabase.auth.resend({
         type: 'signup',
-        email: signUpData.email || '',
+        email: signUpData.email,
         options: {
-          emailRedirectTo: window.location.origin + '/signup/otp-verification'
+          emailRedirectTo: window.location.origin + '/signup/otp-verification',
         }
       });
       
@@ -200,7 +209,10 @@ export default function OtpVerificationScreen() {
               <View style={styles.successIcon}>
                 <CheckCircle size={64} color="#10B981" />
               </View>
-              <Text style={styles.verifiedText}>Email Verified!</Text>
+              <Text style={styles.successText}>Email Verified!</Text>
+              <Text style={[styles.successSubtext, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                Redirecting to the next step...
+              </Text>
             </View>
           ) : (
             <View style={styles.otpContainer}>
@@ -212,7 +224,7 @@ export default function OtpVerificationScreen() {
                     styles.otpInput,
                     { 
                       backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-                      borderColor: isDark ? '#374151' : '#E5E7EB',
+                      borderColor: error ? '#EF4444' : success ? '#10B981' : isDark ? '#374151' : '#E5E7EB',
                       color: isDark ? '#E5E7EB' : '#1F2937',
                       width: inputWidth,
                       height: inputWidth * 1.2
@@ -226,6 +238,7 @@ export default function OtpVerificationScreen() {
                   textAlign="center"
                   fontSize={24}
                   fontFamily="Inter-Bold"
+                  editable={!isLoading && !isVerified}
                 />
               ))}
             </View>
@@ -237,12 +250,12 @@ export default function OtpVerificationScreen() {
             </Text>
             <TouchableOpacity 
               onPress={handleResendCode}
-              disabled={resendCountdown > 0 || isLoading}
+              disabled={resendCountdown > 0 || isLoading || isVerified}
             >
               <Text style={[
                 styles.resendButton,
                 { 
-                  color: (resendCountdown > 0 || isLoading) ? 
+                  color: (resendCountdown > 0 || isLoading || isVerified) ? 
                     (isDark ? '#9CA3AF' : '#6B7280') : 
                     (isDark ? '#60A5FA' : '#3B82F6') 
                 }
@@ -250,6 +263,12 @@ export default function OtpVerificationScreen() {
                 {resendCountdown > 0 ? `Resend in ${resendCountdown}s` : 'Resend Code'}
               </Text>
             </TouchableOpacity>
+          </View>
+          
+          <View style={styles.emailCheckContainer}>
+            <Text style={[styles.emailCheckText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+              Please check both your inbox and spam folder for the verification email.
+            </Text>
           </View>
         </View>
 
@@ -345,46 +364,48 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    marginBottom: 40,
+    marginBottom: 32,
     textAlign: 'center',
     maxWidth: '80%',
   },
   errorContainer: {
-    backgroundColor: '#FEE2E2',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 20,
-    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FEF2F2',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '100%',
   },
   errorText: {
     color: '#EF4444',
     fontFamily: 'Inter-Medium',
     fontSize: 14,
     marginLeft: 8,
+    flex: 1,
   },
   successContainer: {
-    backgroundColor: '#D1FAE5',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 20,
-    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#ECFDF5',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 20,
+    width: '100%',
   },
   successText: {
     color: '#10B981',
     fontFamily: 'Inter-Medium',
     fontSize: 14,
     marginLeft: 8,
+    flex: 1,
   },
   otpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
     gap: 8,
-    marginBottom: 40,
+    marginBottom: 32,
   },
   otpInput: {
     borderWidth: 1,
@@ -399,15 +420,16 @@ const styles = StyleSheet.create({
   successIcon: {
     marginBottom: 16,
   },
-  verifiedText: {
-    fontSize: 24,
-    fontFamily: 'Inter-Bold',
-    color: '#10B981',
+  successSubtext: {
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    marginTop: 8,
+    textAlign: 'center',
   },
   resendContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 8,
   },
   resendText: {
     fontSize: 14,
@@ -417,6 +439,20 @@ const styles = StyleSheet.create({
   resendButton: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
+  },
+  emailCheckContainer: {
+    marginTop: 24,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#60A5FA',
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    width: '100%',
+  },
+  emailCheckText: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    textAlign: 'center',
   },
   footer: {
     padding: 24,

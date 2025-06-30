@@ -13,32 +13,21 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
       return false;
     }
 
-    // For development, we'll accept all valid email formats
-    return true;
-
-    /*
-    // Try to use the RPC function
-    try {
-      const { data, error } = await supabase.rpc('validate_school_email_domain', {
-        email
-      });
-      
-      if (error) {
-        console.error('Error calling validate_school_email_domain RPC:', error);
-        // Fall back to client-side validation
-        return isCommonEducationalDomain(email);
-      }
-      
-      return data || false;
-    } catch (error) {
-      console.error('Exception calling validate_school_email_domain RPC:', error);
-      // Fall back to client-side validation
+    // Call the Supabase function to validate the email domain
+    const { data, error } = await supabase.rpc('validate_school_email_domain', {
+      email
+    });
+    
+    if (error) {
+      console.error('Error validating school email:', error);
+      // Fallback: check if it's a common educational domain
       return isCommonEducationalDomain(email);
     }
-    */
+    
+    return data || false;
   } catch (error) {
     console.error('Error validating school email:', error);
-    // Fall back to client-side validation
+    // Fallback: check if it's a common educational domain
     return isCommonEducationalDomain(email);
   }
 }
@@ -50,32 +39,21 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
  */
 export async function getSchoolFromEmail(email: string): Promise<string | null> {
   try {
-    // For development, extract school name from domain directly
-    return extractSchoolNameFromDomain(email);
-
-    /*
-    // Try to use the RPC function
-    try {
-      const { data, error } = await supabase.rpc('get_school_from_email', {
-        email
-      });
-      
-      if (error) {
-        console.error('Error calling get_school_from_email RPC:', error);
-        // Fall back to client-side extraction
-        return extractSchoolNameFromDomain(email);
-      }
-      
-      return data;
-    } catch (error) {
-      console.error('Exception calling get_school_from_email RPC:', error);
-      // Fall back to client-side extraction
+    // Call the Supabase function to get the school name
+    const { data, error } = await supabase.rpc('get_school_from_email', {
+      email
+    });
+    
+    if (error) {
+      console.error('Error getting school from email:', error);
+      // Fallback: extract school name from domain
       return extractSchoolNameFromDomain(email);
     }
-    */
+    
+    return data;
   } catch (error) {
     console.error('Error getting school from email:', error);
-    // Fall back to client-side extraction
+    // Fallback: extract school name from domain
     return extractSchoolNameFromDomain(email);
   }
 }
@@ -138,22 +116,15 @@ function isCommonEducationalDomain(email: string): boolean {
     /\.ac\.[a-z]{2}$/,  // Academic institutions (international)
     /\.edu\.[a-z]{2}$/  // Educational institutions (international)
   ];
+  
+  // For testing purposes, allow common email domains
+  const testDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+  
+  if (testDomains.includes(domain)) {
+    return true;
+  }
 
-  // Specific known educational domains
-  const knownEduDomains = [
-    'ashesi.edu.gh',
-    'ug.edu.gh',
-    'knust.edu.gh',
-    'ucc.edu.gh',
-    'gimpa.edu.gh',
-    'gmail.com',       // For testing purposes
-    'yahoo.com',       // For testing purposes
-    'outlook.com',     // For testing purposes
-    'hotmail.com'      // For testing purposes
-  ];
-
-  return eduPatterns.some(pattern => pattern.test(domain)) || 
-         knownEduDomains.includes(domain);
+  return eduPatterns.some(pattern => pattern.test(domain));
 }
 
 /**
@@ -165,21 +136,29 @@ function extractSchoolNameFromDomain(email: string): string | null {
   const domain = email.split('@')[1];
   if (!domain) return null;
 
-  // Map specific domains to school names
-  const domainSchoolMap: Record<string, string> = {
+  // For testing purposes, map common email domains to test schools
+  const testDomains: Record<string, string> = {
+    'gmail.com': 'Gmail University',
+    'yahoo.com': 'Yahoo University',
+    'outlook.com': 'Outlook University',
+    'hotmail.com': 'Hotmail University'
+  };
+  
+  if (testDomains[domain]) {
+    return testDomains[domain];
+  }
+
+  // Map specific Ghanaian university domains
+  const ghanaUniversities: Record<string, string> = {
     'ashesi.edu.gh': 'Ashesi University',
     'ug.edu.gh': 'University of Ghana',
     'knust.edu.gh': 'Kwame Nkrumah University of Science and Technology',
     'ucc.edu.gh': 'University of Cape Coast',
-    'gimpa.edu.gh': 'Ghana Institute of Management and Public Administration',
-    'gmail.com': 'Gmail University',       // For testing purposes
-    'yahoo.com': 'Yahoo University',       // For testing purposes
-    'outlook.com': 'Outlook University',   // For testing purposes
-    'hotmail.com': 'Hotmail University'    // For testing purposes
+    'gimpa.edu.gh': 'Ghana Institute of Management and Public Administration'
   };
-
-  if (domainSchoolMap[domain]) {
-    return domainSchoolMap[domain];
+  
+  if (ghanaUniversities[domain]) {
+    return ghanaUniversities[domain];
   }
 
   // Remove common educational suffixes and format as school name
