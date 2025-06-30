@@ -166,6 +166,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.error('Error creating profile:', profileError);
           return { error: profileError };
         }
+        
+        // Show success message
+        Alert.alert(
+          'Account Created',
+          'Your account has been created successfully. You can now sign in.',
+          [{ text: 'OK' }]
+        );
       }
 
       return { error };
@@ -184,11 +191,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!error) {
         router.replace('/(app)');
+      } else {
+        Alert.alert('Sign In Failed', error.message);
       }
 
       return { error };
     } catch (error) {
       console.error('Error in signIn:', error);
+      Alert.alert('Sign In Failed', 'An unexpected error occurred');
       return { error };
     }
   };
@@ -202,10 +212,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (lookupError || data.error) {
+        Alert.alert('Sign In Failed', lookupError?.message || data.error || 'Invalid username or password');
         return { error: { message: lookupError?.message || data.error || 'Invalid username or password' } };
       }
 
       if (!data.email) {
+        Alert.alert('Sign In Failed', 'Username not found');
         return { error: { message: 'Username not found' } };
       }
 
@@ -216,6 +228,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (error) {
+        Alert.alert('Sign In Failed', error.message);
         return { error };
       }
 
@@ -223,6 +236,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: null };
     } catch (error) {
       console.error('Error in signInWithUsername:', error);
+      Alert.alert('Sign In Failed', 'An unexpected error occurred');
       return { error: { message: 'An unexpected error occurred' } };
     }
   };
@@ -280,6 +294,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         type: 'signup'
       });
       
+      if (!error) {
+        Alert.alert('Success', 'Email verified successfully!');
+      }
+      
       return { error };
     } catch (error) {
       return { error };
@@ -291,6 +309,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: 'https://your-app-url.com/reset-password',
       });
+      
+      if (!error) {
+        Alert.alert('Password Reset Email Sent', 'Please check your email for instructions to reset your password.');
+      }
       
       return { error };
     } catch (error) {
@@ -304,6 +326,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.auth.updateUser({
         password,
       });
+      
+      if (!error) {
+        Alert.alert('Success', 'Your password has been updated successfully.');
+      }
       
       return { error };
     } catch (error) {
@@ -328,11 +354,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!error) {
         await refreshProfile();
+        Alert.alert('Success', 'Profile updated successfully');
+      } else {
+        Alert.alert('Error', error.message || 'Failed to update profile');
       }
 
       return { error };
     } catch (error) {
       console.error('Error updating profile:', error);
+      Alert.alert('Error', 'An unexpected error occurred while updating your profile');
       return { error };
     }
   };

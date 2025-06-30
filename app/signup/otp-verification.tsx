@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, ArrowRight, CircleCheck as CheckCircle } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, CircleCheck as CheckCircle, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -182,10 +182,12 @@ export default function OtpVerificationScreen() {
 
           {error ? (
             <View style={styles.errorContainer}>
+              <AlertCircle size={16} color="#EF4444" />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           ) : success ? (
             <View style={styles.successContainer}>
+              <CheckCircle size={16} color="#10B981" />
               <Text style={styles.successText}>{success}</Text>
             </View>
           ) : null}
@@ -195,7 +197,7 @@ export default function OtpVerificationScreen() {
               <View style={styles.successIcon}>
                 <CheckCircle size={64} color="#10B981" />
               </View>
-              <Text style={styles.successText}>Email Verified!</Text>
+              <Text style={styles.verifiedText}>Email Verified!</Text>
             </View>
           ) : (
             <View style={styles.otpContainer}>
@@ -350,12 +352,14 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 20,
     width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   errorText: {
     color: '#EF4444',
     fontFamily: 'Inter-Medium',
     fontSize: 14,
-    textAlign: 'center',
+    marginLeft: 8,
   },
   successContainer: {
     backgroundColor: '#D1FAE5',
@@ -363,12 +367,14 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 20,
     width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   successText: {
     color: '#10B981',
     fontFamily: 'Inter-Medium',
     fontSize: 14,
-    textAlign: 'center',
+    marginLeft: 8,
   },
   otpContainer: {
     flexDirection: 'row',
@@ -389,6 +395,11 @@ const styles = StyleSheet.create({
   },
   successIcon: {
     marginBottom: 16,
+  },
+  verifiedText: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+    color: '#10B981',
   },
   resendContainer: {
     flexDirection: 'row',

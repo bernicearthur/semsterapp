@@ -163,6 +163,7 @@ export default function EmailVerificationScreen() {
               </View>
             ) : success ? (
               <View style={styles.successContainer}>
+                <CheckCircle size={16} color="#10B981" />
                 <Text style={styles.successText}>{success}</Text>
               </View>
             ) : (
@@ -306,15 +307,15 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   successContainer: {
-    backgroundColor: '#D1FAE5',
-    borderRadius: 8,
-    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 8,
   },
   successText: {
     color: '#10B981',
     fontSize: 14,
     fontFamily: 'Inter-Medium',
+    marginLeft: 6,
   },
   helperText: {
     fontSize: 14,
