@@ -147,6 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: signUpData.fullName,
             school: signUpData.school,
           },
+          emailRedirectTo: window.location.origin + '/signup/otp-verification'
         },
       });
 

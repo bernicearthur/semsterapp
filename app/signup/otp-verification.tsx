@@ -121,6 +121,9 @@ export default function OtpVerificationScreen() {
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: signUpData.email || '',
+        options: {
+          emailRedirectTo: window.location.origin + '/signup/otp-verification'
+        }
       });
       
       if (error) {
