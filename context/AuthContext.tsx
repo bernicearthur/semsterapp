@@ -134,9 +134,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error('Error fetching user profile:', error);
         
-        // If we've tried less than 3 times and got a "no rows returned" error,
+        // If we've tried less than 5 times and got a "no rows returned" error,
         // it might be because the profile hasn't been created yet by the trigger
-        if (profileFetchAttempts < 3 && error.code === 'PGRST116') {
+        if (profileFetchAttempts < 5 && error.code === 'PGRST116') {
           console.log('Profile not found, retrying in 1 second...');
           // Wait a second and try again
           setTimeout(() => fetchUserProfile(userId), 1000);
@@ -207,6 +207,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           
           console.log('Profile created successfully');
+          
+          // Fetch the profile to ensure it was created
+          await fetchUserProfile(authData.user.id);
         } catch (profileError) {
           console.error('Exception creating profile:', profileError);
           return { error: profileError };
