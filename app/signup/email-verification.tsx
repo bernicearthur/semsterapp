@@ -92,31 +92,15 @@ export default function EmailVerificationScreen() {
       // Store the email in sign up data
       updateSignUpData({ email });
       
-      // First, check if the email is already registered
-      const { data: { users }, error: checkError } = await supabase.auth.admin.listUsers({
-        filter: {
-          email: email
-        }
-      }).catch(() => ({ data: { users: [] }, error: null }));
-      
-      if (users && users.length > 0) {
-        setError('This email is already registered. Please sign in or use a different email.');
-        setIsLoading(false);
-        return;
-      }
-      
-      // Send OTP verification using Supabase's signUp with email
+      // Try to sign up with a temporary password
       const { error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
-        options: {
-          emailRedirectTo: 'https://your-app-url.com/auth/callback',
-        }
       });
       
       if (error) {
+        // If the user already exists but is not confirmed, resend the confirmation email
         if (error.message.includes('already registered')) {
-          // If the user exists but is not confirmed, resend the confirmation email
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
             email,

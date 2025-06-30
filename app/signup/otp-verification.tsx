@@ -103,11 +103,11 @@ export default function OtpVerificationScreen() {
   };
 
   const handleResendCode = async () => {
-    if (resendCountdown > 0) return;
+    if (resendCountdown > 0 || isLoading) return;
+    
+    setIsLoading(true);
     
     try {
-      setIsLoading(true);
-      
       // Resend the verification email
       const { error } = await supabase.auth.resend({
         type: 'signup',
