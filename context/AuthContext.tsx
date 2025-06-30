@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching user profile:', error);
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -150,12 +150,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      if (!error) {
-        // Create profile entry
+      if (!error && data.user) {
+        // Create profile entry using the user ID from the signup response
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert({
-            id: (await supabase.auth.getUser()).data.user?.id,
+            id: data.user.id,
             username: signUpData.username,
             full_name: signUpData.fullName,
             avatar_url: signUpData.avatarUrl,
