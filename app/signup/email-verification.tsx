@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft, ArrowRight, Mail, CircleAlert as AlertCircle, CheckCircle } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight, Mail, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -14,7 +14,6 @@ export default function EmailVerificationScreen() {
   const [email, setEmail] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
 
@@ -31,7 +30,6 @@ export default function EmailVerificationScreen() {
     
     // Clear error when user types
     if (error) setError('');
-    if (success) setSuccess('');
     
     // Check if it's a school email when the user stops typing
     if (isValidFormat) {
@@ -52,7 +50,7 @@ export default function EmailVerificationScreen() {
       const isSchoolEmail = await validateSchoolEmail(emailToCheck);
       
       if (!isSchoolEmail) {
-        setError('Please use your school email address or a valid email for testing');
+        setError('Please use your school email address');
         setIsValid(false);
       } else {
         // Get the school name from the email
@@ -86,13 +84,12 @@ export default function EmailVerificationScreen() {
 
     setIsLoading(true);
     setError(''); // Clear any previous errors
-    setSuccess(''); // Clear any previous success messages
 
     try {
       // Final check if it's a school email
       const isSchoolEmail = await validateSchoolEmail(email);
       if (!isSchoolEmail) {
-        setError('Please use your school email address or a valid email for testing');
+        setError('Please use your school email address');
         setIsLoading(false);
         return;
       }
@@ -106,30 +103,18 @@ export default function EmailVerificationScreen() {
       // Store the email in sign up data
       updateSignUpData({ email });
       
-      // Try to sign up with a temporary password to trigger email verification
-      const { data, error } = await supabase.auth.signUp({
+      // Try to sign up with a temporary password
+      const { error } = await supabase.auth.signUp({
         email,
         password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
-        options: {
-          emailRedirectTo: window.location.origin + '/signup/otp-verification',
-          data: {
-            email,
-            school: schoolName || ''
-          }
-        }
       });
       
       if (error) {
         // If the user already exists but is not confirmed, resend the confirmation email
         if (error.message.includes('already registered')) {
-          setSuccess('A verification code has been sent to your email. Please check your inbox and spam folder.');
-          
           const { error: resendError } = await supabase.auth.resend({
             type: 'signup',
             email,
-            options: {
-              emailRedirectTo: window.location.origin + '/signup/otp-verification',
-            }
           });
           
           if (resendError) {
@@ -142,14 +127,9 @@ export default function EmailVerificationScreen() {
           setIsLoading(false);
           return;
         }
-      } else {
-        setSuccess('A verification code has been sent to your email. Please check your inbox and spam folder.');
       }
       
-      // Wait a moment to show the success message before navigating
-      setTimeout(() => {
-        router.push('/signup/otp-verification');
-      }, 2000);
+      router.push('/signup/otp-verification');
     } catch (err: any) {
       console.error('Email verification error:', err);
       setError(err.message || 'An unexpected error occurred. Please try again.');
@@ -199,22 +179,6 @@ export default function EmailVerificationScreen() {
             Enter your school email address to receive a verification code
           </Text>
 
-          {error ? (
-            <View style={styles.errorContainer}>
-              <AlertCircle size={16} color="#EF4444" />
-              <Text style={styles.errorText}>{error}</Text>
-            </View>
-          ) : success ? (
-            <View style={styles.successContainer}>
-              <CheckCircle size={16} color="#10B981" />
-              <Text style={styles.successText}>{success}</Text>
-            </View>
-          ) : (
-            <Text style={[styles.helperText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-              We'll send a verification code to this email
-            </Text>
-          )}
-
           <View style={styles.formGroup}>
             <Text style={[styles.label, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
               School Email *
@@ -223,10 +187,10 @@ export default function EmailVerificationScreen() {
               styles.inputContainer,
               { 
                 backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-                borderColor: error ? '#EF4444' : success ? '#10B981' : isDark ? '#374151' : '#E5E7EB'
+                borderColor: error ? '#EF4444' : isDark ? '#374151' : '#E5E7EB'
               }
             ]}>
-              <Mail size={20} color={error ? '#EF4444' : success ? '#10B981' : (isDark ? '#60A5FA' : '#3B82F6')} />
+              <Mail size={20} color={error ? '#EF4444' : (isDark ? '#60A5FA' : '#3B82F6')} />
               <TextInput
                 style={[styles.input, { color: isDark ? '#E5E7EB' : '#1F2937' }]}
                 placeholder="your.name@school.edu"
@@ -236,12 +200,21 @@ export default function EmailVerificationScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
-                editable={!isLoading}
               />
               {isCheckingEmail && (
                 <ActivityIndicator size="small" color={isDark ? '#60A5FA' : '#3B82F6'} />
               )}
             </View>
+            {error ? (
+              <View style={styles.errorContainer}>
+                <AlertCircle size={16} color="#EF4444" />
+                <Text style={styles.errorText}>{error}</Text>
+              </View>
+            ) : (
+              <Text style={[styles.helperText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                We'll send a verification code to this email
+              </Text>
+            )}
           </View>
 
           <View style={styles.schoolInfo}>
@@ -250,12 +223,6 @@ export default function EmailVerificationScreen() {
             </Text>
             <Text style={[styles.schoolName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
               {signUpData.school || 'Will be detected from your email'}
-            </Text>
-          </View>
-          
-          <View style={styles.noticeContainer}>
-            <Text style={[styles.noticeText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-              For testing purposes, you can use common email domains like gmail.com, yahoo.com, etc.
             </Text>
           </View>
         </View>
@@ -344,7 +311,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     fontFamily: 'Inter-Regular',
-    marginBottom: 24,
+    marginBottom: 32,
     textAlign: 'center',
     alignSelf: 'center',
     maxWidth: '80%',
@@ -375,37 +342,18 @@ const styles = StyleSheet.create({
   errorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FEF2F2',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
+    marginTop: 8,
   },
   errorText: {
     color: '#EF4444',
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     marginLeft: 6,
-    flex: 1,
-  },
-  successContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ECFDF5',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  successText: {
-    color: '#10B981',
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    marginLeft: 6,
-    flex: 1,
   },
   helperText: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
-    marginBottom: 16,
+    marginTop: 8,
   },
   schoolInfo: {
     marginTop: 32,
@@ -419,19 +367,6 @@ const styles = StyleSheet.create({
   schoolName: {
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
-    textAlign: 'center',
-  },
-  noticeContainer: {
-    marginTop: 24,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#60A5FA',
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-  },
-  noticeText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
     textAlign: 'center',
   },
   footer: {

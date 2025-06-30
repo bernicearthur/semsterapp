@@ -13,7 +13,6 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
       return false;
     }
 
-    // Call the Supabase function to validate the email domain
     const { data, error } = await supabase.rpc('validate_school_email_domain', {
       email
     });
@@ -39,7 +38,6 @@ export async function validateSchoolEmail(email: string): Promise<boolean> {
  */
 export async function getSchoolFromEmail(email: string): Promise<string | null> {
   try {
-    // Call the Supabase function to get the school name
     const { data, error } = await supabase.rpc('get_school_from_email', {
       email
     });
@@ -116,13 +114,6 @@ function isCommonEducationalDomain(email: string): boolean {
     /\.ac\.[a-z]{2}$/,  // Academic institutions (international)
     /\.edu\.[a-z]{2}$/  // Educational institutions (international)
   ];
-  
-  // For testing purposes, allow common email domains
-  const testDomains = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
-  
-  if (testDomains.includes(domain)) {
-    return true;
-  }
 
   return eduPatterns.some(pattern => pattern.test(domain));
 }
@@ -136,31 +127,6 @@ function extractSchoolNameFromDomain(email: string): string | null {
   const domain = email.split('@')[1];
   if (!domain) return null;
 
-  // For testing purposes, map common email domains to test schools
-  const testDomains: Record<string, string> = {
-    'gmail.com': 'Gmail University',
-    'yahoo.com': 'Yahoo University',
-    'outlook.com': 'Outlook University',
-    'hotmail.com': 'Hotmail University'
-  };
-  
-  if (testDomains[domain]) {
-    return testDomains[domain];
-  }
-
-  // Map specific Ghanaian university domains
-  const ghanaUniversities: Record<string, string> = {
-    'ashesi.edu.gh': 'Ashesi University',
-    'ug.edu.gh': 'University of Ghana',
-    'knust.edu.gh': 'Kwame Nkrumah University of Science and Technology',
-    'ucc.edu.gh': 'University of Cape Coast',
-    'gimpa.edu.gh': 'Ghana Institute of Management and Public Administration'
-  };
-  
-  if (ghanaUniversities[domain]) {
-    return ghanaUniversities[domain];
-  }
-
   // Remove common educational suffixes and format as school name
   const schoolPart = domain
     .replace(/\.(edu|ac\.[a-z]{2}|edu\.[a-z]{2})$/, '')
@@ -168,5 +134,5 @@ function extractSchoolNameFromDomain(email: string): string | null {
     .map(part => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ');
 
-  return schoolPart ? `${schoolPart} University` : null;
+  return schoolPart || null;
 }

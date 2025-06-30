@@ -114,12 +114,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      // Use maybeSingle instead of single to handle cases where profile doesn't exist yet
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .maybeSingle();
+        .single();
 
       if (error) {
         console.error('Error fetching user profile:', error);
@@ -148,32 +147,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             full_name: signUpData.fullName,
             school: signUpData.school,
           },
-          emailRedirectTo: window.location.origin + '/signup/otp-verification',
         },
       });
 
       if (!error) {
         // Create profile entry
-        const { data: userData } = await supabase.auth.getUser();
-        const userId = userData?.user?.id;
-        
-        if (userId) {
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: userId,
-              username: signUpData.username,
-              full_name: signUpData.fullName,
-              avatar_url: signUpData.avatarUrl,
-              school: signUpData.school,
-            });
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: (await supabase.auth.getUser()).data.user?.id,
+            username: signUpData.username,
+            full_name: signUpData.fullName,
+            avatar_url: signUpData.avatarUrl,
+            school: signUpData.school,
+          });
 
-          if (profileError) {
-            console.error('Error creating profile:', profileError);
-            return { error: profileError };
-          }
-          
-          Alert.alert('Success', 'Your account has been created successfully!');
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          return { error: profileError };
         }
       }
 
@@ -298,7 +289,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const resetPassword = async (email: string) => {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/reset-password',
+        redirectTo: 'https://your-app-url.com/reset-password',
       });
       
       return { error };
