@@ -566,9 +566,10 @@ export default function HomeScreen() {
     return (
       <Animated.View 
         entering={FadeIn.duration(400)}
-        style={[styles.postCard, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}
+        style={styles.postCard}
       >
         <TouchableOpacity onPress={() => handlePostPress(post)} activeOpacity={0.95}>
+          <View style={[styles.postContent, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
           {/* Reposted By */}
           {post.repostedBy && (
             <View style={styles.repostedByContainer}>
@@ -625,7 +626,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <Text style={[styles.postContent, { color: isDark ? '#E5E7EB' : '#1F2937' }]}>
+          <Text style={[styles.postText, { color: isDark ? '#E5E7EB' : '#1F2937' }]}>
             {renderHashtags(post.content)}
           </Text>
 
@@ -732,6 +733,10 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           </View>
+          </View>
+          
+          {/* Separator Line */}
+          <View style={[styles.postSeparator, { backgroundColor: isDark ? '#1E293B' : '#E5E7EB' }]} />
         </TouchableOpacity>
       </Animated.View>
     );
@@ -1019,21 +1024,18 @@ const styles = StyleSheet.create({
   },
   postCard: {
     marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    marginBottom: 0,
+  },
+  postContent: {
+    paddingVertical: 16,
+  },
+  postSeparator: {
+    height: 1,
+    marginHorizontal: 16,
   },
   repostedByContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 4,
     gap: 6,
@@ -1050,7 +1052,6 @@ const styles = StyleSheet.create({
   postHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
     paddingTop: 12,
     marginBottom: 12,
     position: 'relative',
@@ -1129,11 +1130,10 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 1.5,
   },
-  postContent: {
+  postText: {
     fontSize: 15,
     fontFamily: 'Inter-Regular',
     lineHeight: 22,
-    paddingHorizontal: 16,
     paddingBottom: 12,
   },
   hashtag: {
@@ -1143,7 +1143,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
   imageGrid: {
-    paddingHorizontal: 16,
     gap: 4,
     marginBottom: 12,
   },
@@ -1161,7 +1160,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
     paddingVertical: 8,
     paddingBottom: 16,
   },
