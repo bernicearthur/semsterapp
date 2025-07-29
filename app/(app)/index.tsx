@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
-import { StyleSheet, View, Text, FlatList, Image, TouchableOpacity, Alert, Share, Platform } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Image, TouchableOpacity, Alert, Share, Platform, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MessageCircle, Repeat2, Share2, Bookmark as BookmarkIcon, MoveVertical as MoreVertical, Heart, Camera, UserPlus, Flag, Copy, Link, UserMinus, X, AtSign } from 'lucide-react-native';
-import Animated, { FadeIn } from 'react-native-reanimated';
+import { MessageCircle, Repeat2, Share2, Bookmark as BookmarkIcon, MoveVertical as MoreVertical, Heart, Camera, UserPlus, Flag, Copy, Link, UserMinus, X, AtSign, Plus, Send, BarChart3, Calendar, Video, PenSquare } from 'lucide-react-native';
+import Animated, { FadeIn, FadeInDown, SlideInRight } from 'react-native-reanimated';
 import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 import { PostDetailsDrawer } from '@/components/drawers/PostDetailsDrawer';
@@ -10,8 +10,9 @@ import { StoryViewerDrawer } from '@/components/drawers/StoryViewerDrawer';
 import { CreateStoryDrawer } from '@/components/drawers/CreateStoryDrawer';
 import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
 import { CreateStudyRoomDrawer } from '@/components/drawers/CreateStudyRoomDrawer';
-import { router } from 'expo-router';
 import { CreatePostDrawer } from '@/components/drawers/CreatePostDrawer';
+import { CreatePollDrawer } from '@/components/drawers/CreatePollDrawer';
+import { router } from 'expo-router';
 
 const initialStories = [
   {
@@ -70,87 +71,6 @@ const initialStories = [
     views: 28,
     isViewed: true,
   },
-  {
-    id: 's5',
-    user: {
-      name: 'Ama Serwaa',
-      avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=100',
-      hasUnseenStory: true,
-    },
-    content: {
-      type: 'text',
-      text: 'Beautiful sunset at campus today! 🌅',
-      backgroundColor: '#F59E0B',
-      textColor: '#FFFFFF',
-    },
-    timestamp: '8h',
-    views: 67,
-    isViewed: false,
-  },
-  {
-    id: 's6',
-    user: {
-      name: 'Yaw Darko',
-      avatar: 'https://images.pexels.com/photos/1516680/pexels-photo-1516680.jpeg?auto=compress&cs=tinysrgb&w=100',
-      hasUnseenStory: true,
-    },
-    content: {
-      type: 'image',
-      url: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800',
-    },
-    timestamp: '12h',
-    views: 89,
-    isViewed: true,
-  },
-  {
-    id: 's7',
-    user: {
-      name: 'Akua Manu',
-      avatar: 'https://images.pexels.com/photos/1858175/pexels-photo-1858175.jpeg?auto=compress&cs=tinysrgb&w=100',
-      hasUnseenStory: true,
-    },
-    content: {
-      type: 'text',
-      text: 'Study group session was so productive! 📚✨',
-      backgroundColor: '#10B981',
-      textColor: '#FFFFFF',
-    },
-    timestamp: '1d',
-    views: 23,
-    isViewed: false,
-  },
-  {
-    id: 's8',
-    user: {
-      name: 'Kojo Annan',
-      avatar: 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=100',
-      hasUnseenStory: true,
-    },
-    content: {
-      type: 'image',
-      url: 'https://images.pexels.com/photos/1181671/pexels-photo-1181671.jpeg?auto=compress&cs=tinysrgb&w=800',
-    },
-    timestamp: '1d',
-    views: 156,
-    isViewed: true,
-  },
-  {
-    id: 's9',
-    user: {
-      name: 'Efua Mensah',
-      avatar: 'https://images.pexels.com/photos/1587009/pexels-photo-1587009.jpeg?auto=compress&cs=tinysrgb&w=100',
-      hasUnseenStory: true,
-    },
-    content: {
-      type: 'text',
-      text: 'Grateful for all the amazing friends I\'ve made this year! 💕',
-      backgroundColor: '#EC4899',
-      textColor: '#FFFFFF',
-    },
-    timestamp: '1d',
-    views: 78,
-    isViewed: false,
-  }
 ];
 
 // List of users for @mention functionality
@@ -248,6 +168,7 @@ export default function HomeScreen() {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [isCreatePollOpen, setIsCreatePollOpen] = useState(false);
   const [showCreateMenu, setShowCreateMenu] = useState(false);
+  const [postText, setPostText] = useState('');
   const flatListRef = useRef(null);
   const loadingRef = useRef(false);
   const postIdCounterRef = useRef(initialPosts.length);
@@ -444,6 +365,10 @@ export default function HomeScreen() {
     Alert.alert('Post Created', 'Your post has been created successfully!');
   };
 
+  const handleCreatePoll = (pollData) => {
+    Alert.alert('Poll Created', 'Your poll has been created successfully!');
+  };
+
   const handleCreateMenuPress = () => {
     setShowCreateMenu(true);
   };
@@ -460,7 +385,7 @@ export default function HomeScreen() {
         setIsCreatePostOpen(true);
         break;
       case 'poll':
-        router.push('/create-post');
+        setIsCreatePollOpen(true);
         break;
       case 'story':
         setIsCreateStoryOpen(true);
@@ -606,13 +531,42 @@ export default function HomeScreen() {
     return timestamp;
   };
 
+  const handleQuickPost = () => {
+    if (postText.trim()) {
+      const newPost = {
+        id: Date.now().toString(),
+        user: {
+          id: 'current-user',
+          name: 'You',
+          avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100',
+          role: 'Student',
+          course: 'Computer Science',
+          year: 2025,
+          isConnected: true,
+        },
+        content: postText.trim(),
+        timestamp: 'now',
+        likes: 0,
+        comments: 0,
+        reposts: 0,
+        shares: 0,
+        bookmarks: 0,
+        mentions: [],
+      };
+      
+      setPosts(prev => [newPost, ...prev]);
+      setPostText('');
+      Alert.alert('Posted!', 'Your post has been shared successfully.');
+    }
+  };
+
   const renderPost = useCallback(({ item: post }) => {
     const postInteractions = interactions[post.id] || { liked: false, bookmarked: false, reposted: false };
 
     return (
       <Animated.View 
         entering={FadeIn.duration(400)}
-        style={{ backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }}
+        style={[styles.postCard, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
       >
         <TouchableOpacity onPress={() => handlePostPress(post)} activeOpacity={0.95}>
           {/* Reposted By */}
@@ -697,7 +651,7 @@ export default function HomeScreen() {
               >
                 <Heart
                   size={22}
-                  color={postInteractions.liked ? '#EF4444' : isDark ? '#9CA3AF' : '#6B7280'}
+                  color={postInteractions.liked ? '#EF4444' : (isDark ? '#9CA3AF' : '#6B7280')}
                   fill={postInteractions.liked ? '#EF4444' : 'none'}
                 />
                 <Text 
@@ -733,7 +687,7 @@ export default function HomeScreen() {
               >
                 <Repeat2
                   size={22}
-                  color={postInteractions.reposted ? '#10B981' : isDark ? '#9CA3AF' : '#6B7280'}
+                  color={postInteractions.reposted ? '#10B981' : (isDark ? '#9CA3AF' : '#6B7280')}
                 />
                 <Text 
                   style={[
@@ -774,7 +728,6 @@ export default function HomeScreen() {
             </View>
           </View>
         </TouchableOpacity>
-        <View style={[styles.divider, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
       </Animated.View>
     );
   }, [isDark, interactions, toggleInteraction, formatNumber, renderHashtags]);
@@ -815,17 +768,68 @@ export default function HomeScreen() {
   ), [isDark]);
 
   const ListHeader = useMemo(() => (
-    <View style={styles.storiesContainer}>
-      <FlatList
-        data={stories}
-        renderItem={({ item, index }) => <StoryCircle story={item} index={index} />}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.storiesList}
-      />
+    <View>
+      {/* Quick Post Input */}
+      <View style={[styles.quickPostContainer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+        <Image 
+          source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100' }}
+          style={styles.quickPostAvatar}
+        />
+        <View style={styles.quickPostInputContainer}>
+          <TextInput
+            style={[
+              styles.quickPostInput,
+              { 
+                backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
+                color: isDark ? '#E5E7EB' : '#1F2937'
+              }
+            ]}
+            placeholder="What's happening on campus?"
+            placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+            value={postText}
+            onChangeText={setPostText}
+            multiline
+          />
+          <View style={styles.quickPostActions}>
+            <TouchableOpacity style={styles.quickPostAction}>
+              <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickPostAction}>
+              <BarChart3 size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.quickPostAction}>
+              <Calendar size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[
+                styles.postButton,
+                { 
+                  backgroundColor: postText.trim() ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: postText.trim() ? 1 : 0.5
+                }
+              ]}
+              onPress={handleQuickPost}
+              disabled={!postText.trim()}
+            >
+              <Send size={16} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+
+      {/* Stories */}
+      <View style={styles.storiesContainer}>
+        <FlatList
+          data={stories}
+          renderItem={({ item, index }) => <StoryCircle story={item} index={index} />}
+          keyExtractor={item => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.storiesList}
+        />
+      </View>
     </View>
-  ), [isDark, StoryCircle, stories]);
+  ), [isDark, StoryCircle, stories, postText]);
 
   const getItemLayout = useCallback((_, index) => ({
     length: 400,
@@ -868,6 +872,91 @@ export default function HomeScreen() {
           />
         </TouchableOpacity>
 
+        {/* Create FAB */}
+        <TouchableOpacity 
+          style={[styles.createFab, { backgroundColor: '#3B82F6' }]}
+          onPress={handleCreateMenuPress}
+        >
+          <Plus size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+
+        {/* Create Menu */}
+        {showCreateMenu && (
+          <View style={styles.createMenuOverlay}>
+            <TouchableOpacity 
+              style={StyleSheet.absoluteFill}
+              onPress={handleCreateMenuClose}
+            />
+            <Animated.View 
+              entering={SlideInRight.duration(200)}
+              style={[
+                styles.createMenu,
+                { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }
+              ]}
+            >
+              <TouchableOpacity 
+                style={styles.createMenuItem}
+                onPress={() => handleCreateOptionPress('post')}
+              >
+                <View style={[styles.createMenuIcon, { backgroundColor: '#3B82F6' }]}>
+                  <PenSquare size={18} color="#FFFFFF" />
+                </View>
+                <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Post
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.createMenuItem}
+                onPress={() => handleCreateOptionPress('poll')}
+              >
+                <View style={[styles.createMenuIcon, { backgroundColor: '#10B981' }]}>
+                  <BarChart3 size={18} color="#FFFFFF" />
+                </View>
+                <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Poll
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.createMenuItem}
+                onPress={() => handleCreateOptionPress('story')}
+              >
+                <View style={[styles.createMenuIcon, { backgroundColor: '#F59E0B' }]}>
+                  <Camera size={18} color="#FFFFFF" />
+                </View>
+                <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Story
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.createMenuItem}
+                onPress={() => handleCreateOptionPress('event')}
+              >
+                <View style={[styles.createMenuIcon, { backgroundColor: '#8B5CF6' }]}>
+                  <Calendar size={18} color="#FFFFFF" />
+                </View>
+                <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Event
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.createMenuItem}
+                onPress={() => handleCreateOptionPress('room')}
+              >
+                <View style={[styles.createMenuIcon, { backgroundColor: '#EC4899' }]}>
+                  <Video size={18} color="#FFFFFF" />
+                </View>
+                <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Room
+                </Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </View>
+        )}
+
         <PostDetailsDrawer
           isOpen={!!selectedPost}
           onClose={() => setSelectedPost(null)}
@@ -904,6 +993,18 @@ export default function HomeScreen() {
           onClose={() => setIsCreateRoomOpen(false)}
           onCreateRoom={handleCreateRoom}
         />
+
+        <CreatePostDrawer
+          isOpen={isCreatePostOpen}
+          onClose={() => setIsCreatePostOpen(false)}
+          onCreatePost={handleCreatePost}
+        />
+
+        <CreatePollDrawer
+          isOpen={isCreatePollOpen}
+          onClose={() => setIsCreatePollOpen(false)}
+          onCreatePoll={handleCreatePoll}
+        />
       </SafeAreaView>
     </SwipeGestureWrapper>
   );
@@ -915,6 +1016,56 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingBottom: 100,
+  },
+  quickPostContainer: {
+    flexDirection: 'row',
+    padding: 16,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 8,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  quickPostAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  quickPostInputContainer: {
+    flex: 1,
+  },
+  quickPostInput: {
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    minHeight: 60,
+    textAlignVertical: 'top',
+    marginBottom: 12,
+  },
+  quickPostActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  quickPostAction: {
+    padding: 8,
+  },
+  postButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   storiesContainer: {
     marginBottom: 8,
@@ -958,6 +1109,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     textAlign: 'center',
     width: '100%',
+  },
+  postCard: {
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   repostedByContainer: {
     flexDirection: 'row',
@@ -1080,6 +1244,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 8,
+    paddingBottom: 16,
   },
   primaryActions: {
     flexDirection: 'row',
@@ -1101,10 +1266,6 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     fontSize: 14,
     fontFamily: 'Inter-Medium',
-  },
-  divider: {
-    height: 1,
-    marginTop: 8,
   },
   createFab: {
     position: 'absolute',
