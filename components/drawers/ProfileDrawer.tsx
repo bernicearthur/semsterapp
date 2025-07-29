@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BookOpen, Briefcase, Search, Menu, X, Moon, Sun, LogOut, CircleHelp as HelpCircle, Settings, Calendar, Bot, ShoppingBag } from 'lucide-react-native';
+import { BookOpen, Menu, X, Moon, Sun, LogOut, CircleHelp as HelpCircle, Settings, Bot, ShoppingBag } from 'lucide-react-native';
 import { router } from 'expo-router';
 import Animated, { 
   useAnimatedStyle, 
@@ -143,12 +143,6 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
       route: '/ai-assistant'
     },
     {
-      icon: <Calendar size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Academic Calendar',
-      subtitle: 'View important dates and events',
-      route: '/academic-calendar'
-    },
-    {
       icon: <BookOpen size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
       title: 'Study Rooms',
       subtitle: 'Find or create study groups',
@@ -159,18 +153,6 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
       title: 'Marketplace',
       subtitle: 'Buy and sell campus items',
       route: '/marketplace'
-    },
-    {
-      icon: <Search size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Lost & Found',
-      subtitle: 'Report or find lost items',
-      route: '/lost-found'
-    },
-    {
-      icon: <Briefcase size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Job Board',
-      subtitle: 'Find campus jobs and internships',
-      route: '/job-board'
     },
     {
       icon: <Settings size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,

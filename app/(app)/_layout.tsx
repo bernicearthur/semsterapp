@@ -108,24 +108,6 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen 
-          name="lost-found"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen 
-          name="job-board"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen 
-          name="academic-calendar"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen 
           name="marketplace"
           options={{
             href: null,
