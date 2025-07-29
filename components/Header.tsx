@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, MessageSquare, User, Image } from 'lucide-react-native';
+import { Bell, MessageSquare, User, Image, Menu } from 'lucide-react-native';
 import { useAppContext } from '@/context/AppContext';
 import { MessagesDrawer } from './drawers/MessagesDrawer';
 import { ProfileDrawer } from './drawers/ProfileDrawer';
@@ -75,13 +75,20 @@ export function Header() {
                 color={isDark ? '#E5E7EB' : '#4B5563'} 
               />
               <View style={styles.notificationBadge}>
-            style={styles.profileButton}
+                <Text style={styles.notificationText}>2</Text>
               </View>
-            <ProfileAvatar 
-              size={32}
-              uri={userProfile?.avatar_url}
-              name={userProfile?.full_name || 'User'}
-            />
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.profileButton}
+              onPress={openProfileDrawer}
+            >
+              <ProfileAvatar 
+                size={32}
+                uri={userProfile?.avatar_url}
+                name={userProfile?.full_name || 'User'}
+              />
+            </TouchableOpacity>
           </View>
         </View>
       </SafeAreaView>
@@ -94,8 +101,6 @@ export function Header() {
 }
 
 const styles = StyleSheet.create({
-            }
-  )
   safeArea: {
     width: '100%',
     zIndex: 10,
@@ -110,6 +115,10 @@ const styles = StyleSheet.create({
   leftSection: {
     flex: 1,
     alignItems: 'flex-start',
+  },
+  menuButton: {
+    padding: 8,
+    borderRadius: 8,
   },
   profileButton: {
     padding: 4,
