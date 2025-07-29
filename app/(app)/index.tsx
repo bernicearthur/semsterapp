@@ -1023,15 +1023,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   postCard: {
-    marginHorizontal: 16,
     marginBottom: 0,
   },
   postContent: {
+    marginHorizontal: 16,
     paddingVertical: 16,
   },
   postSeparator: {
     height: 1,
-    marginHorizontal: 16,
   },
   repostedByContainer: {
     flexDirection: 'row',
@@ -1052,7 +1051,6 @@ const styles = StyleSheet.create({
   postHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 12,
     marginBottom: 12,
     position: 'relative',
   },
