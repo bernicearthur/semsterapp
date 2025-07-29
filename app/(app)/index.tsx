@@ -1017,56 +1017,6 @@ const styles = StyleSheet.create({
   content: {
     paddingBottom: 100,
   },
-  quickPostContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 8,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  quickPostAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  quickPostInputContainer: {
-    flex: 1,
-  },
-  quickPostInput: {
-    borderRadius: 12,
-    padding: 12,
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
-    minHeight: 60,
-    textAlignVertical: 'top',
-    marginBottom: 12,
-  },
-  quickPostActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  quickPostAction: {
-    padding: 8,
-  },
-  postButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   storiesContainer: {
     marginBottom: 8,
   },

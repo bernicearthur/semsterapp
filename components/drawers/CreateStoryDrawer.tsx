@@ -145,6 +145,11 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
       <GestureDetector gesture={gesture}>
         <Animated.View 
           style={[
@@ -451,6 +456,9 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     zIndex: 1000,
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
     flex: 1,
