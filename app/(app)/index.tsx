@@ -846,6 +846,18 @@ export default function HomeScreen() {
           onClose={() => setIsCreateStoryOpen(false)}
           onCreateStory={handleCreateStory}
         />
+
+        <CreateEventDrawer
+          isOpen={isCreateEventOpen}
+          onClose={() => setIsCreateEventOpen(false)}
+          onCreateEvent={handleCreateEvent}
+        />
+
+        <CreateStudyRoomDrawer
+          isOpen={isCreateRoomOpen}
+          onClose={() => setIsCreateRoomOpen(false)}
+          onCreateRoom={handleCreateRoom}
+        />
       </SafeAreaView>
     </SwipeGestureWrapper>
   );
