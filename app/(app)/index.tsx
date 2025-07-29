@@ -428,6 +428,14 @@ export default function HomeScreen() {
     setStories(updatedStories);
   };
 
+  const handleCreateEvent = (eventData) => {
+    Alert.alert('Event Created', `Event "${eventData.title}" has been created successfully!`);
+  };
+
+  const handleCreateRoom = (roomData) => {
+    Alert.alert('Study Room Created', `Study room "${roomData.name}" has been created successfully!`);
+  };
+
   const handleConnectPress = (userId) => {
     // Update the user's connection status
     setPosts(prevPosts => 
