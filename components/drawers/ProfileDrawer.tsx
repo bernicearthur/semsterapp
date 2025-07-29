@@ -28,7 +28,7 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   const screenHeight = Dimensions.get('window').height;
   const [avatarError, setAvatarError] = useState(false);
   
-  const translateY = useSharedValue(screenHeight * 0.6); // Start at 60% height
+  const translateY = useSharedValue(screenHeight); // Start hidden at bottom
   const minHeight = screenHeight * 0.4; // Minimum 40% height
   const maxHeight = screenHeight * 0.95; // Maximum 95% height
 
@@ -117,6 +117,12 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
+      
       <TouchableOpacity 
         style={[StyleSheet.absoluteFill, styles.overlay]}
         activeOpacity={1}
@@ -310,6 +316,9 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     zIndex: 1000,
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
