@@ -37,14 +37,16 @@ export function Header() {
         edges={['top']}
       >
         <View style={styles.header}>
-          <View style={styles.leftSection}>
-            <TouchableOpacity 
-              onPress={openProfileDrawer} 
-              style={[styles.menuButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
-            >
-              <Menu size={22} color={isDark ? '#E5E7EB' : '#4B5563'} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={openProfileDrawer}
+          >
+            <ProfileAvatar 
+              size={32}
+              uri={userProfile?.avatar_url}
+              name={userProfile?.full_name || 'User'}
+            />
+          </TouchableOpacity>
           
           <View style={styles.centerSection}>
             <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -85,17 +87,6 @@ export function Header() {
             >
               <ProfileAvatar 
           <TouchableOpacity 
-            style={styles.profileButton}
-            onPress={openProfileDrawer}
-          >
-            <ProfileAvatar 
-              size={32}
-              uri={userProfile?.avatar_url}
-              name={userProfile?.full_name || 'User'}
-            />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
 
       <ProfileDrawer isOpen={isProfileDrawerOpen} onClose={closeProfileDrawer} />
       <MessagesDrawer isOpen={isMessagesDrawerOpen} onClose={closeMessagesDrawer} />
@@ -119,19 +110,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  leftSection: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  menuButton: {
-    padding: 8,
-    borderRadius: 8,
-  },
   profileButton: {
     padding: 4,
   },
   centerSection: {
-    flex: 2,
+    flex: 1,
     alignItems: 'center',
   },
   title: {
@@ -139,7 +122,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   rightSection: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
