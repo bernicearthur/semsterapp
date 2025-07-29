@@ -410,7 +410,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerButton: {
     padding: 4,

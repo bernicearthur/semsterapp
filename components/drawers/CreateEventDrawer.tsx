@@ -201,7 +201,7 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
         <Animated.View 
           style={[
             styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
+            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
             drawerStyle,
           ]}
         >
@@ -628,10 +628,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
-    position: 'absolute',
+    bottom: 0,
     bottom: 0,
     left: 0,
     right: 0,
+    height: '85%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -649,7 +652,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerButton: {
     padding: 4,
@@ -754,7 +756,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,

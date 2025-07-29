@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView, Dimensions, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Camera, Image as ImageIcon, Send, Paperclip, AtSign, Hash } from 'lucide-react-native';
+import { Globe, Users, BookOpen, GraduationCap } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
@@ -17,8 +18,36 @@ interface CreatePostDrawerProps {
   onCreatePost: (postData: {
     content: string;
     images?: string[];
+    audience: string;
   }) => void;
 }
+
+const audienceOptions = [
+  {
+    id: 'public',
+    icon: <Globe size={24} color="#3B82F6" />,
+    title: 'Public',
+    description: 'Anyone can see this post',
+  },
+  {
+    id: 'connections',
+    icon: <Users size={24} color="#3B82F6" />,
+    title: 'Connections',
+    description: 'Only your connections can see this post',
+  },
+  {
+    id: 'course',
+    icon: <BookOpen size={24} color="#3B82F6" />,
+    title: 'Course',
+    description: 'Only students in your course can see this post',
+  },
+  {
+    id: 'yeargroup',
+    icon: <GraduationCap size={24} color="#3B82F6" />,
+    title: 'Year Group',
+    description: 'Only students in your year can see this post',
+  },
+];
 
 export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDrawerProps) {
   const { isDark } = useTheme();
@@ -27,6 +56,8 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
   
   const [postText, setPostText] = useState('');
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [selectedAudience, setSelectedAudience] = useState<'public' | 'connections' | 'course' | 'yeargroup'>('public');
+  const [showAudienceModal, setShowAudienceModal] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
 
@@ -91,6 +122,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     const postData = {
       content: postText.trim(),
       images: selectedImages.length > 0 ? selectedImages : undefined,
+      audience: selectedAudience,
     };
 
     onCreatePost(postData);
@@ -98,7 +130,34 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     // Reset form
     setPostText('');
     setSelectedImages([]);
+    setSelectedAudience('public');
     onClose();
+  };
+
+  const getAudienceIcon = () => {
+    switch (selectedAudience) {
+      case 'public':
+        return <Globe size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
+      case 'connections':
+        return <Users size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
+      case 'course':
+        return <BookOpen size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
+      case 'yeargroup':
+        return <GraduationCap size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
+    }
+  };
+
+  const getAudienceTitle = () => {
+    switch (selectedAudience) {
+      case 'public':
+        return 'Public';
+      case 'connections':
+        return 'Connections';
+      case 'course':
+        return 'Course';
+      case 'yeargroup':
+        return 'Year Group';
+    }
   };
 
   if (!isOpen) return null;
@@ -129,21 +188,57 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 Create Post
               </Text>
               
-              <TouchableOpacity 
-                style={[
-                  styles.postButton,
-                  { 
-                    backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
-                  }
-                ]}
-                onPress={handleCreatePost}
-                disabled={!postText.trim() && selectedImages.length === 0}
+              <TouchableOpacity
+                style={[styles.audienceSelector, { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }]}
+                onPress={() => setShowAudienceModal(true)}
               >
-                <Send size={18} color="#FFFFFF" />
-                <Text style={styles.postButtonText}>Post</Text>
+                {getAudienceIcon()}
+                <Text style={[styles.audienceText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  {getAudienceTitle()}
+                </Text>
               </TouchableOpacity>
             </View>
+
+            {/* Audience Modal */}
+            {showAudienceModal && (
+              <View style={[StyleSheet.absoluteFill, styles.modalOverlay]}>
+                <TouchableOpacity
+                  style={StyleSheet.absoluteFill}
+                  onPress={() => setShowAudienceModal(false)}
+                />
+                <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                  <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                    Choose Audience
+                  </Text>
+                  {audienceOptions.map((option) => (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={[
+                        styles.audienceOption,
+                        selectedAudience === option.id && styles.selectedAudienceOption,
+                        { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }
+                      ]}
+                      onPress={() => {
+                        setSelectedAudience(option.id as typeof selectedAudience);
+                        setShowAudienceModal(false);
+                      }}
+                    >
+                      <View style={styles.audienceOptionIcon}>
+                        {option.icon}
+                      </View>
+                      <View style={styles.audienceOptionText}>
+                        <Text style={[styles.audienceOptionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          {option.title}
+                        </Text>
+                        <Text style={[styles.audienceOptionDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                          {option.description}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
+            )}
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
               {/* Text Input */}
@@ -223,6 +318,24 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 </TouchableOpacity>
               </View>
             </ScrollView>
+
+            {/* Footer */}
+            <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+              <TouchableOpacity 
+                style={[
+                  styles.postButton,
+                  { 
+                    backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                    opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
+                  }
+                ]}
+                onPress={handleCreatePost}
+                disabled={!postText.trim() && selectedImages.length === 0}
+              >
+                <Send size={18} color="#FFFFFF" />
+                <Text style={styles.postButtonText}>Post</Text>
+              </TouchableOpacity>
+            </View>
           </SafeAreaView>
         </Animated.View>
       </GestureDetector>
@@ -260,7 +373,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerButton: {
     padding: 4,
@@ -269,18 +381,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     fontSize: 20,
   },
-  postButton: {
+  audienceSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 6,
     borderRadius: 20,
-    gap: 6,
   },
-  postButtonText: {
-    color: '#FFFFFF',
+  audienceText: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 14,
+    marginLeft: 8,
   },
   content: {
     flex: 1,
@@ -333,5 +444,66 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 14,
     fontFamily: 'Inter-Medium',
+  },
+  footer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  postButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderRadius: 12,
+    gap: 8,
+  },
+  postButtonText: {
+    color: '#FFFFFF',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 16,
+  },
+  modalOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    padding: 16,
+  },
+  modalContent: {
+    borderRadius: 16,
+    padding: 16,
+  },
+  modalTitle: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 20,
+    marginBottom: 16,
+  },
+  audienceOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  selectedAudienceOption: {
+    backgroundColor: '#3B82F6',
+  },
+  audienceOptionIcon: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  audienceOptionText: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  audienceOptionTitle: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 16,
+    marginBottom: 2,
+  },
+  audienceOptionDescription: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 14,
   },
 });
