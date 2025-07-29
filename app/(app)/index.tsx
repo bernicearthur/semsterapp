@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useMemo } from 'react';
 import { StyleSheet, View, Text, FlatList, Image, TouchableOpacity, Alert, Share, Platform, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MessageCircle, Repeat2, Share2, Bookmark as BookmarkIcon, MoveVertical as MoreVertical, Heart, Camera, UserPlus, Flag, Copy, Link, UserMinus, X, AtSign, Plus, Send, BarChart3, Calendar, Video, PenSquare } from 'lucide-react-native';
+import { MessageCircle, Repeat2, Share2, Bookmark as BookmarkIcon, MoveVertical as MoreVertical, Heart, Camera, UserPlus, Flag, Copy, Link, UserMinus, X, AtSign, Plus, Send, ChartBar as BarChart3, Calendar, Video, SquarePen as PenSquare } from 'lucide-react-native';
 import Animated, { FadeIn, FadeInDown, SlideInRight } from 'react-native-reanimated';
 import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
