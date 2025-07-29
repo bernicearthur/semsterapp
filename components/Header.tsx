@@ -76,7 +76,9 @@ export function Header() {
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationText}>2</Text>
               </View>
-      </View>
+            </TouchableOpacity>
+          </View>
+        </View>
       </SafeAreaView>
 
       <ProfileDrawer isOpen={isProfileDrawerOpen} onClose={closeProfileDrawer} />
@@ -87,8 +89,6 @@ export function Header() {
 }
 
 const styles = StyleSheet.create({
-              }
-  )
   safeArea: {
     width: '100%',
     zIndex: 10,
