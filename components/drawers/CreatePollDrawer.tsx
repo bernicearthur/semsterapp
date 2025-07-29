@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView, Dimensions, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, BarChart3, Plus, Minus, Clock, Globe, Users, BookOpen, GraduationCap } from 'lucide-react-native';
+import { X, ChartBar as BarChart3, Plus, Minus, Clock, Globe, Users, BookOpen, GraduationCap } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
