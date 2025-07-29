@@ -102,6 +102,7 @@ export function Header() {
       <NotificationsDrawer isOpen={isNotificationsDrawerOpen} onClose={closeNotificationsDrawer} />
     </>
   )
+  )
   );
 }
 
