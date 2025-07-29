@@ -8,6 +8,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { PostDetailsDrawer } from '@/components/drawers/PostDetailsDrawer';
 import { StoryViewerDrawer } from '@/components/drawers/StoryViewerDrawer';
 import { CreateStoryDrawer } from '@/components/drawers/CreateStoryDrawer';
+import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
+import { CreateStudyRoomDrawer } from '@/components/drawers/CreateStudyRoomDrawer';
 import { router } from 'expo-router';
 
 const initialStories = [
@@ -240,6 +242,8 @@ export default function HomeScreen() {
   const [selectedStoryIndex, setSelectedStoryIndex] = useState(0);
   const [isStoryViewerOpen, setIsStoryViewerOpen] = useState(false);
   const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
+  const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
+  const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
   const flatListRef = useRef(null);
   const loadingRef = useRef(false);
   const postIdCounterRef = useRef(initialPosts.length);
