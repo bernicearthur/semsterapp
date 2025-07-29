@@ -12,15 +12,12 @@ import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
 import { CreateStudyRoomDrawer } from '@/components/drawers/CreateStudyRoomDrawer';
 import { router } from 'expo-router';
 import { CreatePostDrawer } from '@/components/drawers/CreatePostDrawer';
-import { CreatePollDrawer } from '@/components/drawers/CreatePollDrawer';
-import { Plus, FileText, BarChart3, Calendar, Video } from 'lucide-react-native';
 
 const initialStories = [
   {
     id: 's1',
     user: {
-      name: 'Your Story',
-      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100',
+      name: 'Your import { Plus, FileText, ChartBar as BarChart3, Calendar, Video } from 'lucide-react-native'53.jpeg?auto=compress&cs=tinysrgb&w=100',
       hasUnseenStory: false,
     },
     isAddStory: true,
@@ -462,7 +459,7 @@ export default function HomeScreen() {
         setIsCreatePostOpen(true);
         break;
       case 'poll':
-        setIsCreatePollOpen(true);
+        router.push('/create-post');
         break;
       case 'story':
         setIsCreateStoryOpen(true);
@@ -665,86 +662,6 @@ export default function HomeScreen() {
               onPress={() => handleMoreOptionsPress(post)}
             >
               <MoreVertical size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-
-              {/* Create Button */}
-              <TouchableOpacity 
-                style={[styles.createFab, { backgroundColor: '#3B82F6' }]}
-                onPress={handleCreateMenuPress}
-              >
-                <Plus size={24} color="#FFFFFF" />
-              </TouchableOpacity>
-
-              {/* Create Menu Modal */}
-              {showCreateMenu && (
-                <View style={styles.createMenuOverlay}>
-                  <TouchableOpacity
-                    style={StyleSheet.absoluteFill}
-                    onPress={handleCreateMenuClose}
-                    activeOpacity={1}
-                  />
-                  <View style={[styles.createMenu, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-                    <TouchableOpacity 
-                      style={styles.createMenuItem}
-                      onPress={() => handleCreateOptionPress('post')}
-                    >
-                      <View style={[styles.createMenuIcon, { backgroundColor: '#3B82F6' }]}>
-                        <FileText size={20} color="#FFFFFF" />
-                      </View>
-                      <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Post
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={styles.createMenuItem}
-                      onPress={() => handleCreateOptionPress('poll')}
-                    >
-                      <View style={[styles.createMenuIcon, { backgroundColor: '#10B981' }]}>
-                        <BarChart3 size={20} color="#FFFFFF" />
-                      </View>
-                      <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Poll
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={styles.createMenuItem}
-                      onPress={() => handleCreateOptionPress('story')}
-                    >
-                      <View style={[styles.createMenuIcon, { backgroundColor: '#F59E0B' }]}>
-                        <Camera size={20} color="#FFFFFF" />
-                      </View>
-                      <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Story
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={styles.createMenuItem}
-                      onPress={() => handleCreateOptionPress('event')}
-                    >
-                      <View style={[styles.createMenuIcon, { backgroundColor: '#8B5CF6' }]}>
-                        <Calendar size={20} color="#FFFFFF" />
-                      </View>
-                      <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Event
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={styles.createMenuItem}
-                      onPress={() => handleCreateOptionPress('room')}
-                    >
-                      <View style={[styles.createMenuIcon, { backgroundColor: '#EC4899' }]}>
-                        <Video size={20} color="#FFFFFF" />
-                      </View>
-                      <Text style={[styles.createMenuText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Room
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
             </TouchableOpacity>
           </View>
 
@@ -985,12 +902,6 @@ export default function HomeScreen() {
           isOpen={isCreateRoomOpen}
           onClose={() => setIsCreateRoomOpen(false)}
           onCreateRoom={handleCreateRoom}
-        />
-
-        <CreatePollDrawer
-          isOpen={isCreatePollOpen}
-          onClose={() => setIsCreatePollOpen(false)}
-          onCreatePoll={handleCreatePost}
         />
       </SafeAreaView>
     </SwipeGestureWrapper>
