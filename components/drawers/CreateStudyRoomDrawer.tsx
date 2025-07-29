@@ -532,6 +532,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+  },
   headerButton: {
     padding: 4,
   },
