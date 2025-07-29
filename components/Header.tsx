@@ -1,12 +1,13 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, MessageSquare, Menu } from 'lucide-react-native';
+import { Bell, MessageSquare, User, Image } from 'lucide-react-native';
 import { useAppContext } from '@/context/AppContext';
 import { MessagesDrawer } from './drawers/MessagesDrawer';
 import { ProfileDrawer } from './drawers/ProfileDrawer';
 import { NotificationsDrawer } from './drawers/NotificationsDrawer';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
+import { ProfileAvatar } from './ProfileAvatar';
 
 export function Header() {
   const { isDark } = useTheme();
@@ -74,9 +75,13 @@ export function Header() {
                 color={isDark ? '#E5E7EB' : '#4B5563'} 
               />
               <View style={styles.notificationBadge}>
-                <Text style={styles.notificationText}>2</Text>
+            style={styles.profileButton}
               </View>
-            </TouchableOpacity>
+            <ProfileAvatar 
+              size={32}
+              uri={userProfile?.avatar_url}
+              name={userProfile?.full_name || 'User'}
+            />
           </View>
         </View>
       </SafeAreaView>
@@ -95,8 +100,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingTop: 4,
+    paddingBottom: 4,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -104,20 +109,8 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-start',
   },
-  menuButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+  profileButton: {
+    padding: 4,
   },
   centerSection: {
     flex: 2,

@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Dimensions, Image } from 'react-native';
 import { Header } from '@/components/Header';
-import { House, Search, CalendarDays, ShoppingBag, Users, Compass, Calendar } from 'lucide-react-native';
+import { House, Search, CalendarDays, ShoppingBag, Users, Compass, Calendar, Video } from 'lucide-react-native';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -39,7 +39,7 @@ export default function AppLayout() {
         <Tabs.Screen 
           name="explore"
           options={{
-            tabBarIcon: ({ color, size }) => <Compass size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
@@ -57,7 +57,7 @@ export default function AppLayout() {
         <Tabs.Screen 
           name="study-rooms"
           options={{
-            tabBarIcon: ({ color, size }) => <Users size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <Video size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
