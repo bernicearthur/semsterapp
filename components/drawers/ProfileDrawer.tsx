@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Platform, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Platform, Alert, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BookOpen, Menu, X, Moon, Sun, LogOut, CircleHelp as HelpCircle, Settings, Bot, ShoppingBag } from 'lucide-react-native';
+import { X, User, Settings, Shield, Bell, CircleHelp as HelpCircle, LogOut, ChevronRight, Bot, Moon, Sun } from 'lucide-react-native';
 import { router } from 'expo-router';
 import Animated, { 
   useAnimatedStyle, 
-  withSpring, 
-  withTiming, 
-  Easing,
+  withSpring,
   useSharedValue,
   runOnJS
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useAuth } from '@/context/AuthContext';
+import { ProfileAvatar } from '@/components/ProfileAvatar';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -24,27 +23,25 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   const { isDark, toggleTheme } = useTheme();
   const { userProfile, signOut, getInitials } = useAuth();
   const screenWidth = Dimensions.get('window').width;
-  const drawerWidth = screenWidth * 0.8;
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [isThemeDark, setIsThemeDark] = useState(isDark);
+  const screenHeight = Dimensions.get('window').height;
   const [avatarError, setAvatarError] = useState(false);
   
-  const translateX = useSharedValue(-drawerWidth);
+  const translateY = useSharedValue(screenHeight);
 
   const drawerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   const gesture = Gesture.Pan()
-    .activeOffsetX([-15, 0])
+    .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationX < 0) {
-        translateX.value = event.translationX;
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
       }
     })
     .onEnd((event) => {
-      if (event.translationX < -drawerWidth * 0.3 || event.velocityX < -500) {
-        translateX.value = withSpring(-drawerWidth, {
+      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+        translateY.value = withSpring(screenHeight, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -52,7 +49,7 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
           runOnJS(onClose)();
         });
       } else {
-        translateX.value = withSpring(0, {
+        translateY.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -61,49 +58,12 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
     });
 
   React.useEffect(() => {
-    translateX.value = withSpring(isOpen ? 0 : -drawerWidth, {
+    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
     });
-    
-    // Update theme state when drawer opens
-    if (isOpen) {
-      setIsThemeDark(isDark);
-    }
-  }, [isOpen, isDark]);
-
-  const overlayStyle = useAnimatedStyle(() => ({
-    opacity: withTiming(isOpen ? 0.5 : 0, {
-      duration: 200,
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-    }),
-    pointerEvents: isOpen ? 'auto' : 'none',
-  }));
-
-  const handleOverlayPress = () => {
-    setShowMoreMenu(false);
-    onClose();
-  };
-
-  const handleMorePress = () => {
-    setShowMoreMenu(!showMoreMenu);
-  };
-
-  const handleNavigate = (route: string) => {
-    onClose();
-    router.push(route);
-  };
-
-  const handleMenuItemPress = (action: () => void) => {
-    action();
-    setShowMoreMenu(false);
-  };
-
-  const handleProfilePress = () => {
-    onClose();
-    router.push('/profile-tab');
-  };
+  }, [isOpen]);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -125,66 +85,10 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
     );
   };
 
-  const renderInitialsAvatar = () => {
-    const initials = userProfile?.full_name ? getInitials(userProfile.full_name) : "U";
-    
-    return (
-      <View style={[styles.initialsAvatar, { backgroundColor: '#3B82F6' }]}>
-        <Text style={styles.initialsText}>{initials}</Text>
-      </View>
-    );
+  const handleNavigate = (route: string) => {
+    onClose();
+    router.push(route);
   };
-
-  const menuItems = [
-    {
-      icon: <Bot size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'AI Study Assistant',
-      subtitle: 'Get personalized study help',
-      route: '/ai-assistant'
-    },
-    {
-      icon: <BookOpen size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Study Rooms',
-      subtitle: 'Find or create study groups',
-      route: '/study-rooms'
-    },
-    {
-      icon: <ShoppingBag size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Marketplace',
-      subtitle: 'Buy and sell campus items',
-      route: '/marketplace'
-    },
-    {
-      icon: <Settings size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Settings',
-      subtitle: 'Manage your preferences',
-      route: '/settings'
-    },
-  ];
-
-  const moreMenuItems = [
-    {
-      icon: isThemeDark ? <Sun size={22} color="#F59E0B" /> : <Moon size={22} color="#6366F1" />,
-      title: 'Theme',
-      subtitle: 'Change app appearance',
-      action: toggleTheme,
-      isToggle: true,
-      isActive: isThemeDark,
-    },
-    {
-      icon: <HelpCircle size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Help Center',
-      subtitle: 'Get support and FAQs',
-      action: () => console.log('Help'),
-    },
-    {
-      icon: <LogOut size={22} color="#EF4444" />,
-      title: 'Sign Out',
-      subtitle: 'Log out of your account',
-      action: handleSignOut,
-      danger: true,
-    },
-  ];
 
   if (!isOpen) {
     return null;
@@ -192,158 +96,175 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
-      <Animated.View 
-        style={[StyleSheet.absoluteFill, styles.overlay, overlayStyle]}
-      >
-        <TouchableOpacity
-          style={StyleSheet.absoluteFill}
-          activeOpacity={1}
-          onPress={handleOverlayPress}
-        />
-      </Animated.View>
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
       
       <GestureDetector gesture={gesture}>
-        <Animated.View style={[styles.drawer, drawerStyle, { width: drawerWidth }]}>
-          <SafeAreaView 
-            style={[styles.safeArea, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}
-            edges={['top', 'bottom']}
-          >
-            <View style={[
-              styles.profileSection,
-              { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' },
-              showMoreMenu && { opacity: 0.5 }
-            ]}>
-              <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+          <SafeAreaView style={{ flex: 1 }}>
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Account
+              </Text>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.profileInfo} onPress={handleProfilePress}>
-                {userProfile?.avatar_url && !avatarError ? (
-                  <Image 
-                    source={{ uri: userProfile.avatar_url }}
-                    style={styles.profileImage}
-                    onError={() => setAvatarError(true)}
+            </View>
+
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+              {/* Profile Card */}
+              <View style={[styles.profileCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+                <View style={styles.profileInfo}>
+                  <ProfileAvatar 
+                    size={80}
+                    uri={userProfile?.avatar_url}
+                    name={userProfile?.full_name || 'User'}
                   />
-                ) : renderInitialsAvatar()}
-                <View style={styles.profileText}>
-                  <Text style={[styles.profileName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    {userProfile?.full_name || 'User'}
-                  </Text>
-                  <Text style={[styles.profileUsername, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    @{userProfile?.username || 'username'}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            
-            <View style={styles.contentContainer}>
-              <ScrollView 
-                style={[styles.scrollView, showMoreMenu && { opacity: 0.5 }]}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-                onTouchStart={() => showMoreMenu && setShowMoreMenu(false)}
-              >
-                <View style={styles.menuContainer}>
-                  {menuItems.map((item, index) => (
-                    <TouchableOpacity 
-                      key={index} 
-                      style={styles.menuItem}
-                      onPress={() => item.route ? handleNavigate(item.route) : null}
-                    >
-                      <View style={styles.menuIcon}>
-                        {item.icon}
-                      </View>
-                      <View style={styles.menuText}>
-                        <Text style={[styles.menuTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                          {item.title}
-                        </Text>
-                        <Text style={[styles.menuSubtitle, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                          {item.subtitle}
+                  <View style={styles.profileDetails}>
+                    <Text style={[styles.profileName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                      {userProfile?.full_name || 'Alex Student'}
+                    </Text>
+                    <Text style={[styles.profileEmail, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                      {userProfile?.username ? `@${userProfile.username}` : 'alex.student@university.edu'}
+                    </Text>
+                    <View style={styles.profileBadges}>
+                      <View style={[styles.badge, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
+                        <Text style={[styles.badgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                          Junior
                         </Text>
                       </View>
-                    </TouchableOpacity>
-                  ))}
+                      <View style={[styles.badge, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
+                        <Text style={[styles.badgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                          Computer Science
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
                 </View>
-              </ScrollView>
+              </View>
 
-              <TouchableOpacity
-                style={[
-                  styles.moreButton,
-                  { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }
-                ]}
-                onPress={handleMorePress}
-              >
-                <Menu size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                <Text style={[styles.moreButtonText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  More
+              {/* AI Study Assistant */}
+              <View style={styles.section}>
+                <TouchableOpacity 
+                  style={[styles.aiStudyButton, { backgroundColor: '#3B82F6' }]}
+                  onPress={() => handleNavigate('/ai-assistant')}
+                >
+                  <Bot size={24} color="#FFFFFF" />
+                  <Text style={styles.aiStudyText}>AI Study Assistant</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Quick Actions */}
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                  Quick Actions
                 </Text>
-              </TouchableOpacity>
-
-              <Animated.View 
-                style={[
-                  styles.moreMenuContainer,
-                  { 
-                    backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                    transform: [{ 
-                      translateY: withSpring(showMoreMenu ? 0 : 300, {
-                        damping: 20,
-                        stiffness: 90,
-                      })
-                    }],
-                    opacity: showMoreMenu ? 1 : 0,
-                    pointerEvents: showMoreMenu ? 'auto' : 'none',
-                  }
-                ]}
-              >
-                {moreMenuItems.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.moreMenuItem,
-                      index === moreMenuItems.length - 1 && styles.lastMoreMenuItem
-                    ]}
-                    onPress={() => handleMenuItemPress(item.action)}
+                
+                <View style={[styles.menuContainer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={() => handleNavigate('/profile-tab')}
                   >
-                    <View style={styles.moreMenuIcon}>
-                      {item.icon}
+                    <View style={styles.menuItemLeft}>
+                      <User size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        Profile
+                      </Text>
                     </View>
-                    <View style={[
-                      styles.moreMenuText,
-                      item.isToggle && styles.moreMenuToggleContainer
-                    ]}>
-                      <View>
-                        <Text style={[
-                          styles.moreMenuTitle,
-                          { 
-                            color: item.danger ? '#EF4444' : 
-                              (isDark ? '#FFFFFF' : '#111827')
-                          }
-                        ]}>
-                          {item.title}
-                        </Text>
-                        <Text style={[
-                          styles.moreMenuSubtitle,
-                          { color: isDark ? '#9CA3AF' : '#6B7280' }
-                        ]}>
-                          {item.subtitle}
-                        </Text>
-                      </View>
-                      {item.isToggle && (
-                        <View style={[
-                          styles.toggleSwitch,
-                          { backgroundColor: item.isActive ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB') }
-                        ]}>
-                          <Animated.View style={[
-                            styles.toggleKnob,
-                            { transform: [{ translateX: item.isActive ? 20 : 2 }] }
-                          ]} />
-                        </View>
-                      )}
-                    </View>
+                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
                   </TouchableOpacity>
-                ))}
-              </Animated.View>
-            </View>
+
+                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                  <TouchableOpacity 
+                    style={styles.menuItem}
+                    onPress={() => handleNavigate('/settings')}
+                  >
+                    <View style={styles.menuItemLeft}>
+                      <Settings size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        Settings
+                      </Text>
+                    </View>
+                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                  </TouchableOpacity>
+
+                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                  <TouchableOpacity style={styles.menuItem}>
+                    <View style={styles.menuItemLeft}>
+                      <Shield size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        Privacy
+                      </Text>
+                    </View>
+                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                  </TouchableOpacity>
+
+                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                  <TouchableOpacity style={styles.menuItem}>
+                    <View style={styles.menuItemLeft}>
+                      <Bell size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        Notifications
+                      </Text>
+                    </View>
+                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                  </TouchableOpacity>
+
+                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                  <TouchableOpacity style={styles.menuItem}>
+                    <View style={styles.menuItemLeft}>
+                      <HelpCircle size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        Help & Support
+                      </Text>
+                    </View>
+                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                  </TouchableOpacity>
+
+                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                  <View style={styles.menuItem}>
+                    <View style={styles.menuItemLeft}>
+                      {isDark ? (
+                        <Sun size={22} color="#F59E0B" />
+                      ) : (
+                        <Moon size={22} color="#6366F1" />
+                      )}
+                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        Theme
+                      </Text>
+                    </View>
+                    <Switch
+                      value={isDark}
+                      onValueChange={toggleTheme}
+                      trackColor={{ false: '#E5E7EB', true: '#3B82F6' }}
+                      thumbColor="#FFFFFF"
+                    />
+                  </View>
+                </View>
+              </View>
+
+              {/* Sign Out */}
+              <View style={styles.section}>
+                <TouchableOpacity 
+                  style={[styles.signOutButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                  onPress={handleSignOut}
+                >
+                  <LogOut size={22} color="#EF4444" />
+                  <Text style={[styles.signOutText, { color: '#EF4444' }]}>
+                    Sign Out
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </SafeAreaView>
         </Animated.View>
       </GestureDetector>
@@ -357,175 +278,152 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   overlay: {
-    backgroundColor: '#000000',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
-    height: '100%',
-  },
-  safeArea: {
-    flex: 1,
-  },
-  profileSection: {
-    padding: 16,
-    paddingTop: 32,
-    position: 'relative',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    zIndex: 10,
-    padding: 8,
-  },
-  profileInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  profileImage: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#3B82F6',
-  },
-  initialsAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: '#3B82F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  initialsText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontFamily: 'Inter-Bold',
-  },
-  profileText: {
-    marginLeft: 12,
-  },
-  profileName: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
-    marginBottom: 2,
-  },
-  profileUsername: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 14,
-  },
-  contentContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    marginTop: -8,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 16,
-  },
-  menuContainer: {
-    paddingTop: 8,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  menuIcon: {
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuText: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  menuTitle: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 16,
-    marginBottom: 2,
-  },
-  menuSubtitle: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-  },
-  moreButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
-  },
-  moreButtonText: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 16,
-    marginLeft: 12,
-  },
-  moreMenuContainer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: -3,
+      height: -2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4.65,
-    elevation: 6,
-    paddingTop: 8,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  moreMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  lastMoreMenuItem: {
-    borderBottomWidth: 0,
-  },
-  moreMenuIcon: {
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  moreMenuText: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  moreMenuToggleContainer: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 20,
+    paddingBottom: 16,
   },
-  moreMenuTitle: {
-    fontFamily: 'Inter-SemiBold',
+  headerTitle: {
+    fontSize: 24,
+    fontFamily: 'Inter-Bold',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  profileCard: {
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+  },
+  profileInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  profileDetails: {
+    marginLeft: 16,
+    flex: 1,
+  },
+  profileName: {
+    fontSize: 20,
+    fontFamily: 'Inter-Bold',
+    marginBottom: 4,
+  },
+  profileEmail: {
     fontSize: 16,
-    marginBottom: 2,
-  },
-  moreMenuSubtitle: {
     fontFamily: 'Inter-Regular',
+    marginBottom: 12,
+  },
+  profileBadges: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  badge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  badgeText: {
     fontSize: 12,
+    fontFamily: 'Inter-Medium',
   },
-  toggleSwitch: {
-    width: 44,
-    height: 24,
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
+    marginBottom: 12,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  aiStudyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
     borderRadius: 12,
-    padding: 2,
+    gap: 12,
   },
-  toggleKnob: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
+  aiStudyText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+  },
+  menuContainer: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+  },
+  menuItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  menuItemText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: 50,
+  },
+  signOutButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    borderRadius: 12,
+    gap: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  signOutText: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
   },
 });
