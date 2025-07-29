@@ -25,14 +25,70 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const [avatarError, setAvatarError] = useState(false);
+  const [isExtended, setIsExtended] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const drawerHeight = useSharedValue(0.85);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    height: `${drawerHeight.value * 100}%`,
   }));
 
-  const gesture = Gesture.Pan()
+  const dragHandleGesture = Gesture.Pan()
+    .activeOffsetY([0, 15])
+    .onUpdate((event) => {
+      if (isExtended) {
+        // When extended, allow dragging down to collapse
+        if (event.translationY > 0) {
+          const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
+          drawerHeight.value = 1 - (progress * 0.15);
+        }
+      } else {
+        // When collapsed, allow dragging up to extend or down to close
+        if (event.translationY < 0) {
+          const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
+          drawerHeight.value = 0.85 + (progress * 0.15);
+        } else if (event.translationY > 0) {
+          translateY.value = event.translationY;
+        }
+      }
+    })
+    .onEnd((event) => {
+      if (isExtended) {
+        // When extended, decide whether to stay extended or collapse
+        if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
+          // Collapse to 85%
+          drawerHeight.value = withSpring(0.85);
+          setIsExtended(false);
+        } else {
+          // Stay extended
+          drawerHeight.value = withSpring(1);
+        }
+      } else {
+        // When collapsed, decide whether to extend, stay collapsed, or close
+        if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
+          // Extend to 100%
+          drawerHeight.value = withSpring(1);
+          setIsExtended(true);
+        } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+          // Close drawer
+          translateY.value = withSpring(screenHeight, {
+            damping: 20,
+            stiffness: 90,
+            mass: 0.4,
+          }, () => {
+            runOnJS(onClose)();
+          });
+        } else {
+          // Stay at current position
+          translateY.value = withSpring(0);
+          drawerHeight.value = withSpring(0.85);
+        }
+      }
+    });
+
+  const overlayGesture = Gesture.Pan()
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
       if (event.translationY > 0) {
@@ -63,6 +119,12 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
       stiffness: 90,
       mass: 0.4,
     });
+    
+    if (!isOpen) {
+      // Reset to collapsed state when drawer closes
+      setIsExtended(false);
+      drawerHeight.value = 0.85;
+    }
   }, [isOpen]);
 
   const handleSignOut = () => {
@@ -106,9 +168,11 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
         <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
           <SafeAreaView style={{ flex: 1 }}>
             {/* Drag Handle */}
-            <View style={styles.dragHandle}>
-              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
-            </View>
+            <GestureDetector gesture={dragHandleGesture}>
+              <View style={styles.dragHandle}>
+                <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+              </View>
+            </GestureDetector>
 
             {/* Header */}
             <View style={styles.header}>
@@ -120,7 +184,8 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            <GestureDetector gesture={overlayGesture}>
+              <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
               {/* Profile Card */}
               <TouchableOpacity 
                 style={[styles.profileCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
@@ -276,10 +341,10 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
                   </Text>
                 </TouchableOpacity>
               </View>
-            </ScrollView>
+              </ScrollView>
+            </GestureDetector>
           </SafeAreaView>
         </Animated.View>
-      </GestureDetector>
     </View>
   );
 }
@@ -306,7 +371,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
