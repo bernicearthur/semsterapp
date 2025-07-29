@@ -77,7 +77,7 @@ export function Header() {
                 <Text style={styles.notificationText}>2</Text>
               </View>
             <User size={22} color={isDark ? '#E5E7EB' : '#4B5563'} />
-          </View>
+    
         </View>
       </SafeAreaView>
 
