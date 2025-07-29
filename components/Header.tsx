@@ -84,12 +84,16 @@ export function Header() {
               onPress={openProfileDrawer}
             >
               <ProfileAvatar 
-                size={32}
-                uri={userProfile?.avatar_url}
-                name={userProfile?.full_name || 'User'}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={openProfileDrawer}
+          >
+            <ProfileAvatar 
+              size={32}
+              uri={userProfile?.avatar_url}
+              name={userProfile?.full_name || 'User'}
+            />
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
 

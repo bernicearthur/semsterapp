@@ -61,12 +61,6 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen 
-          name="create-post"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen 
           name="profile-tab"
           options={{
             href: null,
