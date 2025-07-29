@@ -595,7 +595,6 @@ export default function HomeScreen() {
                       <Text style={styles.verifiedText}>✓</Text>
                     </View>
                   )}
-                  <Text style={styles.timestamp}> • {formatTimestamp(post.timestamp)}</Text>
                   
                   {!post.user.isConnected && (
                     <TouchableOpacity 
@@ -603,20 +602,26 @@ export default function HomeScreen() {
                       onPress={() => handleConnectPress(post.user.id)}
                     >
                       <UserPlus size={14} color="#3B82F6" />
-                      <Text style={styles.connectText}>Connect</Text>
+                      <Text style={styles.connectText}>Buddy Up</Text>
                     </TouchableOpacity>
                   )}
                 </View>
-                <Text style={[styles.userMeta, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                  {renderUserMeta(post.user)}
-                </Text>
+                <View style={styles.userMetaRow}>
+                  <Text style={[styles.userMeta, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                    @{post.user.name.toLowerCase().replace(/\s+/g, '')} • {formatTimestamp(post.timestamp)}
+                  </Text>
+                </View>
               </View>
             </View>
             <TouchableOpacity 
               style={styles.moreButton}
               onPress={() => handleMoreOptionsPress(post)}
             >
-              <MoreVertical size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+              <View style={styles.moreDotsContainer}>
+                <View style={[styles.moreDot, { backgroundColor: isDark ? '#9CA3AF' : '#6B7280' }]} />
+                <View style={[styles.moreDot, { backgroundColor: isDark ? '#9CA3AF' : '#6B7280' }]} />
+                <View style={[styles.moreDot, { backgroundColor: isDark ? '#9CA3AF' : '#6B7280' }]} />
+              </View>
             </TouchableOpacity>
           </View>
 
@@ -1015,7 +1020,15 @@ const styles = StyleSheet.create({
   postCard: {
     marginHorizontal: 16,
     marginBottom: 16,
-    borderRadius: 0,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   repostedByContainer: {
     flexDirection: 'row',
@@ -1098,11 +1111,23 @@ const styles = StyleSheet.create({
   userMeta: {
     fontSize: 13,
     fontFamily: 'Inter-Regular',
-    marginTop: 1,
+  },
+  userMetaRow: {
+    marginTop: 2,
   },
   moreButton: {
     padding: 8,
     borderRadius: 20,
+  },
+  moreDotsContainer: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+  },
+  moreDot: {
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
   },
   postContent: {
     fontSize: 15,
