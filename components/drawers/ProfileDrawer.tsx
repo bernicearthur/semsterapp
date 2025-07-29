@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 16,
+    minHeight: 60,
   },
   headerTitle: {
     fontSize: 24,
