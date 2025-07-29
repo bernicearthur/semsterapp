@@ -113,6 +113,8 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
       }
     });
 
+  const gesture = Gesture.Race(dragHandleGesture, overlayGesture);
+
   React.useEffect(() => {
     translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
@@ -345,6 +347,7 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
             </GestureDetector>
           </SafeAreaView>
         </Animated.View>
+      </GestureDetector>
     </View>
   );
 }
@@ -371,6 +374,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
