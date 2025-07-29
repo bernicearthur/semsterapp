@@ -566,7 +566,7 @@ export default function HomeScreen() {
     return (
       <Animated.View 
         entering={FadeIn.duration(400)}
-        style={[styles.postCard, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+        style={[styles.postCard, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}
       >
         <TouchableOpacity onPress={() => handlePostPress(post)} activeOpacity={0.95}>
           {/* Reposted By */}
@@ -769,54 +769,6 @@ export default function HomeScreen() {
 
   const ListHeader = useMemo(() => (
     <View>
-      {/* Quick Post Input */}
-      <View style={[styles.quickPostContainer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-        <Image 
-          source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100' }}
-          style={styles.quickPostAvatar}
-        />
-        <View style={styles.quickPostInputContainer}>
-          <TextInput
-            style={[
-              styles.quickPostInput,
-              { 
-                backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
-                color: isDark ? '#E5E7EB' : '#1F2937'
-              }
-            ]}
-            placeholder="What's happening on campus?"
-            placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-            value={postText}
-            onChangeText={setPostText}
-            multiline
-          />
-          <View style={styles.quickPostActions}>
-            <TouchableOpacity style={styles.quickPostAction}>
-              <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickPostAction}>
-              <BarChart3 size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickPostAction}>
-              <Calendar size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[
-                styles.postButton,
-                { 
-                  backgroundColor: postText.trim() ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                  opacity: postText.trim() ? 1 : 0.5
-                }
-              ]}
-              onPress={handleQuickPost}
-              disabled={!postText.trim()}
-            >
-              <Send size={16} color="#FFFFFF" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-
       {/* Stories */}
       <View style={styles.storiesContainer}>
         <FlatList
@@ -1063,15 +1015,7 @@ const styles = StyleSheet.create({
   postCard: {
     marginHorizontal: 16,
     marginBottom: 16,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    borderRadius: 0,
   },
   repostedByContainer: {
     flexDirection: 'row',
@@ -1225,57 +1169,6 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    zIndex: 1000,
-  },
-  createMenuOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    zIndex: 999,
-    paddingBottom: 90,
-    paddingRight: 20,
-  },
-  createMenu: {
-    borderRadius: 16,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 8,
-    minWidth: 160,
-  },
-  createMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    gap: 12,
-  },
-  createMenuIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   createMenuText: {
     fontSize: 14,
     fontFamily: 'Inter-SemiBold',
