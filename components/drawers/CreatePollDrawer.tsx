@@ -173,7 +173,11 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
-      <View style={[StyleSheet.absoluteFill, styles.overlay]} />
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
       <GestureDetector gesture={gesture}>
         <Animated.View 
           style={[

@@ -168,7 +168,7 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
       <TouchableOpacity 
         style={[StyleSheet.absoluteFill, styles.overlay]}
         activeOpacity={1}
-        onPress={onClose}
+        onPress={handleClose}
       />
       <GestureDetector gesture={gesture}>
         <Animated.View 

@@ -250,11 +250,16 @@ export function StoryViewerDrawer({
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
-      <GestureDetector gesture={combinedGestures}>
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
+      <GestureDetector gesture={gesture}>
         <Animated.View 
           style={[
-            styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#000000', width: screenWidth, height: screenHeight },
+            styles.drawer, 
+            { backgroundColor: isDark ? '#0F172A' : '#000000' },
             drawerStyle,
           ]}
         >
@@ -456,13 +461,25 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 1000,
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   drawer: {
-    flex: 1,
     position: 'absolute',
-    top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
-    bottom: 0,
+    height: '100%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   progressContainer: {
     flexDirection: 'row',

@@ -195,7 +195,7 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
       <TouchableOpacity 
         style={[StyleSheet.absoluteFill, styles.overlay]}
         activeOpacity={1}
-        onPress={onClose}
+        onPress={handleClose}
       />
       <GestureDetector gesture={gesture}>
         <Animated.View 
