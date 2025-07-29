@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Dimensions, Image } from 'react-native';
 import { Header } from '@/components/Header';
-import { House, Search, SquarePlus as PlusSquare, CalendarDays } from 'lucide-react-native';
+import { House, Search, CalendarDays, ShoppingBag, Users } from 'lucide-react-native';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -43,32 +43,33 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen 
-          name="create-post"
-          options={{
-            tabBarIcon: ({ color, size }) => <PlusSquare size={size} color={color} />,
-          }}
-        />
-        <Tabs.Screen 
           name="events"
           options={{
             tabBarIcon: ({ color, size }) => <CalendarDays size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
+          name="marketplace"
+          options={{
+            tabBarIcon: ({ color, size }) => <ShoppingBag size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen 
+          name="study-rooms"
+          options={{
+            tabBarIcon: ({ color, size }) => <Users size={size} color={color} />,
+          }}
+        />
+        <Tabs.Screen 
+          name="create-post"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen 
           name="profile-tab"
           options={{
-            tabBarIcon: ({ focused }) => (
-              <Image 
-                source={{ uri: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100' }}
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  borderWidth: focused ? 2 : 0,
-                  borderColor: colors.primary,
-                }}
-              />
-            ),
+            href: null,
           }}
         />
         <Tabs.Screen 
@@ -96,19 +97,7 @@ export default function AppLayout() {
           }}
         />
         <Tabs.Screen 
-          name="study-rooms"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen 
           name="settings"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen 
-          name="marketplace"
           options={{
             href: null,
           }}

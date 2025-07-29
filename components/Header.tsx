@@ -36,18 +36,22 @@ export function Header() {
         edges={['top']}
       >
         <View style={styles.header}>
-          <TouchableOpacity 
-            onPress={openProfileDrawer} 
-            style={[styles.menuButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
-          >
-            <Menu size={22} color={isDark ? '#E5E7EB' : '#4B5563'} />
-          </TouchableOpacity>
+          <View style={styles.leftSection}>
+            <TouchableOpacity 
+              onPress={openProfileDrawer} 
+              style={[styles.menuButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+            >
+              <Menu size={22} color={isDark ? '#E5E7EB' : '#4B5563'} />
+            </TouchableOpacity>
+          </View>
           
-          <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-            {displayName}
-          </Text>
+          <View style={styles.centerSection}>
+            <Text style={[styles.title, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+              {displayName}
+            </Text>
+          </View>
           
-          <View style={styles.actionsContainer}>
+          <View style={styles.rightSection}>
             <TouchableOpacity 
               style={styles.iconButton}
               onPress={openNotificationsDrawer}
@@ -90,11 +94,14 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  leftSection: {
+    flex: 1,
+    alignItems: 'flex-start',
   },
   menuButton: {
     width: 40,
@@ -111,13 +118,19 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  centerSection: {
+    flex: 2,
+    alignItems: 'center',
+  },
   title: {
     fontFamily: 'Inter-Bold',
     fontSize: 20,
   },
-  actionsContainer: {
+  rightSection: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   iconButton: {
     position: 'relative',
