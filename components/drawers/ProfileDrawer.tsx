@@ -7,9 +7,7 @@ import Animated, {
   useAnimatedStyle, 
   withSpring,
   useSharedValue,
-  runOnJS,
-  interpolate,
-  Extrapolate
+  runOnJS
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -28,31 +26,21 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   const screenHeight = Dimensions.get('window').height;
   const [avatarError, setAvatarError] = useState(false);
   
-  const translateY = useSharedValue(screenHeight * 0.6); // Start at 60% height
-  const minHeight = screenHeight * 0.4; // Minimum 40% height
-  const maxHeight = screenHeight * 0.95; // Maximum 95% height
+  const translateY = useSharedValue(screenHeight);
 
   const drawerStyle = useAnimatedStyle(() => ({
-    height: screenHeight - translateY.value,
     transform: [{ translateY: translateY.value }],
   }));
 
   const gesture = Gesture.Pan()
-    .activeOffsetY([-15, 15])
+    .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      const newTranslateY = translateY.value + event.translationY;
-      // Constrain between min and max heights
-      translateY.value = Math.max(
-        screenHeight - maxHeight,
-        Math.min(screenHeight - minHeight, newTranslateY)
-      );
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
+      }
     })
     .onEnd((event) => {
-      const currentHeight = screenHeight - translateY.value;
-      const midHeight = (minHeight + maxHeight) / 2;
-      
-      if (event.velocityY > 500 || (event.translationY > 100 && currentHeight < midHeight)) {
-        // Close drawer
+      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
         translateY.value = withSpring(screenHeight, {
           damping: 20,
           stiffness: 90,
@@ -60,17 +48,8 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
         }, () => {
           runOnJS(onClose)();
         });
-      } else if (event.velocityY < -500 || (event.translationY < -100 && currentHeight < midHeight)) {
-        // Expand to full height
-        translateY.value = withSpring(screenHeight - maxHeight, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        });
       } else {
-        // Snap to nearest position
-        const targetHeight = currentHeight > midHeight ? maxHeight : minHeight;
-        translateY.value = withSpring(screenHeight - targetHeight, {
+        translateY.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -79,7 +58,7 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
     });
 
   React.useEffect(() => {
-    translateY.value = withSpring(isOpen ? screenHeight * 0.6 : screenHeight, {
+    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
@@ -126,14 +105,13 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
       <GestureDetector gesture={gesture}>
         <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
           <SafeAreaView style={{ flex: 1 }}>
-            {/* Unified Header with Drag Handle */}
-            <View style={styles.unifiedHeader}>
-              {/* Drag Handle */}
-              <View style={styles.dragHandle}>
-                <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
-              </View>
-              
-              {/* Header Content */}
+            {/* Drag Handle */}
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+
+            {/* Header */}
+            <View style={styles.header}>
               <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                 Account
               </Text>
@@ -314,11 +292,21 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   drawer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
@@ -330,28 +318,18 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  unifiedHeader: {
-    position: 'relative',
-  },
-  dragHandle: {
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
-  },
-  dragIndicator: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
   },
   headerTitle: {
     fontSize: 24,
     fontFamily: 'Inter-Bold',
-    textAlign: 'center',
-    marginBottom: 16,
   },
   closeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 20,
     padding: 4,
   },
   content: {
