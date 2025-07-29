@@ -70,7 +70,7 @@ export function StoryViewerDrawer({
   
   const progressAnimations = useRef<RNAnimated.Value[]>([]);
   const storyTimer = useRef<NodeJS.Timeout>();
-  const translateY = useSharedValue(screenHeight);
+  const translateX = useSharedValue(screenWidth);
   const moreOptionsOpacity = useSharedValue(0);
   
   const currentStory = stories[currentStoryIndex];
@@ -82,7 +82,7 @@ export function StoryViewerDrawer({
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: translateY.value }
+      { translateX: translateX.value }
     ],
   }));
 
@@ -93,17 +93,17 @@ export function StoryViewerDrawer({
     }],
   }));
 
-  // Swipe down to close
+  // Swipe right to close
   const gesture = Gesture.Pan()
-    .activeOffsetY([-15, 15])
+    .activeOffsetX([0, 15])
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      if (event.translationX > 0) {
+        translateX.value = event.translationX;
       }
     })
     .onEnd((event) => {
-      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-        translateY.value = withSpring(screenHeight, {
+      if (event.translationX > screenWidth * 0.3 || event.velocityX > 500) {
+        translateX.value = withSpring(screenWidth, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -111,7 +111,7 @@ export function StoryViewerDrawer({
           runOnJS(onClose)();
         });
       } else {
-        translateY.value = withSpring(0, {
+        translateX.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -120,7 +120,7 @@ export function StoryViewerDrawer({
     });
 
   React.useEffect(() => {
-    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
+    translateX.value = withSpring(isOpen ? 0 : screenWidth, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
@@ -250,11 +250,6 @@ export function StoryViewerDrawer({
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
-      <TouchableOpacity 
-        style={[StyleSheet.absoluteFill, styles.overlay]}
-        activeOpacity={1}
-        onPress={onClose}
-      />
       <GestureDetector gesture={gesture}>
         <Animated.View 
           style={[
@@ -465,13 +460,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
+    flex: 1,
     position: 'absolute',
-    bottom: 0,
-    left: 0,
+    top: 0,
     right: 0,
-    height: '100%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    bottom: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

@@ -46,28 +46,29 @@ const gradients = [
 export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStoryDrawerProps) {
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
   const [storyType, setStoryType] = useState<'image' | 'text' | 'video'>('text');
   const [textContent, setTextContent] = useState('');
   const [selectedBackground, setSelectedBackground] = useState(backgroundColors[0]);
   const [selectedTextColor, setSelectedTextColor] = useState(textColors[0]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   
-  const translateX = useSharedValue(screenWidth);
+  const translateY = useSharedValue(screenHeight);
 
   const drawerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   const gesture = Gesture.Pan()
-    .activeOffsetX([0, 15])
+    .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationX > 0) {
-        translateX.value = event.translationX;
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
       }
     })
     .onEnd((event) => {
-      if (event.translationX > screenWidth * 0.3 || event.velocityX > 500) {
-        translateX.value = withSpring(screenWidth, {
+      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+        translateY.value = withSpring(screenHeight, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -75,7 +76,7 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
           runOnJS(onClose)();
         });
       } else {
-        translateX.value = withSpring(0, {
+        translateY.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -84,7 +85,7 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
     });
 
   React.useEffect(() => {
-    translateX.value = withSpring(isOpen ? 0 : screenWidth, {
+    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
@@ -154,7 +155,7 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
         <Animated.View 
           style={[
             styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
+            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
             drawerStyle,
           ]}
         >
@@ -461,15 +462,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
-    flex: 1,
     position: 'absolute',
-    top: 0,
+    bottom: 0,
+    left: 0,
     right: 0,
+    height: '85%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     bottom: 0,
     shadowColor: '#000',
     shadowOffset: {
-      width: -2,
-      height: 0,
+      width: 0,
+      height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
