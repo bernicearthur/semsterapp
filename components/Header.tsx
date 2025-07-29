@@ -94,6 +94,8 @@ export function Header() {
 }
 
 const styles = StyleSheet.create({
+            }
+  )
   safeArea: {
     width: '100%',
     zIndex: 10,
