@@ -5,8 +5,6 @@ import { router } from 'expo-router';
 import { ArrowLeft, ArrowRight, Mail, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
-import { validateSchoolEmail, getSchoolFromEmail } from '@/lib/school-utils';
 
 export default function EmailVerificationScreen() {
   const { isDark } = useTheme();
@@ -30,44 +28,7 @@ export default function EmailVerificationScreen() {
     
     // Clear error when user types
     if (error) setError('');
-    
-    // Check if it's a school email when the user stops typing
-    if (isValidFormat) {
-      const timeoutId = setTimeout(() => {
-        checkSchoolEmail(email);
-      }, 500);
-      
-      return () => clearTimeout(timeoutId);
-    }
   }, [email]);
-
-  const checkSchoolEmail = async (emailToCheck: string) => {
-    if (!emailToCheck) return;
-    
-    setIsCheckingEmail(true);
-    
-    try {
-      const isSchoolEmail = await validateSchoolEmail(emailToCheck);
-      
-      if (!isSchoolEmail) {
-        setError('Please use your school email address');
-        setIsValid(false);
-      } else {
-        // Get the school name from the email
-        const schoolName = await getSchoolFromEmail(emailToCheck);
-        if (schoolName) {
-          // Update the school in sign up data if it's different
-          if (signUpData.school !== schoolName) {
-            updateSignUpData({ school: schoolName });
-          }
-        }
-      }
-    } catch (err) {
-      console.error('Error checking school email:', err);
-    } finally {
-      setIsCheckingEmail(false);
-    }
-  };
 
   const handleBack = () => {
     router.back();
@@ -79,50 +40,14 @@ export default function EmailVerificationScreen() {
       return;
     }
 
-    // Final check if it's a school email
-    const isSchoolEmail = await validateSchoolEmail(email);
-    if (!isSchoolEmail) {
-      setError('Please use your school email address');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
       // Store the email in sign up data
       updateSignUpData({ email });
       
-      // Get school name and update signup data
-      const schoolName = await getSchoolFromEmail(email);
-      if (schoolName) {
-        updateSignUpData({ school: schoolName });
-      }
-      
-      // Try to sign up with a temporary password to trigger OTP
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password: 'TEMPORARY_PASSWORD_FOR_VERIFICATION', // This will be changed later
-      });
-      
-      if (error) {
-        if (error.message.includes('already registered')) {
-          // If the user already exists, resend the confirmation email
-          const { error: resendError } = await supabase.auth.resend({
-            type: 'signup',
-            email,
-          });
-          
-          if (resendError) {
-            setError(resendError.message);
-            setIsLoading(false);
-            return;
-          }
-        } else {
-          setError(error.message);
-          setIsLoading(false);
-          return;
-        }
-      }
+      // Mock email verification
+      console.log('Mock email verification for:', email);
       
       router.push('/signup/otp-verification');
     } catch (err: any) {

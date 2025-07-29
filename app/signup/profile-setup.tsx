@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import { ArrowLeft, ArrowRight, User, Camera, AtSign, CircleAlert as AlertCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
 
 export default function ProfileSetupScreen() {
   const { isDark } = useTheme();
@@ -57,30 +56,17 @@ export default function ProfileSetupScreen() {
     
     setIsCheckingUsername(true);
     
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('username')
-        .eq('username', username)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Error checking username:', error);
-        setUsernameError('Error checking username availability');
-        return;
-      }
-      
-      if (data) {
+    // Mock username check
+    setTimeout(() => {
+      // Simulate some usernames being taken
+      const takenUsernames = ['admin', 'test', 'user', 'demo'];
+      if (takenUsernames.includes(username.toLowerCase())) {
         setUsernameError('This username is already taken');
       } else {
         setUsernameError('');
       }
-    } catch (error) {
-      console.error('Error checking username:', error);
-      setUsernameError('Error checking username availability');
-    } finally {
       setIsCheckingUsername(false);
-    }
+    }, 500);
   };
 
   const validateInputs = () => {

@@ -5,7 +5,6 @@ import { router } from 'expo-router';
 import { ArrowLeft, ArrowRight, CircleCheck as CheckCircle } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
 
 export default function OtpVerificationScreen() {
   const { isDark } = useTheme();
@@ -76,18 +75,8 @@ export default function OtpVerificationScreen() {
     setIsLoading(true);
 
     try {
-      // Verify OTP with Supabase
-      const { error } = await supabase.auth.verifyOtp({
-        email: signUpData.email || '',
-        token: otpValue,
-        type: 'signup',
-      });
-
-      if (error) {
-        setError(error.message || 'Invalid verification code');
-        setIsLoading(false);
-        return;
-      }
+      // Mock OTP verification
+      console.log('Mock OTP verification for:', signUpData.email);
 
       setIsLoading(false);
       setIsVerified(true);
@@ -109,17 +98,8 @@ export default function OtpVerificationScreen() {
     setResendLoading(true);
     
     try {
-      // Resend the verification email
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: signUpData.email || '',
-      });
-      
-      if (error) {
-        setError(error.message || 'Failed to resend verification code');
-        setResendLoading(false);
-        return;
-      }
+      // Mock resend code
+      console.log('Mock resend code for:', signUpData.email);
       
       setResendCountdown(60);
       Alert.alert('Code Sent', `A new verification code has been sent to ${signUpData.email}`);

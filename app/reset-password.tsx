@@ -5,7 +5,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Key, Eye, EyeOff, CircleAlert as AlertCircle, CircleCheck as CheckCircle, Shield } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useAuth } from '@/context/AuthContext';
-import { supabase } from '@/lib/supabase';
 
 export default function ResetPasswordScreen() {
   const { isDark } = useTheme();
@@ -78,7 +77,7 @@ export default function ResetPasswordScreen() {
     setIsLoading(true);
 
     try {
-      // In a real app, we would use the token from the URL
+      // Mock password update
       const { error } = await updatePassword(password);
       
       if (error) {

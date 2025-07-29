@@ -1,12 +1,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/lib/supabase';
-import { Session, User } from '@supabase/supabase-js';
 import { router } from 'expo-router';
 import { Platform, Alert } from 'react-native';
 
 type AuthContextType = {
-  session: Session | null;
-  user: User | null;
+  session: any | null;
+  user: any | null;
   loading: boolean;
   signUp: (email: string, password: string, metadata?: Record<string, any>) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
@@ -67,92 +65,29 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<any | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [signUpData, setSignUpData] = useState<AuthContextType['signUpData']>({});
   const [userProfile, setUserProfile] = useState<AuthContextType['userProfile']>(null);
   const [profileFetchAttempts, setProfileFetchAttempts] = useState(0);
 
-  // Initialize auth state
+  // Mock auth initialization
   useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        // Get current session
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        setSession(currentSession);
-        setUser(currentSession?.user || null);
-
-        if (currentSession?.user) {
-          await fetchUserProfile(currentSession.user.id);
-        }
-
-        // Set up auth state change listener
-        const { data: { subscription } } = await supabase.auth.onAuthStateChange(
-          async (_event, newSession) => {
-            setSession(newSession);
-            setUser(newSession?.user || null);
-
-            if (newSession?.user) {
-              await fetchUserProfile(newSession.user.id);
-            } else {
-              setUserProfile(null);
-            }
-          }
-        );
-
-        setLoading(false);
-        return () => subscription.unsubscribe();
-      } catch (error) {
-        console.error('Error initializing auth:', error);
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
+    // Mock initialization
+    setLoading(false);
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
-    try {
-      // Reset attempts counter if this is a new fetch for a different user
-      if (userProfile?.id !== userId) {
-        setProfileFetchAttempts(0);
-      }
-
-      // Increment attempts counter
-      setProfileFetchAttempts(prev => prev + 1);
-
-      console.log(`Fetching user profile for ${userId}, attempt ${profileFetchAttempts + 1}`);
-
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        
-        // If we've tried less than 3 times and got a "no rows returned" error,
-        // it might be because the profile hasn't been created yet by the trigger
-        if (profileFetchAttempts < 3 && error.code === 'PGRST116') {
-          console.log('Profile not found, retrying in 1 second...');
-          // Wait a second and try again
-          setTimeout(() => fetchUserProfile(userId), 1000);
-          return;
-        }
-        
-        return;
-      }
-
-      console.log('User profile fetched successfully:', data);
-      setUserProfile(data);
-      // Reset attempts counter on success
-      setProfileFetchAttempts(0);
-    } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
-    }
+    // Mock profile fetch
+    setUserProfile({
+      id: userId,
+      username: 'mockuser',
+      full_name: 'Mock User',
+      avatar_url: null,
+      school: 'Mock University'
+    });
   };
 
   const refreshProfile = async () => {
@@ -162,145 +97,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, metadata?: Record<string, any>) => {
-    try {
-      console.log('Starting signup process for:', email);
-      console.log('With metadata:', metadata);
-      
-      // Create the auth user with metadata
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: metadata || {
-            full_name: signUpData.fullName || '',
-            username: signUpData.username || '',
-            school: signUpData.school || '',
-          }
-        }
-      });
-
-      if (authError) {
-        console.error('Auth signup error:', authError);
-        return { error: authError };
-      }
-
-      console.log('Auth user created successfully:', authData.user?.id);
-
-      // Only create the profile if auth signup was successful
-      if (authData.user) {
-        try {
-          // Create profile entry with proper defaults to avoid RLS violations
-          console.log('Creating profile for user:', authData.user.id);
-          
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .upsert({
-              id: authData.user.id,
-              username: metadata?.username || signUpData.username || '',
-              full_name: metadata?.full_name || signUpData.fullName || '',
-              avatar_url: metadata?.avatar_url || signUpData.avatarUrl || null,
-              school: metadata?.school || signUpData.school || '',
-            });
-
-          if (profileError) {
-            console.error('Error creating profile:', profileError);
-            return { error: profileError };
-          }
-          
-          console.log('Profile created successfully');
-        } catch (profileError) {
-          console.error('Exception creating profile:', profileError);
-          return { error: profileError };
-        }
-      }
-
-      return { error: null };
-    } catch (error) {
-      console.error('Error in signUp:', error);
-      return { error };
-    }
+    // Mock signup
+    console.log('Mock signup for:', email);
+    return { error: null };
   };
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (!error) {
-        router.replace('/(app)');
-      }
-
-      return { error };
-    } catch (error) {
-      console.error('Error in signIn:', error);
-      return { error };
-    }
+    // Mock signin
+    console.log('Mock signin for:', email);
+    router.replace('/(app)');
+    return { error: null };
   };
 
   const signInWithUsername = async (username: string, password: string) => {
-    try {
-      // First, get the email associated with the username
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('username', username)
-        .single();
-
-      if (error) {
-        return { error: { message: 'Invalid username or password' } };
-      }
-
-      // Get the user's email from auth.users
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('email')
-        .eq('id', data.id)
-        .single();
-
-      if (userError || !userData?.email) {
-        return { error: { message: 'Invalid username or password' } };
-      }
-
-      // Now sign in with the email and password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: userData.email,
-        password,
-      });
-
-      if (signInError) {
-        return { error: signInError };
-      }
-
-      router.replace('/(app)');
-      return { error: null };
-    } catch (error) {
-      console.error('Error in signInWithUsername:', error);
-      return { error: { message: 'An unexpected error occurred' } };
-    }
+    // Mock username signin
+    console.log('Mock signin with username:', username);
+    router.replace('/(app)');
+    return { error: null };
   };
 
   const signInWithSocial = async (provider: 'google' | 'microsoft') => {
-    try {
-      if (Platform.OS === 'web') {
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider,
-          options: {
-            redirectTo: window.location.origin,
-          },
-        });
-
-        return { error };
-      } else {
-        // For native platforms, we would use a different approach
-        // This is simplified for the demo
-        return { error: { message: `${provider} sign-in is not supported on this platform yet.` } };
-      }
-    } catch (error) {
-      console.error(`Error signing in with ${provider}:`, error);
-      return { error };
-    }
+    // Mock social signin
+    console.log('Mock social signin with:', provider);
+    return { error: null };
   };
 
   const signInWithGoogle = async () => {
@@ -318,77 +137,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      router.replace('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+    // Mock signout
+    setSession(null);
+    setUser(null);
+    setUserProfile(null);
+    router.replace('/');
   };
 
   const verifyOtp = async (email: string, otp: string) => {
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'signup'
-      });
-      
-      return { error };
-    } catch (error) {
-      return { error };
-    }
+    // Mock OTP verification
+    console.log('Mock OTP verification for:', email);
+    return { error: null };
   };
 
   const resetPassword = async (email: string) => {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: 'https://your-app-url.com/reset-password',
-      });
-      
-      return { error };
-    } catch (error) {
-      console.error('Error in resetPassword:', error);
-      return { error };
-    }
+    // Mock password reset
+    console.log('Mock password reset for:', email);
+    return { error: null };
   };
 
   const updatePassword = async (password: string) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password,
-      });
-      
-      return { error };
-    } catch (error) {
-      console.error('Error in updatePassword:', error);
-      return { error };
-    }
+    // Mock password update
+    console.log('Mock password update');
+    return { error: null };
   };
 
   const updateProfile = async (data: { username?: string, full_name?: string, avatar_url?: string, school?: string }) => {
-    try {
-      if (!user) {
-        return { error: { message: 'User not authenticated' } };
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          ...data,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (!error) {
-        await refreshProfile();
-      }
-
-      return { error };
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      return { error };
+    // Mock profile update
+    console.log('Mock profile update:', data);
+    if (userProfile) {
+      setUserProfile({ ...userProfile, ...data });
     }
+    return { error: null };
   };
 
   const updateSignUpData = (data: Partial<AuthContextType['signUpData']>) => {

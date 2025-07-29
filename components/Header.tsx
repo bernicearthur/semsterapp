@@ -23,8 +23,8 @@ export function Header() {
     closeNotificationsDrawer
   } = useAppContext();
   
-  // Display school name if available, otherwise fall back to "Semster"
-  const displayName = userProfile?.school || "Semster";
+  // Display app name
+  const displayName = "Semster";
   
   return (
     <>
