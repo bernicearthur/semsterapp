@@ -17,7 +17,8 @@ const initialStories = [
   {
     id: 's1',
     user: {
-      name: 'Your import { Plus, FileText, ChartBar as BarChart3, Calendar, Video } from 'lucide-react-native'53.jpeg?auto=compress&cs=tinysrgb&w=100',
+      name: 'Your Story',
+      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=100',
       hasUnseenStory: false,
     },
     isAddStory: true,
