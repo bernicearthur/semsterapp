@@ -186,163 +186,162 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
 
             <GestureDetector gesture={overlayGesture}>
               <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-              {/* Profile Card */}
-              <TouchableOpacity 
-                style={[styles.profileCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
-                onPress={() => {
-                  onClose();
-                  router.push('/profile-tab');
-                }}
-                activeOpacity={0.7}
-              >
-                <View style={styles.profileInfo}>
-                  <ProfileAvatar 
-                    size={80}
-                    uri={userProfile?.avatar_url}
-                    name={userProfile?.full_name || 'User'}
-                  />
-                  <View style={styles.profileDetails}>
-                    <Text style={[styles.profileName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                      {userProfile?.full_name || 'Alex Student'}
-                    </Text>
-                    <Text style={[styles.profileEmail, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                      {userProfile?.username ? `@${userProfile.username}` : 'alex.student@university.edu'}
-                    </Text>
-                    <View style={styles.profileBadges}>
-                      <View style={[styles.badge, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
-                        <Text style={[styles.badgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                          Junior
-                        </Text>
-                      </View>
-                      <View style={[styles.badge, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
-                        <Text style={[styles.badgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                          Computer Science
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              </TouchableOpacity>
-
-              {/* AI Study Assistant */}
-              <View style={styles.section}>
+                {/* Profile Card */}
                 <TouchableOpacity 
-                  style={[styles.aiStudyButton, { backgroundColor: '#3B82F6' }]}
-                  onPress={() => handleNavigate('/ai-assistant')}
+                  style={[styles.profileCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
+                  onPress={() => {
+                    onClose();
+                    router.push('/profile-tab');
+                  }}
+                  activeOpacity={0.7}
                 >
-                  <Bot size={24} color="#FFFFFF" />
-                  <Text style={styles.aiStudyText}>AI Study Assistant</Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* Quick Actions */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                  Quick Actions
-                </Text>
-                
-                <View style={[styles.menuContainer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-                  <TouchableOpacity 
-                    style={styles.menuItem}
-                    onPress={() => handleNavigate('/profile-tab')}
-                  >
-                    <View style={styles.menuItemLeft}>
-                      <User size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Profile
-                      </Text>
-                    </View>
-                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                  </TouchableOpacity>
-
-                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
-
-                  <TouchableOpacity 
-                    style={styles.menuItem}
-                    onPress={() => handleNavigate('/settings')}
-                  >
-                    <View style={styles.menuItemLeft}>
-                      <Settings size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Settings
-                      </Text>
-                    </View>
-                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                  </TouchableOpacity>
-
-                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
-
-                  <TouchableOpacity style={styles.menuItem}>
-                    <View style={styles.menuItemLeft}>
-                      <Shield size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Privacy
-                      </Text>
-                    </View>
-                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                  </TouchableOpacity>
-
-                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
-
-                  <TouchableOpacity style={styles.menuItem}>
-                    <View style={styles.menuItemLeft}>
-                      <Bell size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Notifications
-                      </Text>
-                    </View>
-                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                  </TouchableOpacity>
-
-                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
-
-                  <TouchableOpacity style={styles.menuItem}>
-                    <View style={styles.menuItemLeft}>
-                      <HelpCircle size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Help & Support
-                      </Text>
-                    </View>
-                    <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                  </TouchableOpacity>
-
-                  <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
-
-                  <View style={styles.menuItem}>
-                    <View style={styles.menuItemLeft}>
-                      {isDark ? (
-                        <Sun size={22} color="#F59E0B" />
-                      ) : (
-                        <Moon size={22} color="#6366F1" />
-                      )}
-                      <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                        Theme
-                      </Text>
-                    </View>
-                    <Switch
-                      value={isDark}
-                      onValueChange={toggleTheme}
-                      trackColor={{ false: '#E5E7EB', true: '#3B82F6' }}
-                      thumbColor="#FFFFFF"
+                  <View style={styles.profileInfo}>
+                    <ProfileAvatar 
+                      size={80}
+                      uri={userProfile?.avatar_url}
+                      name={userProfile?.full_name || 'User'}
                     />
+                    <View style={styles.profileDetails}>
+                      <Text style={[styles.profileName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        {userProfile?.full_name || 'Alex Student'}
+                      </Text>
+                      <Text style={[styles.profileEmail, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                        {userProfile?.username ? `@${userProfile.username}` : 'alex.student@university.edu'}
+                      </Text>
+                      <View style={styles.profileBadges}>
+                        <View style={[styles.badge, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
+                          <Text style={[styles.badgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                            Junior
+                          </Text>
+                        </View>
+                        <View style={[styles.badge, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]}>
+                          <Text style={[styles.badgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                            Computer Science
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+
+                {/* AI Study Assistant */}
+                <View style={styles.section}>
+                  <TouchableOpacity 
+                    style={[styles.aiStudyButton, { backgroundColor: '#3B82F6' }]}
+                    onPress={() => handleNavigate('/ai-assistant')}
+                  >
+                    <Bot size={24} color="#FFFFFF" />
+                    <Text style={styles.aiStudyText}>AI Study Assistant</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* Quick Actions */}
+                <View style={styles.section}>
+                  <Text style={[styles.sectionTitle, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                    Quick Actions
+                  </Text>
+                  
+                  <View style={[styles.menuContainer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                    <TouchableOpacity 
+                      style={styles.menuItem}
+                      onPress={() => handleNavigate('/profile-tab')}
+                    >
+                      <View style={styles.menuItemLeft}>
+                        <User size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                        <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          Profile
+                        </Text>
+                      </View>
+                      <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    </TouchableOpacity>
+
+                    <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                    <TouchableOpacity 
+                      style={styles.menuItem}
+                      onPress={() => handleNavigate('/settings')}
+                    >
+                      <View style={styles.menuItemLeft}>
+                        <Settings size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                        <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          Settings
+                        </Text>
+                      </View>
+                      <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    </TouchableOpacity>
+
+                    <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                    <TouchableOpacity style={styles.menuItem}>
+                      <View style={styles.menuItemLeft}>
+                        <Shield size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                        <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          Privacy
+                        </Text>
+                      </View>
+                      <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    </TouchableOpacity>
+
+                    <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                    <TouchableOpacity style={styles.menuItem}>
+                      <View style={styles.menuItemLeft}>
+                        <Bell size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                        <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          Notifications
+                        </Text>
+                      </View>
+                      <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    </TouchableOpacity>
+
+                    <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                    <TouchableOpacity style={styles.menuItem}>
+                      <View style={styles.menuItemLeft}>
+                        <HelpCircle size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                        <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          Help & Support
+                        </Text>
+                      </View>
+                      <ChevronRight size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    </TouchableOpacity>
+
+                    <View style={[styles.divider, { backgroundColor: isDark ? '#334155' : '#E5E7EB' }]} />
+
+                    <View style={styles.menuItem}>
+                      <View style={styles.menuItemLeft}>
+                        {isDark ? (
+                          <Sun size={22} color="#F59E0B" />
+                        ) : (
+                          <Moon size={22} color="#6366F1" />
+                        )}
+                        <Text style={[styles.menuItemText, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                          Theme
+                        </Text>
+                      </View>
+                      <Switch
+                        value={isDark}
+                        onValueChange={toggleTheme}
+                        trackColor={{ false: '#E5E7EB', true: '#3B82F6' }}
+                        thumbColor="#FFFFFF"
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>
 
-              {/* Sign Out */}
-              <View style={styles.section}>
-                <TouchableOpacity 
-                  style={[styles.signOutButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
-                  onPress={handleSignOut}
-                >
-                  <LogOut size={22} color="#EF4444" />
-                  <Text style={[styles.signOutText, { color: '#EF4444' }]}>
-                    Sign Out
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                {/* Sign Out */}
+                <View style={styles.section}>
+                  <TouchableOpacity 
+                    style={[styles.signOutButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                    onPress={handleSignOut}
+                  >
+                    <LogOut size={22} color="#EF4444" />
+                    <Text style={[styles.signOutText, { color: '#EF4444' }]}>
+                      Sign Out
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </ScrollView>
-            </GestureDetector>
           </SafeAreaView>
         </Animated.View>
       </GestureDetector>
@@ -398,8 +397,8 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   content: {
-    flex: 1,
     paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   profileCard: {
     borderRadius: 16,
