@@ -70,8 +70,7 @@ export function StoryViewerDrawer({
   
   const progressAnimations = useRef<RNAnimated.Value[]>([]);
   const storyTimer = useRef<NodeJS.Timeout>();
-  const translateY = useSharedValue(0);
-  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(screenHeight);
   const moreOptionsOpacity = useSharedValue(0);
   
   const currentStory = stories[currentStoryIndex];
@@ -83,8 +82,7 @@ export function StoryViewerDrawer({
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [
-      { translateY: translateY.value },
-      { translateX: translateX.value }
+      { translateY: translateY.value }
     ],
   }));
 
@@ -95,8 +93,8 @@ export function StoryViewerDrawer({
     }],
   }));
 
-  // Vertical swipe to close
-  const verticalGesture = Gesture.Pan()
+  // Swipe down to close
+  const gesture = Gesture.Pan()
     .activeOffsetY([-15, 15])
     .onUpdate((event) => {
       if (event.translationY > 0) {
@@ -121,56 +119,12 @@ export function StoryViewerDrawer({
       }
     });
 
-  // Horizontal swipe for navigation
-  const horizontalGesture = Gesture.Pan()
-    .activeOffsetX([-15, 15])
-    .onUpdate((event) => {
-      translateX.value = event.translationX;
-    })
-    .onEnd((event) => {
-      if (event.translationX < -screenWidth * 0.2 || event.velocityX < -500) {
-        // Swipe left to next story
-        if (currentStoryIndex < stories.length - 1) {
-          translateX.value = withSpring(-screenWidth, {
-            damping: 20,
-            stiffness: 90,
-            mass: 0.4,
-          }, () => {
-            translateX.value = 0;
-            runOnJS(setCurrentStoryIndex)(currentStoryIndex + 1);
-          });
-        } else {
-          translateX.value = withSpring(0);
-        }
-      } else if (event.translationX > screenWidth * 0.2 || event.velocityX > 500) {
-        // Swipe right to previous story
-        if (currentStoryIndex > 0) {
-          translateX.value = withSpring(screenWidth, {
-            damping: 20,
-            stiffness: 90,
-            mass: 0.4,
-          }, () => {
-            translateX.value = 0;
-            runOnJS(setCurrentStoryIndex)(currentStoryIndex - 1);
-          });
-        } else {
-          translateX.value = withSpring(0);
-        }
-      } else {
-        translateX.value = withSpring(0);
-      }
-    });
-
-  // Combine gestures
-  const combinedGestures = Gesture.Simultaneous(verticalGesture, horizontalGesture);
-
   React.useEffect(() => {
     translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
     });
-    translateX.value = 0;
   }, [isOpen]);
 
   const startStoryProgress = () => {
