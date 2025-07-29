@@ -76,9 +76,7 @@ export function Header() {
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationText}>2</Text>
               </View>
-            <User size={22} color={isDark ? '#E5E7EB' : '#4B5563'} />
-    
-        </View>
+      </View>
       </SafeAreaView>
 
       <ProfileDrawer isOpen={isProfileDrawerOpen} onClose={closeProfileDrawer} />
@@ -97,7 +95,8 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingTop: 8,
+    paddingBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
   },
