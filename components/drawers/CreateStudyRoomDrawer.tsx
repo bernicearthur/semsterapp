@@ -30,6 +30,7 @@ const dates = [
 export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateStudyRoomDrawerProps) {
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
   
   const [roomName, setRoomName] = useState('');
   const [description, setDescription] = useState('');
@@ -42,22 +43,22 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   
-  const translateX = useSharedValue(screenWidth);
+  const translateY = useSharedValue(screenHeight);
 
   const drawerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   const gesture = Gesture.Pan()
-    .activeOffsetX([0, 15])
+    .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationX > 0) {
-        translateX.value = event.translationX;
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
       }
     })
     .onEnd((event) => {
-      if (event.translationX > screenWidth * 0.3 || event.velocityX > 500) {
-        translateX.value = withSpring(screenWidth, {
+      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+        translateY.value = withSpring(screenHeight, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -65,7 +66,7 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
           runOnJS(onClose)();
         });
       } else {
-        translateX.value = withSpring(0, {
+        translateY.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -74,7 +75,7 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
     });
 
   React.useEffect(() => {
-    translateX.value = withSpring(isOpen ? 0 : screenWidth, {
+    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
@@ -136,6 +137,7 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
 
     onCreateRoom(roomData);
     resetForm();
+    onClose();
   };
 
   const getEndTime = (startTime: string) => {
@@ -156,10 +158,6 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
     return `${newHour}:${minute.toString().padStart(2, '0')} ${newPeriod}`;
   };
 
-  const handleClose = () => {
-    resetForm();
-    onClose();
-  };
 
   if (!isOpen) return null;
 
@@ -168,7 +166,7 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
       <TouchableOpacity 
         style={[StyleSheet.absoluteFill, styles.overlay]}
         activeOpacity={1}
-        onPress={handleClose}
+        onPress={onClose}
       />
       <GestureDetector gesture={gesture}>
         <Animated.View 
@@ -180,8 +178,8 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
         >
           <SafeAreaView style={{ flex: 1 }}>
             {/* Header */}
-            <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
-              <TouchableOpacity onPress={handleClose} style={styles.headerButton}>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
               
@@ -513,15 +511,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
-    flex: 1,
     position: 'absolute',
-    top: 0,
-    right: 0,
     bottom: 0,
+    left: 0,
+    right: 0,
+    height: '85%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     shadowColor: '#000',
     shadowOffset: {
-      width: -2,
-      height: 0,
+      width: 0,
+      height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -532,7 +532,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-  },
   headerButton: {
     padding: 4,
   },

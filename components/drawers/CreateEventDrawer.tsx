@@ -181,12 +181,9 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
 
     onCreateEvent(event);
     resetForm();
-  };
-
-  const handleClose = () => {
-    resetForm();
     onClose();
   };
+
 
   if (!isOpen) return null;
 
@@ -195,7 +192,7 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
       <TouchableOpacity 
         style={[StyleSheet.absoluteFill, styles.overlay]}
         activeOpacity={1}
-        onPress={handleClose}
+        onPress={onClose}
       />
       <GestureDetector gesture={gesture}>
         <Animated.View 
@@ -207,8 +204,8 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
         >
           <SafeAreaView style={{ flex: 1 }}>
             {/* Header */}
-            <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
-              <TouchableOpacity onPress={handleClose} style={styles.headerButton}>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
               
@@ -628,13 +625,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   drawer: {
-    bottom: 0,
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
     height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
