@@ -1085,7 +1085,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    zIndex: 1000,
+    zIndex: 9999,
   },
   createMenuOverlay: {
     position: 'absolute',
@@ -1096,7 +1096,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    zIndex: 9998,
   },
   createMenu: {
     borderRadius: 16,

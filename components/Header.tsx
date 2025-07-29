@@ -76,7 +76,7 @@ export function Header() {
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationText}>2</Text>
               </View>
-            </TouchableOpacity>
+            <User size={22} color={isDark ? '#E5E7EB' : '#4B5563'} />
           </View>
         </View>
       </SafeAreaView>

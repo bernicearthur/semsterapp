@@ -20,32 +20,32 @@ export default function AppLayout() {
           tabBarInactiveTintColor: colors.subtext,
           tabBarStyle: {
             backgroundColor: isDark ? '#0F172A' : '#F8FAFC',
-            height: 56,
+            height: 60,
             paddingTop: 0,
-            paddingBottom: 0,
+            paddingBottom: 8,
             borderTopWidth: 0
           },
           tabBarItemStyle: {
-            paddingTop: 0,
+            paddingTop: 8,
             paddingBottom: 0,
           },
         }}>
         <Tabs.Screen 
           name="index"
           options={{
-            tabBarIcon: ({ color, size }) => <House size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
           name="explore"
           options={{
-            tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <Compass size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
           name="events"
           options={{
-            tabBarIcon: ({ color, size }) => <CalendarDays size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
