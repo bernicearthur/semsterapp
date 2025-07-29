@@ -105,6 +105,11 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
       <GestureDetector gesture={gesture}>
         <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
           <SafeAreaView style={{ flex: 1 }}>
+            {/* Drag Handle */}
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+
             {/* Header */}
             <View style={styles.header}>
               <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -117,7 +122,14 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
 
             <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
               {/* Profile Card */}
-              <View style={[styles.profileCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+              <TouchableOpacity 
+                style={[styles.profileCard, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
+                onPress={() => {
+                  onClose();
+                  router.push('/profile-tab');
+                }}
+                activeOpacity={0.7}
+              >
                 <View style={styles.profileInfo}>
                   <ProfileAvatar 
                     size={80}
@@ -145,7 +157,7 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
                     </View>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
 
               {/* AI Study Assistant */}
               <View style={styles.section}>
@@ -280,6 +292,15 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   drawer: {
     position: 'absolute',
     bottom: 0,
@@ -301,7 +322,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    paddingHorizontal: 20,
     paddingBottom: 16,
   },
   headerTitle: {
