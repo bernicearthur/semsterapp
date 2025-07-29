@@ -388,9 +388,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    minHeight: 60,
+    paddingHorizontal: 16,
+    paddingBottom: 4,
+    minHeight: 44,
   },
   headerTitle: {
     fontSize: 24,
