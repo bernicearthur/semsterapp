@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Bell, MessageSquare, User, Image, Menu } from 'lucide-react-native';
+import { Bell, MessageSquare } from 'lucide-react-native';
 import { useAppContext } from '@/context/AppContext';
 import { MessagesDrawer } from './drawers/MessagesDrawer';
 import { ProfileDrawer } from './drawers/ProfileDrawer';
@@ -80,22 +80,14 @@ export function Header() {
                 <Text style={styles.notificationText}>2</Text>
               </View>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.profileButton}
-              onPress={openProfileDrawer}
-            >
-              <ProfileAvatar 
-          <TouchableOpacity 
+          </View>
+        </View>
+      </SafeAreaView>
 
       <ProfileDrawer isOpen={isProfileDrawerOpen} onClose={closeProfileDrawer} />
       <MessagesDrawer isOpen={isMessagesDrawerOpen} onClose={closeMessagesDrawer} />
       <NotificationsDrawer isOpen={isNotificationsDrawerOpen} onClose={closeNotificationsDrawer} />
     </>
-  )
-  )
-  )
-  )
   );
 }
 
