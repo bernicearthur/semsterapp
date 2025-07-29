@@ -33,7 +33,7 @@ export default function AppLayout() {
         <Tabs.Screen 
           name="index"
           options={{
-            tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+            tabBarIcon: ({ color, size }) => <House size={size} color={color} />,
           }}
         />
         <Tabs.Screen 
