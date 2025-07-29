@@ -41,23 +41,11 @@ export default function SignInScreen() {
     setIsLoading(true);
     
     try {
-      let result;
+      // Mock successful sign in
+      console.log('Mock signin for:', identifier);
       
-      if (isEmail) {
-        // Sign in with email
-        result = await signIn(identifier, password);
-      } else {
-        // Sign in with username
-        result = await signInWithUsername(identifier, password);
-      }
-      
-      if (result.error) {
-        setError(result.error.message || 'Invalid credentials');
-        setIsLoading(false);
-        return;
-      }
-      
-      // Navigation is handled in the signIn function
+      // Navigate to main app
+      router.replace('/(app)');
     } catch (err) {
       setError('An unexpected error occurred');
       setIsLoading(false);

@@ -23,8 +23,8 @@ export function Header() {
     closeNotificationsDrawer
   } = useAppContext();
   
-  // Display app name
-  const displayName = "Semster";
+  // Display school name or app name as fallback
+  const displayName = userProfile?.school || "University";
   
   return (
     <>

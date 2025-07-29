@@ -105,6 +105,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     // Mock signin
     console.log('Mock signin for:', email);
+    
+    // Set mock user data
+    const mockUser = {
+      id: 'mock-user-id',
+      email: email,
+    };
+    
+    const mockProfile = {
+      id: 'mock-user-id',
+      username: 'mockuser',
+      full_name: 'Mock User',
+      avatar_url: null,
+      school: 'University of Ghana'
+    };
+    
+    setUser(mockUser);
+    setUserProfile(mockProfile);
+    setSession({ user: mockUser });
+    
     router.replace('/(app)');
     return { error: null };
   };
@@ -112,6 +131,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithUsername = async (username: string, password: string) => {
     // Mock username signin
     console.log('Mock signin with username:', username);
+    
+    // Set mock user data
+    const mockUser = {
+      id: 'mock-user-id',
+      email: `${username}@university.edu`,
+    };
+    
+    const mockProfile = {
+      id: 'mock-user-id',
+      username: username,
+      full_name: 'Mock User',
+      avatar_url: null,
+      school: 'University of Ghana'
+    };
+    
+    setUser(mockUser);
+    setUserProfile(mockProfile);
+    setSession({ user: mockUser });
+    
     router.replace('/(app)');
     return { error: null };
   };
@@ -119,6 +157,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithSocial = async (provider: 'google' | 'microsoft') => {
     // Mock social signin
     console.log('Mock social signin with:', provider);
+    
+    // Set mock user data
+    const mockUser = {
+      id: 'mock-user-id',
+      email: `user@${provider}.com`,
+    };
+    
+    const mockProfile = {
+      id: 'mock-user-id',
+      username: 'socialuser',
+      full_name: 'Social User',
+      avatar_url: null,
+      school: 'University of Ghana'
+    };
+    
+    setUser(mockUser);
+    setUserProfile(mockProfile);
+    setSession({ user: mockUser });
+    
+    router.replace('/(app)');
     return { error: null };
   };
 
