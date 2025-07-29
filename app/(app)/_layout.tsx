@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { Dimensions, Image } from 'react-native';
 import { Header } from '@/components/Header';
-import { House, Search, CalendarDays, ShoppingBag, Users } from 'lucide-react-native';
+import { House, Search, CalendarDays, ShoppingBag, Users, Compass, Calendar } from 'lucide-react-native';
 import { useAppContext } from '@/context/AppContext';
 import { useTheme } from '@/context/ThemeContext';
 
