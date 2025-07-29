@@ -1027,7 +1027,8 @@ const styles = StyleSheet.create({
   },
   postContent: {
     marginHorizontal: 16,
-    paddingVertical: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
   },
   postSeparator: {
     height: 1,
@@ -1051,7 +1052,7 @@ const styles = StyleSheet.create({
   postHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
     position: 'relative',
   },
   userInfo: {
