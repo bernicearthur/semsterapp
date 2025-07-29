@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, TextInput, Alert, Modal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Calendar, Clock, MapPin, Users, Filter, Search, Plus, X, Link, Globe, Bookmark, Share2, MoreVertical, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Calendar, Clock, MapPin, Users, Filter, Search, Plus, X, Link, Globe, Bookmark, Share2, MoveVertical as MoreVertical, ChevronDown, ChevronUp } from 'lucide-react-native';
 import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 import Animated, { FadeIn, FadeInDown, SlideInRight } from 'react-native-reanimated';
