@@ -11,6 +11,7 @@ import { CreateStoryDrawer } from '@/components/drawers/CreateStoryDrawer';
 import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
 import { CreateStudyRoomDrawer } from '@/components/drawers/CreateStudyRoomDrawer';
 import { router } from 'expo-router';
+import { CreatePostDrawer } from '@/components/drawers/CreatePostDrawer';
 
 const initialStories = [
   {
@@ -244,6 +245,8 @@ export default function HomeScreen() {
   const [isCreateStoryOpen, setIsCreateStoryOpen] = useState(false);
   const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
+  const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [showCreateMenu, setShowCreateMenu] = useState(false);
   const flatListRef = useRef(null);
   const loadingRef = useRef(false);
   const postIdCounterRef = useRef(initialPosts.length);
@@ -434,6 +437,40 @@ export default function HomeScreen() {
 
   const handleCreateRoom = (roomData) => {
     Alert.alert('Study Room Created', `Study room "${roomData.name}" has been created successfully!`);
+  };
+
+  const handleCreatePost = (postData) => {
+    Alert.alert('Post Created', 'Your post has been created successfully!');
+  };
+
+  const handleCreateMenuPress = () => {
+    setShowCreateMenu(true);
+  };
+
+  const handleCreateMenuClose = () => {
+    setShowCreateMenu(false);
+  };
+
+  const handleCreateOptionPress = (option) => {
+    setShowCreateMenu(false);
+    
+    switch (option) {
+      case 'post':
+        setIsCreatePostOpen(true);
+        break;
+      case 'poll':
+        router.push('/create-post');
+        break;
+      case 'story':
+        setIsCreateStoryOpen(true);
+        break;
+      case 'event':
+        setIsCreateEventOpen(true);
+        break;
+      case 'room':
+        setIsCreateRoomOpen(true);
+        break;
+    }
   };
 
   const handleConnectPress = (userId) => {
