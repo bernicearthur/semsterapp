@@ -360,11 +360,11 @@ export default function StudyRoomsScreen() {
                 <Filter size={20} color={showFilters ? '#FFFFFF' : (isDark ? '#9CA3AF' : '#6B7280')} />
               </TouchableOpacity>
             </View>
-
+                  { backgroundColor: room.status === 'live' ? '#EF4444' : '#F59E0B' }
             {/* Filters */}
             {showFilters && (
               <View style={styles.filtersContainer}>
-
+                    { backgroundColor: '#FFFFFF' }
                 <View style={styles.filterSection}>
                   <Text style={[styles.filterLabel, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                     Status
