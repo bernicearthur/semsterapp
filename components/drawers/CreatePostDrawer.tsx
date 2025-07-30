@@ -324,7 +324,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
           </ScrollView>
 
           {/* Footer */}
-          <View style={[styles.footer, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+          <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
             <TouchableOpacity 
               style={[
                 styles.postButton, 
@@ -511,6 +511,8 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.1)',
   },
   postButton: {
     flexDirection: 'row',
