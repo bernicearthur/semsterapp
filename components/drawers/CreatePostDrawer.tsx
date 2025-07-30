@@ -280,8 +280,8 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 </TouchableOpacity>
                 
                 <TouchableOpacity style={styles.actionButton}>
-                  <AtSign size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>Tag</Text>
+                  <Hash size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>Hashtag</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>
@@ -353,7 +353,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 1000,
+    zIndex: 2000,
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -462,16 +462,18 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     paddingVertical: 16,
   },
   actionButton: {
+    flex: 1,
     alignItems: 'center',
     gap: 8,
   },
   actionText: {
     fontSize: 12,
     fontFamily: 'Inter-Medium',
+    textAlign: 'center',
   },
   footer: {
     padding: 16,
