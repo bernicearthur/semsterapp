@@ -235,35 +235,37 @@ export default function ExploreScreen() {
             </View>
 
             {suggestedGroups.map(group => (
-              <TouchableOpacity 
+              <View 
                 key={group.id} 
-                style={[styles.groupItem, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                style={[styles.socialCard, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
               >
-                <Image source={{ uri: group.avatar }} style={styles.groupIcon} />
-                <View style={styles.groupInfo}>
-                  <View style={styles.groupHeader}>
-                    <Text style={[styles.groupName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                      {group.name}
+                <View style={styles.socialCardHeader}>
+                  <Image source={{ uri: group.avatar }} style={styles.socialAvatar} />
+                  <View style={styles.socialInfo}>
+                    <View style={styles.socialNameRow}>
+                      <Text style={[styles.socialName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        {group.name}
+                      </Text>
+                      {group.isPrivate && (
+                        <Lock size={14} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                      )}
+                    </View>
+                    <Text style={[styles.socialMeta, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                      {group.members} members
                     </Text>
-                    {group.isPrivate && (
-                      <View>
-                        <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                      </View>
-                    )}
                   </View>
-                  <Text style={[styles.groupDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    {group.description}
-                  </Text>
-                  <Text style={[styles.groupMembers, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    {group.members} members
-                  </Text>
+                  <TouchableOpacity 
+                    style={[styles.socialActionButton, { backgroundColor: '#3B82F6' }]}
+                  >
+                    <Text style={styles.socialActionText}>
+                      {group.isPrivate ? 'Request' : 'Join'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity 
-                  style={[styles.joinButton, { backgroundColor: '#3B82F6' }]}
-                >
-                  <Text style={styles.joinButtonText}>{group.isPrivate ? 'Request' : 'Join'}</Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
+                <Text style={[styles.socialDescription, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  {group.description}
+                </Text>
+              </View>
             ))}
           </View>
 
@@ -283,40 +285,42 @@ export default function ExploreScreen() {
             </View>
 
             {suggestedChannels.map(channel => (
-              <TouchableOpacity 
+              <View 
                 key={channel.id} 
-                style={[styles.channelItem, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                style={[styles.socialCard, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
               >
-                <Image source={{ uri: channel.avatar }} style={styles.channelIcon} />
-                <View style={styles.channelInfo}>
-                  <View style={styles.channelHeader}>
-                    <Text style={[styles.channelName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                      {channel.name}
+                <View style={styles.socialCardHeader}>
+                  <Image source={{ uri: channel.avatar }} style={styles.socialAvatar} />
+                  <View style={styles.socialInfo}>
+                    <View style={styles.socialNameRow}>
+                      <Text style={[styles.socialName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        {channel.name}
+                      </Text>
+                      {channel.isPrivate && (
+                        <Lock size={14} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                      )}
+                      {channel.isVerified && (
+                        <View style={[styles.verifiedBadge, { backgroundColor: '#3B82F6' }]}>
+                          <Text style={styles.verifiedBadgeText}>✓</Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text style={[styles.socialMeta, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                      {channel.subscribers.toLocaleString()} subscribers
                     </Text>
-                    {channel.isPrivate && (
-                      <View>
-                        <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                      </View>
-                    )}
-                    {channel.isVerified && (
-                      <View style={[styles.verifiedBadge, { backgroundColor: '#3B82F6', marginLeft: 4 }]}>
-                        <Text style={styles.verifiedBadgeText}>✓</Text>
-                      </View>
-                    )}
                   </View>
-                  <Text style={[styles.channelDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    {channel.description}
-                  </Text>
-                  <Text style={[styles.channelSubscribers, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    {channel.subscribers.toLocaleString()} subscribers
-                  </Text>
+                  <TouchableOpacity 
+                    style={[styles.socialActionButton, { backgroundColor: '#10B981' }]}
+                  >
+                    <Text style={styles.socialActionText}>
+                      {channel.isPrivate ? 'Request' : 'Subscribe'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                <TouchableOpacity 
-                  style={[styles.subscribeButton, { backgroundColor: '#10B981' }]}
-                >
-                  <Text style={styles.subscribeButtonText}>{channel.isPrivate ? 'Request' : 'Subscribe'}</Text>
-                </TouchableOpacity>
-              </TouchableOpacity>
+                <Text style={[styles.socialDescription, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  {channel.description}
+                </Text>
+              </View>
             ))}
           </View>
           
@@ -485,9 +489,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     fontSize: 14,
   },
-  groupItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  socialCard: {
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
@@ -497,105 +499,61 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-  groupIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+  socialCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
   },
-  groupInfo: {
+  socialAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    marginRight: 12,
+  },
+  socialInfo: {
     flex: 1,
-    marginLeft: 16,
   },
-  groupHeader: {
+  socialNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
   },
-  groupName: {
+  socialName: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 16,
+    marginRight: 6,
   },
-  groupDescription: {
+  socialMeta: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 13,
+  },
+  socialDescription: {
     fontFamily: 'Inter-Regular',
     fontSize: 14,
-    marginBottom: 4,
+    lineHeight: 20,
   },
-  groupMembers: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-  },
-  joinButton: {
-    paddingVertical: 8,
+  socialActionButton: {
     paddingHorizontal: 16,
+    paddingVertical: 8,
     borderRadius: 20,
-    marginLeft: 12,
   },
-  joinButtonText: {
+  socialActionText: {
     color: '#FFFFFF',
     fontFamily: 'Inter-SemiBold',
-    fontSize: 14,
-  },
-  channelItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  channelIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
-  channelInfo: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  channelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  channelName: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 16,
+    fontSize: 13,
   },
   verifiedBadge: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 4,
   },
   verifiedBadgeText: {
     color: '#FFFFFF',
     fontFamily: 'Inter-Bold',
-    fontSize: 12,
-  },
-  channelDescription: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  channelSubscribers: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-  },
-  subscribeButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    marginLeft: 12,
-  },
-  subscribeButtonText: {
-    color: '#FFFFFF',
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 14,
+    fontSize: 10,
   },
   communityItem: {
     flexDirection: 'row',
