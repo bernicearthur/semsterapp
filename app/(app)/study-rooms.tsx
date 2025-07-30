@@ -228,6 +228,7 @@ export default function StudyRoomsScreen() {
               </View>
             )}
           </View>
+        </View>
         <View style={styles.roomStatus}>
           <View style={[
             styles.statusBadge,
