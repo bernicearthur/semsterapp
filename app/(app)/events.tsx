@@ -1,12 +1,11 @@
 import { useState, useRef } from 'react';
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, TextInput, Alert, Modal, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Calendar, Clock, MapPin, Users, Filter, Search, Plus, X, Link, Globe, Bookmark, Share2, MoveVertical as MoreVertical, ChevronDown, ChevronUp } from 'lucide-react-native';
+import { Calendar, Clock, MapPin, Users, Filter, Search, Plus, X, Link, Globe, Bookmark, Share2, MoveVertical as MoreVertical } from 'lucide-react-native';
 import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 import Animated, { FadeIn, FadeInDown, SlideInRight } from 'react-native-reanimated';
 import { EventDetailsDrawer } from '@/components/drawers/EventDetailsDrawer';
-import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
 
 interface Event {
   id: string;
@@ -213,19 +212,6 @@ export default function EventsScreen() {
 
   const handleEventPress = (event: Event) => {
     setSelectedEvent(event);
-  };
-
-  const handleCreateEvent = (newEvent: Omit<Event, 'id' | 'attendees' | 'isAttending' | 'isSaved'>) => {
-    const event: Event = {
-      ...newEvent,
-      id: Date.now().toString(),
-      attendees: 0,
-      isAttending: false,
-      isSaved: false,
-    };
-    setEvents(prevEvents => [event, ...prevEvents]);
-    setIsCreateEventOpen(false);
-    Alert.alert('Success', 'Event created successfully!');
   };
 
   const filteredEvents = events.filter(event => {
