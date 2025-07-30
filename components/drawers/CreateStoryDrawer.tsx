@@ -52,35 +52,66 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
   const [selectedBackground, setSelectedBackground] = useState(backgroundColors[0]);
   const [selectedTextColor, setSelectedTextColor] = useState(textColors[0]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isExtended, setIsExtended] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const drawerHeight = useSharedValue(0.85);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    height: `${drawerHeight.value * 100}%`,
   }));
 
-  const gesture = Gesture.Pan()
+  const dragHandleGesture = Gesture.Pan()
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      if (isExtended) {
+        // When extended, allow dragging down to collapse
+        if (event.translationY > 0) {
+          const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
+          drawerHeight.value = 1 - (progress * 0.15);
+        }
+      } else {
+        // When collapsed, allow dragging up to extend or down to close
+        if (event.translationY < 0) {
+          const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
+          drawerHeight.value = 0.85 + (progress * 0.15);
+        } else if (event.translationY > 0) {
+          translateY.value = event.translationY;
+        }
       }
     })
     .onEnd((event) => {
-      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-        translateY.value = withSpring(screenHeight, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        }, () => {
-          runOnJS(onClose)();
-        });
+      if (isExtended) {
+        // When extended, decide whether to stay extended or collapse
+        if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
+          // Collapse to 85%
+          drawerHeight.value = withSpring(0.85);
+          runOnJS(setIsExtended)(false);
+        } else {
+          // Stay extended
+          drawerHeight.value = withSpring(1);
+        }
       } else {
-        translateY.value = withSpring(0, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        });
+        // When collapsed, decide whether to extend, stay collapsed, or close
+        if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
+          // Extend to 100%
+          drawerHeight.value = withSpring(1);
+          runOnJS(setIsExtended)(true);
+        } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+          // Close drawer
+          translateY.value = withSpring(screenHeight, {
+            damping: 20,
+            stiffness: 90,
+            mass: 0.4,
+          }, () => {
+            runOnJS(onClose)();
+          });
+        } else {
+          // Stay at current position
+          translateY.value = withSpring(0);
+          drawerHeight.value = withSpring(0.85);
+        }
       }
     });
 
@@ -90,6 +121,12 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
       stiffness: 90,
       mass: 0.4,
     });
+    
+    if (!isOpen) {
+      // Reset to collapsed state when drawer closes
+      setIsExtended(false);
+      drawerHeight.value = 0.85;
+    }
   }, [isOpen]);
 
   const handleCreateStory = () => {
@@ -151,304 +188,309 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
         activeOpacity={1}
         onPress={onClose}
       />
-      <GestureDetector gesture={gesture}>
-        <Animated.View 
-          style={[
-            styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
-            drawerStyle,
-          ]}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            {/* Header */}
-            <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-              </TouchableOpacity>
-              
-              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                Create Story
-              </Text>
-              
-              <TouchableOpacity 
+      
+      <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+        <SafeAreaView style={{ flex: 1 }}>
+          {/* Drag Handle */}
+          <GestureDetector gesture={dragHandleGesture}>
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+          </GestureDetector>
+
+          {/* Header */}
+          <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
+            <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+              <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+            </TouchableOpacity>
+            
+            <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+              Create Story
+            </Text>
+            
+            <TouchableOpacity 
+              style={[
+                styles.createButton,
+                { 
+                  backgroundColor: (storyType === 'text' && textContent.trim()) || 
+                                 (storyType === 'image' && selectedImage) || 
+                                 storyType === 'video' ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: (storyType === 'text' && textContent.trim()) || 
+                          (storyType === 'image' && selectedImage) || 
+                          storyType === 'video' ? 1 : 0.5
+                }
+              ]}
+              onPress={handleCreateStory}
+              disabled={!(
+                (storyType === 'text' && textContent.trim()) || 
+                (storyType === 'image' && selectedImage) || 
+                storyType === 'video'
+              )}
+            >
+              <Send size={18} color="#FFFFFF" />
+              <Text style={styles.createButtonText}>Share</Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Story Type Selector */}
+            <View style={styles.typeSelector}>
+              <TouchableOpacity
                 style={[
-                  styles.createButton,
+                  styles.typeButton,
                   { 
-                    backgroundColor: (storyType === 'text' && textContent.trim()) || 
-                                   (storyType === 'image' && selectedImage) || 
-                                   storyType === 'video' ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: (storyType === 'text' && textContent.trim()) || 
-                            (storyType === 'image' && selectedImage) || 
-                            storyType === 'video' ? 1 : 0.5
+                    backgroundColor: storyType === 'text' ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
+                    borderColor: storyType === 'text' ? '#3B82F6' : 'transparent'
                   }
                 ]}
-                onPress={handleCreateStory}
-                disabled={!(
-                  (storyType === 'text' && textContent.trim()) || 
-                  (storyType === 'image' && selectedImage) || 
-                  storyType === 'video'
-                )}
+                onPress={() => setStoryType('text')}
               >
-                <Send size={18} color="#FFFFFF" />
-                <Text style={styles.createButtonText}>Share</Text>
+                <Type size={24} color={storyType === 'text' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
+                <Text style={[
+                  styles.typeButtonText,
+                  { color: storyType === 'text' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
+                ]}>
+                  Text
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.typeButton,
+                  { 
+                    backgroundColor: storyType === 'image' ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
+                    borderColor: storyType === 'image' ? '#3B82F6' : 'transparent'
+                  }
+                ]}
+                onPress={() => setStoryType('image')}
+              >
+                <ImageIcon size={24} color={storyType === 'image' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
+                <Text style={[
+                  styles.typeButtonText,
+                  { color: storyType === 'image' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
+                ]}>
+                  Photo
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.typeButton,
+                  { 
+                    backgroundColor: storyType === 'video' ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
+                    borderColor: storyType === 'video' ? '#3B82F6' : 'transparent'
+                  }
+                ]}
+                onPress={() => setStoryType('video')}
+              >
+                <Video size={24} color={storyType === 'video' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
+                <Text style={[
+                  styles.typeButtonText,
+                  { color: storyType === 'video' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
+                ]}>
+                  Video
+                </Text>
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-              {/* Story Type Selector */}
-              <View style={styles.typeSelector}>
-                <TouchableOpacity
-                  style={[
-                    styles.typeButton,
-                    { 
-                      backgroundColor: storyType === 'text' ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
-                      borderColor: storyType === 'text' ? '#3B82F6' : 'transparent'
-                    }
-                  ]}
-                  onPress={() => setStoryType('text')}
-                >
-                  <Type size={24} color={storyType === 'text' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
-                  <Text style={[
-                    styles.typeButtonText,
-                    { color: storyType === 'text' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
+            {/* Preview */}
+            <View style={styles.previewSection}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Preview
+              </Text>
+              
+              <View style={styles.previewContainer}>
+                {storyType === 'text' && (
+                  <View style={[
+                    styles.textPreview,
+                    { backgroundColor: selectedBackground }
                   ]}>
-                    Text
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.typeButton,
-                    { 
-                      backgroundColor: storyType === 'image' ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
-                      borderColor: storyType === 'image' ? '#3B82F6' : 'transparent'
-                    }
-                  ]}
-                  onPress={() => setStoryType('image')}
-                >
-                  <ImageIcon size={24} color={storyType === 'image' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
-                  <Text style={[
-                    styles.typeButtonText,
-                    { color: storyType === 'image' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
-                  ]}>
-                    Photo
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    styles.typeButton,
-                    { 
-                      backgroundColor: storyType === 'video' ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
-                      borderColor: storyType === 'video' ? '#3B82F6' : 'transparent'
-                    }
-                  ]}
-                  onPress={() => setStoryType('video')}
-                >
-                  <Video size={24} color={storyType === 'video' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
-                  <Text style={[
-                    styles.typeButtonText,
-                    { color: storyType === 'video' ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
-                  ]}>
-                    Video
-                  </Text>
-                </TouchableOpacity>
+                    <Text style={[
+                      styles.textPreviewContent,
+                      { color: selectedTextColor }
+                    ]}>
+                      {textContent || 'Your text will appear here...'}
+                    </Text>
+                  </View>
+                )}
+                
+                {storyType === 'image' && (
+                  <View style={styles.imagePreview}>
+                    {selectedImage ? (
+                      <Image source={{ uri: selectedImage }} style={styles.previewImage} />
+                    ) : (
+                      <View style={[styles.imagePlaceholder, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}>
+                        <ImageIcon size={48} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                        <Text style={[styles.placeholderText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                          Select an image
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                )}
+                
+                {storyType === 'video' && (
+                  <View style={[styles.videoPreview, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}>
+                    <Video size={48} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    <Text style={[styles.placeholderText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                      Video story ready
+                    </Text>
+                  </View>
+                )}
               </View>
+            </View>
 
-              {/* Preview */}
-              <View style={styles.previewSection}>
+            {/* Content Input */}
+            {storyType === 'text' && (
+              <View style={styles.textInputSection}>
                 <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Preview
+                  Your Message
                 </Text>
                 
-                <View style={styles.previewContainer}>
-                  {storyType === 'text' && (
-                    <View style={[
-                      styles.textPreview,
-                      { backgroundColor: selectedBackground }
-                    ]}>
-                      <Text style={[
-                        styles.textPreviewContent,
-                        { color: selectedTextColor }
-                      ]}>
-                        {textContent || 'Your text will appear here...'}
-                      </Text>
-                    </View>
-                  )}
+                <TextInput
+                  style={[
+                    styles.textInput,
+                    { 
+                      backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                      color: isDark ? '#E5E7EB' : '#1F2937',
+                      borderColor: isDark ? '#374151' : '#E5E7EB'
+                    }
+                  ]}
+                  placeholder="What's on your mind?"
+                  placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                  value={textContent}
+                  onChangeText={setTextContent}
+                  multiline
+                  maxLength={200}
+                />
+                
+                <Text style={[styles.characterCount, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                  {textContent.length}/200
+                </Text>
+              </View>
+            )}
+
+            {/* Background Colors (for text stories) */}
+            {storyType === 'text' && (
+              <View style={styles.colorSection}>
+                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Background Color
+                </Text>
+                
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.colorPalette}
+                >
+                  {backgroundColors.map((color, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.colorOption,
+                        { backgroundColor: color },
+                        selectedBackground === color && styles.selectedColor
+                      ]}
+                      onPress={() => setSelectedBackground(color)}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            {/* Text Colors (for text stories) */}
+            {storyType === 'text' && (
+              <View style={styles.colorSection}>
+                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Text Color
+                </Text>
+                
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.colorPalette}
+                >
+                  {textColors.map((color, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.colorOption,
+                        { backgroundColor: color },
+                        selectedTextColor === color && styles.selectedColor,
+                        color === '#FFFFFF' && { borderWidth: 1, borderColor: '#E5E7EB' }
+                      ]}
+                      onPress={() => setSelectedTextColor(color)}
+                    />
+                  ))}
+                </ScrollView>
+              </View>
+            )}
+
+            {/* Image Selection (for image stories) */}
+            {storyType === 'image' && (
+              <View style={styles.imageSection}>
+                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Select Image
+                </Text>
+                
+                <View style={styles.imageActions}>
+                  <TouchableOpacity 
+                    style={[styles.imageActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
+                    onPress={handleSelectImage}
+                  >
+                    <ImageIcon size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[styles.imageActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Choose from Gallery
+                    </Text>
+                  </TouchableOpacity>
                   
-                  {storyType === 'image' && (
-                    <View style={styles.imagePreview}>
-                      {selectedImage ? (
-                        <Image source={{ uri: selectedImage }} style={styles.previewImage} />
-                      ) : (
-                        <View style={[styles.imagePlaceholder, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}>
-                          <ImageIcon size={48} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                          <Text style={[styles.placeholderText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                            Select an image
-                          </Text>
-                        </View>
-                      )}
-                    </View>
-                  )}
-                  
-                  {storyType === 'video' && (
-                    <View style={[styles.videoPreview, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}>
-                      <Video size={48} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                      <Text style={[styles.placeholderText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                        Video story ready
-                      </Text>
-                    </View>
-                  )}
+                  <TouchableOpacity 
+                    style={[styles.imageActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
+                  >
+                    <Camera size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[styles.imageActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Take Photo
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
+            )}
 
-              {/* Content Input */}
-              {storyType === 'text' && (
-                <View style={styles.textInputSection}>
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Your Message
-                  </Text>
-                  
-                  <TextInput
-                    style={[
-                      styles.textInput,
-                      { 
-                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                        color: isDark ? '#E5E7EB' : '#1F2937',
-                        borderColor: isDark ? '#374151' : '#E5E7EB'
-                      }
-                    ]}
-                    placeholder="What's on your mind?"
-                    placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                    value={textContent}
-                    onChangeText={setTextContent}
-                    multiline
-                    maxLength={200}
-                  />
-                  
-                  <Text style={[styles.characterCount, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    {textContent.length}/200
-                  </Text>
-                </View>
-              )}
-
-              {/* Background Colors (for text stories) */}
-              {storyType === 'text' && (
-                <View style={styles.colorSection}>
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Background Color
-                  </Text>
-                  
-                  <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.colorPalette}
+            {/* Video Options (for video stories) */}
+            {storyType === 'video' && (
+              <View style={styles.videoSection}>
+                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Video Options
+                </Text>
+                
+                <View style={styles.videoActions}>
+                  <TouchableOpacity 
+                    style={[styles.videoActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
                   >
-                    {backgroundColors.map((color, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        style={[
-                          styles.colorOption,
-                          { backgroundColor: color },
-                          selectedBackground === color && styles.selectedColor
-                        ]}
-                        onPress={() => setSelectedBackground(color)}
-                      />
-                    ))}
-                  </ScrollView>
-                </View>
-              )}
-
-              {/* Text Colors (for text stories) */}
-              {storyType === 'text' && (
-                <View style={styles.colorSection}>
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Text Color
-                  </Text>
+                    <Video size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[styles.videoActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Record Video
+                    </Text>
+                  </TouchableOpacity>
                   
-                  <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.colorPalette}
+                  <TouchableOpacity 
+                    style={[styles.videoActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
                   >
-                    {textColors.map((color, index) => (
-                      <TouchableOpacity
-                        key={index}
-                        style={[
-                          styles.colorOption,
-                          { backgroundColor: color },
-                          selectedTextColor === color && styles.selectedColor,
-                          color === '#FFFFFF' && { borderWidth: 1, borderColor: '#E5E7EB' }
-                        ]}
-                        onPress={() => setSelectedTextColor(color)}
-                      />
-                    ))}
-                  </ScrollView>
+                    <ImageIcon size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[styles.videoActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Choose from Gallery
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-              )}
+              </View>
+            )}
 
-              {/* Image Selection (for image stories) */}
-              {storyType === 'image' && (
-                <View style={styles.imageSection}>
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Select Image
-                  </Text>
-                  
-                  <View style={styles.imageActions}>
-                    <TouchableOpacity 
-                      style={[styles.imageActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
-                      onPress={handleSelectImage}
-                    >
-                      <ImageIcon size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.imageActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                        Choose from Gallery
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={[styles.imageActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
-                    >
-                      <Camera size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.imageActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                        Take Photo
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-
-              {/* Video Options (for video stories) */}
-              {storyType === 'video' && (
-                <View style={styles.videoSection}>
-                  <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Video Options
-                  </Text>
-                  
-                  <View style={styles.videoActions}>
-                    <TouchableOpacity 
-                      style={[styles.videoActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
-                    >
-                      <Video size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.videoActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                        Record Video
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={[styles.videoActionButton, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}
-                    >
-                      <ImageIcon size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.videoActionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                        Choose from Gallery
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-            </ScrollView>
-          </SafeAreaView>
-        </Animated.View>
-      </GestureDetector>
+            <View style={{ height: 40 }} />
+          </ScrollView>
+        </SafeAreaView>
+      </Animated.View>
+    </View>
+  );
+}
     </View>
   );
 }
@@ -466,10 +508,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    bottom: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -479,11 +519,21 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerButton: {
     padding: 4,
