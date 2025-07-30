@@ -100,6 +100,7 @@ const suggestedChannels = [
     subscribers: 3421,
     avatar: 'https://images.pexels.com/photos/267885/pexels-photo-267885.jpeg?auto=compress&cs=tinysrgb&w=100',
     isVerified: true,
+    isPrivate: false,
   },
   {
     id: '2',
@@ -108,6 +109,7 @@ const suggestedChannels = [
     subscribers: 1892,
     avatar: 'https://images.pexels.com/photos/2004161/pexels-photo-2004161.jpeg?auto=compress&cs=tinysrgb&w=100',
     isVerified: false,
+    isPrivate: true,
   },
   {
     id: '3',
@@ -116,6 +118,7 @@ const suggestedChannels = [
     subscribers: 2156,
     avatar: 'https://images.pexels.com/photos/3183183/pexels-photo-3183183.jpeg?auto=compress&cs=tinysrgb&w=100',
     isVerified: true,
+    isPrivate: false,
   },
 ];
 
@@ -208,8 +211,8 @@ export default function ExploreScreen() {
                   <TouchableOpacity 
                     style={[styles.connectButton, { backgroundColor: '#3B82F6' }]}
                   >
-                    <Plus size={18} color="#FFFFFF" />
-                    <Text style={styles.connectButtonText}>Connect</Text>
+                    <UserPlus size={18} color="#FFFFFF" />
+                    <Text style={styles.connectButtonText}>Buddy Up</Text>
                   </TouchableOpacity>
                 </View>
               ))}
@@ -242,13 +245,7 @@ export default function ExploreScreen() {
                     <Text style={[styles.groupName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                       {group.name}
                     </Text>
-                    {group.isPrivate && (
-                      <View style={[styles.privateBadge, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}>
-                        <Text style={[styles.privateBadgeText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                          Private
-                        </Text>
-                      </View>
-                    )}
+                    {group.isPrivate && <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />}
                   </View>
                   <Text style={[styles.groupDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
                     {group.description}
@@ -260,7 +257,7 @@ export default function ExploreScreen() {
                 <TouchableOpacity 
                   style={[styles.joinButton, { backgroundColor: '#3B82F6' }]}
                 >
-                  <Text style={styles.joinButtonText}>Join</Text>
+                  <Text style={styles.joinButtonText}>{group.isPrivate ? 'Request' : 'Join'}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             ))}
@@ -292,6 +289,7 @@ export default function ExploreScreen() {
                     <Text style={[styles.channelName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                       {channel.name}
                     </Text>
+                    {channel.isPrivate && <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />}
                     {channel.isVerified && (
                       <View style={[styles.verifiedBadge, { backgroundColor: '#3B82F6' }]}>
                         <Text style={styles.verifiedBadgeText}>✓</Text>
@@ -308,7 +306,7 @@ export default function ExploreScreen() {
                 <TouchableOpacity 
                   style={[styles.subscribeButton, { backgroundColor: '#10B981' }]}
                 >
-                  <Text style={styles.subscribeButtonText}>Subscribe</Text>
+                  <Text style={styles.subscribeButtonText}>{channel.isPrivate ? 'Request' : 'Subscribe'}</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             ))}
@@ -503,21 +501,12 @@ const styles = StyleSheet.create({
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
     marginBottom: 4,
   },
   groupName: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 16,
-    flex: 1,
-  },
-  privateBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  privateBadgeText: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 12,
   },
   groupDescription: {
     fontFamily: 'Inter-Regular',
@@ -563,12 +552,12 @@ const styles = StyleSheet.create({
   channelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
     marginBottom: 4,
   },
   channelName: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 16,
-    flex: 1,
   },
   verifiedBadge: {
     width: 20,
