@@ -369,6 +369,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontFamily: 'Inter-Regular',
     fontSize: 16,
+    outlineStyle: 'none',
   },
   eyeButton: {
     padding: 4,
