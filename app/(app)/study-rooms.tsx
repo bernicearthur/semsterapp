@@ -156,13 +156,8 @@ export default function StudyRoomsScreen() {
   const [selectedRoomForJoin, setSelectedRoomForJoin] = useState<StudyRoom | null>(null);
   const [joinRoomData, setJoinRoomData] = useState<{ roomId: string; roomName?: string; password?: string } | null>(null);
 
-  const handleJoinRoom = (roomId: string, password?: string) => {
-    const room = rooms.find(r => r.id === roomId);
-    if (room) {
-      Alert.alert('Joining Room', `Joining "${room.name}"...`);
-    } else {
-      Alert.alert('Joining Room', `Joining room with ID: ${roomId}`);
-    }
+  const handleJoinRoom = (password: string) => {
+    Alert.alert('Joining Room', `Joining room with password: ${password}`);
     setIsJoinRoomOpen(false);
   };
 
