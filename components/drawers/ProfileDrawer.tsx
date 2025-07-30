@@ -140,7 +140,9 @@ export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
           text: "Sign Out",
           onPress: () => {
             onClose();
-            signOut();
+            signOut().then(() => {
+              router.replace('/');
+            });
           }
         }
       ]
