@@ -459,25 +459,14 @@ export default function StudyRoomsScreen() {
         </ScrollView>
 
         {/* Join with Code Button */}
-        <View style={styles.joinWithCodeContainer}>
+        {/* Join with Code Button */}
+        <View style={styles.joinCodeContainer}>
           <TouchableOpacity 
-            style={[styles.joinWithCodeButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+            style={[styles.joinCodeButton, { backgroundColor: '#3B82F6' }]}
             onPress={() => setIsJoinRoomOpen(true)}
           >
-            <Text style={[styles.joinWithCodeText, { color: isDark ? '#60A5FA' : '#3B82F6' }]}>
-              Join with Code
-            </Text>
-            <ChevronRight size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Floating Action Buttons */}
-        <View style={styles.fabContainer}>
-          <TouchableOpacity 
-            style={[styles.fab, styles.primaryFab, { backgroundColor: '#3B82F6' }]}
-            onPress={() => setIsJoinRoomOpen(true)}
-          >
-            <Users size={24} color="#FFFFFF" />
+            <Text style={styles.joinCodeText}>Join with Code</Text>
+            <ChevronRight size={16} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
@@ -776,55 +765,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     textAlign: 'center',
   },
-  joinWithCodeContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-  },
-  joinWithCodeButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  joinWithCodeText: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-  },
-  fabContainer: {
+  joinCodeContainer: {
     position: 'absolute',
     bottom: 20,
     right: 20,
-    gap: 12,
   },
-  fab: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
+  joinCodeButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    justifyContent: 'center',
+    gap: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
     elevation: 5,
   },
-  primaryFab: {
-    // Primary FAB styles
-  },
-  secondaryFab: {
-    // Secondary FAB styles
+  joinCodeText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Inter-SemiBold',
   },
 });
