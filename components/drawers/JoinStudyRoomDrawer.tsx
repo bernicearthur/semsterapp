@@ -207,7 +207,7 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
               <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                Join Video Study Room
+                Join Room
               </Text>
               <View style={{ width: 24 }} />
             </View>
@@ -263,95 +263,9 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                 </View>
               </View>
 
-              {/* Search Active Rooms */}
-              <View style={styles.searchSection}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Active Study Rooms
-                </Text>
-                <View style={[styles.searchBar, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}>
-                  <Search size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                  <TextInput
-                    style={[styles.searchInput, { color: isDark ? '#E5E7EB' : '#1F2937' }]}
-                    placeholder="Search by subject or room name"
-                    placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                  />
-                </View>
-              </View>
-
-              {/* Active Rooms List */}
-              <View style={styles.roomsSection}>
-                {filteredRooms.length > 0 ? (
-                  filteredRooms.map((room) => (
-                    <TouchableOpacity
-                      key={room.id}
-                      style={[
-                        styles.roomItem,
-                        { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' },
-                        selectedRoom === room.id && { 
-                          borderColor: '#10B981',
-                          borderWidth: 2,
-                        }
-                      ]}
-                      onPress={() => handleRoomSelect(room.id)}
-                    >
-                      <View style={styles.roomInfo}>
-                        <View style={styles.roomHeader}>
-                          <Text style={[styles.roomName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                            {room.name}
-                          </Text>
-                          {room.isPrivate && (
-                            <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                          )}
-                        </View>
-                        
-                        <View style={styles.roomDetails}>
-                          {room.subject && (
-                            <View style={styles.roomDetail}>
-                              <BookOpen size={14} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                              <Text style={[styles.roomDetailText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                                {room.subject}
-                              </Text>
-                            </View>
-                          )}
-                          
-                          <View style={styles.roomDetail}>
-                            <Users size={14} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                            <Text style={[styles.roomDetailText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                              {room.participants} {room.maxParticipants ? `/ ${room.maxParticipants}` : ''} online
-                            </Text>
-                          </View>
-                        </View>
-                      </View>
-                      
-                      <View style={[
-                        styles.participantIndicator,
-                        { backgroundColor: room.participants > 0 ? '#10B981' : '#9CA3AF' }
-                      ]}>
-                        <Text style={styles.participantCount}>{room.participants}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))
-                ) : (
-                  <View style={styles.emptyState}>
-                    <Text style={[styles.emptyStateText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                      No active rooms match your search
-                    </Text>
-                  </View>
-                )}
-              </View>
-
-              {/* Or Join with Code */}
-              <View style={styles.orDivider}>
-                <View style={[styles.dividerLine, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
-                <Text style={[styles.orText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>OR</Text>
-                <View style={[styles.dividerLine, { backgroundColor: isDark ? '#374151' : '#E5E7EB' }]} />
-              </View>
-
               <View style={styles.codeSection}>
                 <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Join with Room Code
+                  Room Code
                 </Text>
                 
                 <View style={styles.inputGroup}>
@@ -363,7 +277,8 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                         { 
                           backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
                           color: isDark ? '#E5E7EB' : '#1F2937',
-                          borderColor: isDark ? '#374151' : '#E5E7EB'
+                          borderColor: isDark ? '#374151' : '#E5E7EB',
+                          outlineStyle: 'none',
                         }
                       ]}
                       placeholder="Enter room code"
@@ -385,7 +300,8 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                           { 
                             backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
                             color: isDark ? '#E5E7EB' : '#1F2937',
-                            borderColor: isDark ? '#374151' : '#E5E7EB'
+                            borderColor: isDark ? '#374151' : '#E5E7EB',
+                            outlineStyle: 'none',
                           }
                         ]}
                         placeholder="Password (if required)"
@@ -398,38 +314,6 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                   </View>
                 )}
               </View>
-
-              <View style={styles.infoSection}>
-                <Text style={[styles.infoTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  About Video Study Rooms
-                </Text>
-                <Text style={[styles.infoText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                  Join a real-time video study session with fellow students. 
-                  These rooms are always active - no scheduling needed. 
-                  Drop in anytime to collaborate, ask questions, or study in a focused environment.
-                </Text>
-                
-                <View style={[styles.featureItem, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}>
-                  <Video size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.featureText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Real-time video and audio collaboration
-                  </Text>
-                </View>
-                
-                <View style={[styles.featureItem, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}>
-                  <MessageCircle size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.featureText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Text chat for sharing links and notes
-                  </Text>
-                </View>
-                
-                <View style={[styles.featureItem, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}>
-                  <UserPlus size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.featureText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Invite friends to join your study session
-                  </Text>
-                </View>
-              </View>
             </ScrollView>
 
             <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
@@ -441,7 +325,7 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                 onPress={handleJoinRoom}
               >
                 <Video size={20} color="#FFFFFF" />
-                <Text style={styles.joinButtonText}>Join Video Chat</Text>
+                <Text style={styles.joinButtonText}>Join Room</Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
