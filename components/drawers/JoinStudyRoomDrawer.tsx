@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Dimensions, Alert, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Video, Mic, MicOff, VideoOff, Camera, RotateCcw, Lock } from 'lucide-react-native';
+import { X, Video, Mic, MicOff, VideoOff, Camera, RotateCcw, Lock, Settings } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
@@ -126,7 +126,9 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                 </Text>
               </View>
               
-              <View style={styles.headerButton} />
+              <TouchableOpacity style={styles.headerButton}>
+                <Settings size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+              </TouchableOpacity>
             </View>
 
             <ScrollView 
@@ -218,7 +220,6 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry
-                      outlineStyle="none"
                     />
                   </View>
                 </View>
