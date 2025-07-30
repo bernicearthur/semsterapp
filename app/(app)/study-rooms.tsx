@@ -597,6 +597,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     outlineStyle: 'none',
+    outlineStyle: 'none',
   },
   filterButton: {
     width: 48,
