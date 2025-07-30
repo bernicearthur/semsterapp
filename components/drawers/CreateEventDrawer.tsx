@@ -203,6 +203,11 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
           ]}
         >
           <SafeAreaView style={{ flex: 1 }}>
+            {/* Drag Handle */}
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+
             {/* Header */}
             <View style={styles.header}>
               <TouchableOpacity onPress={onClose} style={styles.headerButton}>
@@ -623,6 +628,15 @@ const styles = StyleSheet.create({
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
   },
   drawer: {
     position: 'absolute',
