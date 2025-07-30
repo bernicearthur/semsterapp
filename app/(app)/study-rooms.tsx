@@ -444,13 +444,13 @@ export default function StudyRoomsScreen() {
 
         {/* Floating Action Buttons */}
         <View style={styles.fabContainer}>
-          <TouchableOpacity 
+             { backgroundColor: room.status === 'live' ? '#EF4444' : '#3B82F6' }
             style={[styles.fab, styles.primaryFab, { backgroundColor: '#3B82F6' }]}
             onPress={() => setIsJoinRoomOpen(true)}
           >
             <Users size={24} color="#FFFFFF" />
           </TouchableOpacity>
-        </View>
+             {room.status === 'live' ? (room.isPrivate ? 'Request' : 'Join') : 'Schedule'}
 
         {/* Join Room Drawer */}
         <JoinStudyRoomDrawer
@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
   },
   liveRoomCard: {
     borderLeftWidth: 4,
-    borderLeftColor: '#10B981',
+    borderLeftColor: '#EF4444',
   },
   roomHeader: {
     flexDirection: 'row',
