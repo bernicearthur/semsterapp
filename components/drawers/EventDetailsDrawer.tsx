@@ -397,9 +397,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
 
             {/* More Options Menu */}
             {showMoreOptions && (
-              <Animated.View 
-                style={[
-                  styles.moreOptionsMenu,
               <View style={[StyleSheet.absoluteFill, styles.moreOptionsOverlay]}>
                 <TouchableOpacity 
                   style={StyleSheet.absoluteFill}
@@ -761,7 +758,6 @@ const styles = StyleSheet.create({
   },
   moreOptionsOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1000,
   },
   moreOptionsBottomDrawer: {
     position: 'absolute',
@@ -793,11 +789,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 16,
-    gap: 12,
+    paddingHorizontal: 24,
+    gap: 16,
   },
   moreOptionText: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: 'Inter-Medium',
   },
   moreDotsIcon: {
