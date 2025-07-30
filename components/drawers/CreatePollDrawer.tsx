@@ -33,35 +33,57 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
   const [pollDuration, setPollDuration] = useState(24);
   const [selectedAudience, setSelectedAudience] = useState<'public' | 'connections' | 'course' | 'yeargroup'>('public');
   const [showAudienceModal, setShowAudienceModal] = useState(false);
+  const [isExtended, setIsExtended] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const drawerHeight = useSharedValue(0.85);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    height: `${drawerHeight.value * 100}%`,
   }));
 
-  const gesture = Gesture.Pan()
+  const dragHandleGesture = Gesture.Pan()
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      if (isExtended) {
+        if (event.translationY > 0) {
+          const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
+          drawerHeight.value = 1 - (progress * 0.15);
+        }
+      } else {
+        if (event.translationY < 0) {
+          const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
+          drawerHeight.value = 0.85 + (progress * 0.15);
+        } else if (event.translationY > 0) {
+          translateY.value = event.translationY;
+        }
       }
     })
     .onEnd((event) => {
-      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-        translateY.value = withSpring(screenHeight, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        }, () => {
-          runOnJS(onClose)();
-        });
+      if (isExtended) {
+        if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
+          drawerHeight.value = withSpring(0.85);
+          runOnJS(setIsExtended)(false);
+        } else {
+          drawerHeight.value = withSpring(1);
+        }
       } else {
-        translateY.value = withSpring(0, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        });
+        if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
+          drawerHeight.value = withSpring(1);
+          runOnJS(setIsExtended)(true);
+        } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+          translateY.value = withSpring(screenHeight, {
+            damping: 20,
+            stiffness: 90,
+            mass: 0.4,
+          }, () => {
+            runOnJS(onClose)();
+          });
+        } else {
+          translateY.value = withSpring(0);
+          drawerHeight.value = withSpring(0.85);
+        }
       }
     });
 
@@ -71,6 +93,11 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
       stiffness: 90,
       mass: 0.4,
     });
+    
+    if (!isOpen) {
+      setIsExtended(false);
+      drawerHeight.value = 0.85;
+    }
   }, [isOpen]);
 
   const handleAddPollOption = () => {
@@ -178,27 +205,21 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
         activeOpacity={1}
         onPress={onClose}
       />
-      <GestureDetector gesture={gesture}>
-        <Animated.View 
-          style={[
-            styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
-            drawerStyle,
-          ]}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            {/* Header */}
-            <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-              </TouchableOpacity>
-              
-              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                Create Poll
-              </Text>
-              
+      
+      <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+        <SafeAreaView style={{ flex: 1 }}>
+          {/* Drag Handle */}
+          <GestureDetector gesture={dragHandleGesture}>
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+          </GestureDetector>
+
+          {/* Header Section */}
+          <View style={[styles.headerSection, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+            <View style={styles.headerContent}>
               <TouchableOpacity
-                style={[styles.audienceSelector, { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }]}
+                style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
                 onPress={() => setShowAudienceModal(true)}
               >
                 {getAudienceIcon()}
@@ -206,176 +227,193 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
                   {getAudienceTitle()}
                 </Text>
               </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-              {/* Poll Question */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Poll Question
-                </Text>
-                <TextInput
-                  style={[
-                    styles.pollQuestionInput,
-                    { backgroundColor: isDark ? '#1E293B' : '#F9FAFB', color: isDark ? '#E5E7EB' : '#1F2937' }
-                  ]}
-                  placeholder="Ask a question..."
-                  placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                  value={pollQuestion}
-                  onChangeText={setPollQuestion}
-                  multiline
-                />
-              </View>
-
-              {/* Poll Options */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Poll Options
-                </Text>
-                
-                <View style={styles.pollOptionsContainer}>
-                  {pollOptions.map((option, index) => (
-                    <View key={index} style={styles.pollOptionRow}>
-                      <TextInput
-                        style={[
-                          styles.pollOptionInput,
-                          { backgroundColor: isDark ? '#1E293B' : '#F9FAFB', color: isDark ? '#E5E7EB' : '#1F2937' }
-                        ]}
-                        placeholder={`Option ${index + 1}`}
-                        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                        value={option}
-                        onChangeText={(text) => handleUpdatePollOption(text, index)}
-                      />
-                      {pollOptions.length > 2 && (
-                        <TouchableOpacity
-                          style={[styles.removeOptionButton, { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }]}
-                          onPress={() => handleRemovePollOption(index)}
-                        >
-                          <Minus size={16} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  ))}
-
-                  {pollOptions.length < 4 && (
-                    <TouchableOpacity
-                      style={[styles.addOptionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                      onPress={handleAddPollOption}
-                    >
-                      <Plus size={16} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[styles.addOptionText, { color: isDark ? '#60A5FA' : '#3B82F6' }]}>
-                        Add Option
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
-
-              {/* Poll Duration */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Poll Duration
-                </Text>
-                
-                <View style={styles.pollDurationContainer}>
-                  <Clock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.pollDurationLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Duration:
-                  </Text>
-                  <View style={styles.pollDurationOptions}>
-                    {[24, 48, 72].map((hours) => (
-                      <TouchableOpacity
-                        key={hours}
-                        style={[
-                          styles.pollDurationOption,
-                          { 
-                            backgroundColor: pollDuration === hours ? 
-                              '#3B82F6' : 
-                              (isDark ? '#1E293B' : '#F3F4F6')
-                          }
-                        ]}
-                        onPress={() => setPollDuration(hours)}
-                      >
-                        <Text
-                          style={[
-                            styles.pollDurationText,
-                            { 
-                              color: pollDuration === hours ? 
-                                '#FFFFFF' : 
-                                (isDark ? '#E5E7EB' : '#4B5563')
-                            }
-                          ]}
-                        >
-                          {hours}h
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            </ScrollView>
-
-            {/* Footer */}
-            <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-              <TouchableOpacity 
-                style={[
-                  styles.createButton, 
-                  { 
-                    backgroundColor: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? 1 : 0.5
-                  }
-                ]}
-                onPress={handleCreatePoll}
-                disabled={!pollQuestion.trim() || pollOptions.some(opt => opt.trim() === '')}
-              >
-                <BarChart3 size={20} color="#FFFFFF" />
-                <Text style={styles.createButtonText}>Create Poll</Text>
+              
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
             </View>
+          </View>
 
-            {/* Audience Modal */}
-            {showAudienceModal && (
-              <View style={[StyleSheet.absoluteFill, styles.modalOverlay]}>
-                <TouchableOpacity
-                  style={StyleSheet.absoluteFill}
-                  onPress={() => setShowAudienceModal(false)}
-                />
-                <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-                  <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Choose Audience
-                  </Text>
-                  {audienceOptions.map((option) => (
-                    <TouchableOpacity
-                      key={option.id}
+          <ScrollView 
+            style={styles.content} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Poll Question */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Poll Question
+              </Text>
+              <TextInput
+                style={[
+                  styles.pollQuestionInput,
+                  { 
+                    backgroundColor: isDark ? '#1E293B' : '#FFFFFF', 
+                    color: isDark ? '#E5E7EB' : '#1F2937',
+                    borderColor: isDark ? '#374151' : '#E5E7EB'
+                  }
+                ]}
+                placeholder="Ask a question..."
+                placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                value={pollQuestion}
+                onChangeText={setPollQuestion}
+                multiline
+              />
+            </View>
+
+            {/* Poll Options */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Poll Options
+              </Text>
+              
+              <View style={styles.pollOptionsContainer}>
+                {pollOptions.map((option, index) => (
+                  <View key={index} style={styles.pollOptionRow}>
+                    <TextInput
                       style={[
-                        styles.audienceOption,
-                        selectedAudience === option.id && styles.selectedAudienceOption,
-                        { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }
+                        styles.pollOptionInput,
+                        { 
+                          backgroundColor: isDark ? '#1E293B' : '#FFFFFF', 
+                          color: isDark ? '#E5E7EB' : '#1F2937',
+                          borderColor: isDark ? '#374151' : '#E5E7EB'
+                        }
                       ]}
-                      onPress={() => {
-                        setSelectedAudience(option.id as typeof selectedAudience);
-                        setShowAudienceModal(false);
-                      }}
+                      placeholder={`Option ${index + 1}`}
+                      placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                      value={option}
+                      onChangeText={(text) => handleUpdatePollOption(text, index)}
+                    />
+                    {pollOptions.length > 2 && (
+                      <TouchableOpacity
+                        style={[styles.removeOptionButton, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}
+                        onPress={() => handleRemovePollOption(index)}
+                      >
+                        <Minus size={16} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                ))}
+
+                {pollOptions.length < 4 && (
+                  <TouchableOpacity
+                    style={[styles.addOptionButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+                    onPress={handleAddPollOption}
+                  >
+                    <Plus size={16} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[styles.addOptionText, { color: isDark ? '#60A5FA' : '#3B82F6' }]}>
+                      Add Option
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
+            {/* Poll Duration */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Poll Duration
+              </Text>
+              
+              <View style={styles.pollDurationContainer}>
+                <Clock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                <Text style={[styles.pollDurationLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Duration:
+                </Text>
+                <View style={styles.pollDurationOptions}>
+                  {[6, 12, 24, 48, 72].map((hours) => (
+                    <TouchableOpacity
+                      key={hours}
+                      style={[
+                        styles.pollDurationOption,
+                        { 
+                          backgroundColor: pollDuration === hours ? 
+                            '#3B82F6' : 
+                            (isDark ? '#1E293B' : '#FFFFFF'),
+                          borderColor: isDark ? '#374151' : '#E5E7EB'
+                        }
+                      ]}
+                      onPress={() => setPollDuration(hours)}
                     >
-                      <View style={styles.audienceOptionIcon}>
-                        {option.icon}
-                      </View>
-                      <View style={styles.audienceOptionText}>
-                        <Text style={[styles.audienceOptionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                          {option.title}
-                        </Text>
-                        <Text style={[styles.audienceOptionDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                          {option.description}
-                        </Text>
-                      </View>
+                      <Text
+                        style={[
+                          styles.pollDurationText,
+                          { 
+                            color: pollDuration === hours ? 
+                              '#FFFFFF' : 
+                              (isDark ? '#E5E7EB' : '#4B5563')
+                          }
+                        ]}
+                      >
+                        {hours}h
+                      </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
               </View>
-            )}
-          </SafeAreaView>
-        </Animated.View>
-      </GestureDetector>
+            </View>
+          </ScrollView>
+
+          {/* Create Poll Button Footer */}
+          <View style={[styles.footer, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+            <TouchableOpacity 
+              style={[
+                styles.createButton, 
+                { 
+                  backgroundColor: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? 1 : 0.5
+                }
+              ]}
+              onPress={handleCreatePoll}
+              disabled={!pollQuestion.trim() || pollOptions.some(opt => opt.trim() === '')}
+            >
+              <BarChart3 size={20} color="#FFFFFF" />
+              <Text style={styles.createButtonText}>Create Poll</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Audience Modal */}
+          {showAudienceModal && (
+            <View style={[StyleSheet.absoluteFill, styles.modalOverlay]}>
+              <TouchableOpacity
+                style={StyleSheet.absoluteFill}
+                onPress={() => setShowAudienceModal(false)}
+              />
+              <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                  Choose Audience
+                </Text>
+                {audienceOptions.map((option) => (
+                  <TouchableOpacity
+                    key={option.id}
+                    style={[
+                      styles.audienceOption,
+                      selectedAudience === option.id && styles.selectedAudienceOption,
+                      { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }
+                    ]}
+                    onPress={() => {
+                      setSelectedAudience(option.id as typeof selectedAudience);
+                      setShowAudienceModal(false);
+                    }}
+                  >
+                    <View style={styles.audienceOptionIcon}>
+                      {option.icon}
+                    </View>
+                    <View style={styles.audienceOptionText}>
+                      <Text style={[styles.audienceOptionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                        {option.title}
+                      </Text>
+                      <Text style={[styles.audienceOptionDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                        {option.description}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          )}
+        </SafeAreaView>
+      </Animated.View>
     </View>
   );
 }
@@ -383,7 +421,7 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 1000,
+    zIndex: 10000,
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -393,7 +431,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
@@ -405,34 +442,56 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  header: {
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
+  headerSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  headerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-  },
-  headerButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 20,
   },
   audienceSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    maxWidth: '70%',
   },
   audienceText: {
-    fontFamily: 'Inter-Medium',
+    fontFamily: 'Inter-SemiBold',
     fontSize: 14,
     marginLeft: 8,
+    flexShrink: 1,
+  },
+  closeButton: {
+    padding: 4,
   },
   content: {
     flex: 1,
-    padding: 20,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 40,
   },
   section: {
     marginBottom: 24,
@@ -443,12 +502,21 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   pollQuestionInput: {
-    borderRadius: 12,
+    borderWidth: 1,
+    borderRadius: 16,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     minHeight: 80,
     textAlignVertical: 'top',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   pollOptionsContainer: {
     gap: 12,
@@ -460,10 +528,19 @@ const styles = StyleSheet.create({
   },
   pollOptionInput: {
     flex: 1,
+    borderWidth: 1,
     borderRadius: 12,
     padding: 12,
     fontSize: 14,
     fontFamily: 'Inter-Regular',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   removeOptionButton: {
     padding: 8,
@@ -476,6 +553,9 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 12,
     gap: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderStyle: 'dashed',
   },
   addOptionText: {
     fontFamily: 'Inter-Medium',
@@ -485,6 +565,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    flexWrap: 'wrap',
   },
   pollDurationLabel: {
     fontFamily: 'Inter-Medium',
@@ -493,26 +574,27 @@ const styles = StyleSheet.create({
   pollDurationOptions: {
     flexDirection: 'row',
     gap: 8,
+    flexWrap: 'wrap',
   },
   pollDurationOption: {
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
+    borderWidth: 1,
   },
   pollDurationText: {
     fontFamily: 'Inter-Medium',
     fontSize: 14,
   },
   footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    padding: 20,
+    paddingTop: 16,
   },
   createButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
   },
@@ -525,10 +607,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     padding: 16,
+    zIndex: 15000,
   },
   modalContent: {
     borderRadius: 16,
     padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   modalTitle: {
     fontFamily: 'Inter-Bold',
