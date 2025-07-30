@@ -510,13 +510,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
-    flex: 1,
   },
   groupName: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 16,
-    flex: 0,
-    flexShrink: 1,
   },
   groupDescription: {
     fontFamily: 'Inter-Regular',
@@ -563,13 +560,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
-    flex: 1,
   },
   channelName: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 16,
-    flex: 0,
-    flexShrink: 1,
   },
   verifiedBadge: {
     width: 20,
