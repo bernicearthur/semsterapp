@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(0, 0, 0, 0.1)',
   },
   headerLeft: {
-    flex: 1,
+    maxWidth: '35%',
   },
   audienceSelector: {
     flexDirection: 'row',
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
-    alignSelf: 'flex-start',
+    maxWidth: '100%',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -441,11 +441,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontFamily: 'Inter-Bold',
-    position: 'absolute',
-    left: 0,
-    right: 0,
     textAlign: 'center',
-    zIndex: -1,
+    flex: 1,
+    paddingHorizontal: 8,
   },
   closeButton: {
     padding: 4,
@@ -458,7 +456,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   textInputContainer: {
-    marginBottom: 16,
+    marginBottom: 8,
   },
   textInput: {
     borderWidth: 1,
@@ -498,7 +496,7 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   actionsContainer: {
-    marginTop: 8,
+    marginTop: 4,
   },
   actionButtonsRow: {
     flexDirection: 'row',
