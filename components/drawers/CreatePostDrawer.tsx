@@ -218,9 +218,20 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 
           {/* Header */}
           <View style={styles.header}>
+            <TouchableOpacity
+              style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+              onPress={() => setShowAudienceModal(true)}
+            >
+              {getAudienceIcon()}
+              <Text style={[styles.audienceText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                {getAudienceTitle()}
+              </Text>
+            </TouchableOpacity>
+            
             <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
               Create Post
             </Text>
+            
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
             </TouchableOpacity>
@@ -232,19 +243,6 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
-            {/* Audience Selector */}
-            <View style={styles.audienceSelectorContainer}>
-              <TouchableOpacity
-                style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                onPress={() => setShowAudienceModal(true)}
-              >
-                {getAudienceIcon()}
-                <Text style={[styles.audienceText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                  {getAudienceTitle()}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
             {/* Text Input */}
             <View style={styles.textInputContainer}>
               <TextInput
@@ -284,42 +282,44 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 
             {/* Actions */}
             <View style={styles.actionsContainer}>
-              <TouchableOpacity 
-                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                onPress={handleAddPhoto}
-              >
-                <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                  Photo
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-              >
-                <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                  File
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-              >
-                <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                  Mention
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-              >
-                <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                  Tag
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.actionButtonsRow}>
+                <TouchableOpacity 
+                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                  onPress={handleAddPhoto}
+                >
+                  <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Photo
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                >
+                  <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    File
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                >
+                  <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Mention
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                >
+                  <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Tag
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </ScrollView>
 
