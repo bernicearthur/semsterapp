@@ -51,7 +51,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const [showMoreOptions, setShowMoreOptions] = useState(false);
-  const [showMoreOptions, setShowMoreOptions] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
   const moreOptionsOpacity = useSharedValue(0);
@@ -141,18 +140,9 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     moreOptionsOpacity.value = withTiming(0);
     Alert.alert('Report Event', 'Report this event for inappropriate content?');
   };
+
   const handleMoreOptions = () => {
     setShowMoreOptions(!showMoreOptions);
-  };
-
-  const handleReportEvent = () => {
-    Alert.alert('Report Event', 'This event has been reported for review.');
-    setShowMoreOptions(false);
-  };
-
-  const handleContactOrganizer = () => {
-    Alert.alert('Contact Organizer', `Message sent to ${event?.organizer.name}`);
-    setShowMoreOptions(false);
   };
 
 
@@ -211,13 +201,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                       onPress={handleShareEvent}
                     >
                       <Share2 size={24} color="#FFFFFF" />
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
-                      onPress={toggleMoreOptions}
-                    >
-                      <MoreVertical size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                     
                     <TouchableOpacity 
@@ -379,9 +362,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                         backgroundColor: event.isAttending ? '#10B981' : '#3B82F6',
                         shadowColor: event.isAttending ? '#10B981' : '#3B82F6',
                       }
-                        backgroundColor: event.isAttending ? '#10B981' : '#3B82F6',
-                        shadowColor: event.isAttending ? '#10B981' : '#3B82F6',
-                      }
                     ]}
                     onPress={() => onToggleAttendance(event.id)}
                   >
@@ -399,13 +379,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                           {event.attendees} {event.maxAttendees ? `/ ${event.maxAttendees}` : ''} people attending
                         </Text>
                       </View>
-                    </View>
-                          <View style={styles.attendingDot} />
-                        </View>
-                      )}
-                      <Text style={styles.integratedAttendButtonText}>
-                        {event.isAttending ? '✓ Attending' : 'Attend Event'}
-                      </Text>
                     </View>
                   </TouchableOpacity>
                   
@@ -752,46 +725,32 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
   integratedAttendingSection: {
-    marginTop: 24,
+    marginTop: 32,
     marginBottom: 24,
-    padding: 0,
+    padding: 20,
     borderRadius: 20,
-  },
-  integratedAttendButton: {
-    paddingVertical: 20,
-    paddingHorizontal: 24,
-    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 2,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  attendButtonContent: {
-    flexDirection: 'row',
+  integratedAttendButton: {
+    paddingVertical: 18,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-  },
-  attendingIndicator: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  attendingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FFFFFF',
-  },
-  attendButtonTextContainer: {
-    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 5,
   },
   attendButtonContent: {
     flexDirection: 'row',
@@ -812,45 +771,20 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: '#FFFFFF',
   },
+  attendButtonTextContainer: {
+    alignItems: 'center',
+  },
   integratedAttendButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontFamily: 'Inter-SemiBold',
     letterSpacing: 0.5,
-    marginBottom: 2,
   },
   attendButtonSubtext: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
-  },
-  moreOptionsMenu: {
-    position: 'absolute',
-    top: 80,
-    right: 16,
-    borderRadius: 12,
-    padding: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    minWidth: 180,
-    zIndex: 1000,
-  },
-  moreOptionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  moreOptionText: {
-    fontSize: 16,
-    fontFamily: 'Inter-Medium',
+    marginTop: 4,
   },
   attendingSubtext: {
     textAlign: 'center',
@@ -878,14 +812,16 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   moreOptionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderRadius: 12,
     marginBottom: 8,
+    gap: 12,
   },
   moreOptionText: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
-    textAlign: 'center',
   },
 });
