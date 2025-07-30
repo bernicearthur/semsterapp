@@ -279,8 +279,6 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
             </Text>
           </View>
         </Animated.View>
-          </SafeAreaView>
-        </Animated.View>
       </GestureDetector>
     </View>
   );
