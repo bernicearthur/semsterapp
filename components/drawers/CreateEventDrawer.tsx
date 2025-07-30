@@ -231,7 +231,7 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
         activeOpacity={1}
         onPress={onClose}
       />
-      <GestureDetector gesture={gesture}>
+      <GestureDetector gesture={dragHandleGesture}>
         <Animated.View 
           style={[
             styles.drawer,
@@ -241,9 +241,11 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
         >
           <SafeAreaView style={{ flex: 1 }}>
             {/* Drag Handle */}
-            <View style={styles.dragHandle}>
-              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
-            </View>
+            <GestureDetector gesture={dragHandleGesture}>
+              <View style={styles.dragHandle}>
+                <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+              </View>
+            </GestureDetector>
 
             {/* Header */}
             <View style={styles.header}>
