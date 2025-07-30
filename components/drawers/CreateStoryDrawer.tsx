@@ -199,7 +199,7 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
           </GestureDetector>
 
           {/* Header */}
-          <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
+          <View style={styles.header}>
             <TouchableOpacity onPress={onClose} style={styles.headerButton}>
               <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
             </TouchableOpacity>
