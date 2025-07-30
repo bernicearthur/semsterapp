@@ -228,7 +228,7 @@ export default function StudyRoomsScreen() {
               </View>
             )}
           </View>
-        </View>
+          { backgroundColor: room.status === 'live' ? '#EF4444' : '#F59E0B' }
         <View style={styles.roomStatus}>
           <View style={[
             styles.statusBadge,
