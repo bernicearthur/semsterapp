@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Linking, Alert, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, MoveVertical as MoreVertical, ExternalLink, Copy, UserPlus, Flag } from 'lucide-react-native';
+import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
   useSharedValue,
   runOnJS,
-  withTiming,
-  interpolate
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -50,21 +48,13 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
-  const [showMoreOptions, setShowMoreOptions] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
-  const moreOptionsOpacity = useSharedValue(0);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
 
-  const moreOptionsStyle = useAnimatedStyle(() => ({
-    opacity: moreOptionsOpacity.value,
-    transform: [{ 
-      translateY: interpolate(moreOptionsOpacity.value, [0, 1], [20, 0])
-    }],
-  }));
 
   const gesture = Gesture.Pan()
     .activeOffsetY([0, 15])
@@ -99,10 +89,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     });
   }, [isOpen]);
 
-  const toggleMoreOptions = () => {
-    setShowMoreOptions(!showMoreOptions);
-    moreOptionsOpacity.value = withTiming(showMoreOptions ? 0 : 1);
-  };
 
   const handleJoinOnlineEvent = () => {
     if (event?.onlineLink) {
@@ -128,22 +114,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     }
   };
 
-  const handleReportEvent = () => {
-    Alert.alert(
-      'Report Event',
-      'Why are you reporting this event?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Inappropriate Content', onPress: () => Alert.alert('Reported', 'Thank you for your report') },
-        { text: 'Spam', onPress: () => Alert.alert('Reported', 'Thank you for your report') },
-        { text: 'Misleading Information', onPress: () => Alert.alert('Reported', 'Thank you for your report') },
-      ]
-    );
-  };
 
-  const handleContactOrganizer = () => {
-    Alert.alert('Contact Organizer', 'This would open a message to the event organizer');
-  };
 
   if (!isOpen || !event) return null;
 
@@ -200,13 +171,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                       onPress={handleShareEvent}
                     >
                       <Share2 size={24} color="#FFFFFF" />
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
-                      onPress={toggleMoreOptions}
-                    >
-                      <MoreVertical size={24} color="#FFFFFF" />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -351,62 +315,23 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                     </TouchableOpacity>
                   </View>
                 )}
+
+                {/* Integrated Attending Section */}
+                <View style={[styles.integratedAttendingSection, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+                  <TouchableOpacity
+                    style={[
+                      styles.integratedAttendButton,
+                      { backgroundColor: event.isAttending ? '#10B981' : '#3B82F6' }
+                    ]}
+                    onPress={() => onToggleAttendance(event.id)}
+                  >
+                    <Text style={styles.integratedAttendButtonText}>
+                      {event.isAttending ? 'Attending' : 'Attend Event'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </ScrollView>
-
-            {/* Bottom Actions */}
-            <View style={[styles.bottomActions, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-              <TouchableOpacity
-                style={[
-                  styles.attendButton,
-                  { backgroundColor: event.isAttending ? '#10B981' : '#3B82F6' }
-                ]}
-                onPress={() => onToggleAttendance(event.id)}
-              >
-                <Text style={styles.attendButtonText}>
-                  {event.isAttending ? 'Attending' : 'Attend Event'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* More Options Menu */}
-            {showMoreOptions && (
-              <Animated.View 
-                style={[
-                  styles.moreOptionsMenu,
-                  { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' },
-                  moreOptionsStyle
-                ]}
-              >
-                <TouchableOpacity 
-                  style={styles.moreOptionItem}
-                  onPress={() => {
-                    setShowMoreOptions(false);
-                    moreOptionsOpacity.value = withTiming(0);
-                    handleContactOrganizer();
-                  }}
-                >
-                  <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                  <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Invite Friends
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={styles.moreOptionItem}
-                  onPress={() => {
-                    setShowMoreOptions(false);
-                    moreOptionsOpacity.value = withTiming(0);
-                    handleReportEvent();
-                  }}
-                >
-                  <Flag size={20} color="#EF4444" />
-                  <Text style={[styles.moreOptionText, { color: '#EF4444' }]}>
-                    Report Event
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
-            )}
           </SafeAreaView>
         </Animated.View>
       </GestureDetector>
@@ -664,14 +589,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
   },
-  bottomActions: {
-    padding: 24,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
-    backgroundColor: 'inherit',
+  integratedAttendingSection: {
+    marginTop: 32,
+    marginBottom: 24,
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  attendButton: {
+  integratedAttendButton: {
     paddingVertical: 18,
     borderRadius: 16,
     alignItems: 'center',
@@ -679,45 +611,16 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 3,
     },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 6,
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 5,
   },
-  attendButtonText: {
+  integratedAttendButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontFamily: 'Inter-SemiBold',
     letterSpacing: 0.5,
-  },
-  moreOptionsMenu: {
-    position: 'absolute',
-    top: 90,
-    right: 16,
-    borderRadius: 16,
-    padding: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
-    minWidth: 180,
-    backdropFilter: 'blur(10px)',
-  },
-  moreOptionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    gap: 14,
-    borderRadius: 12,
-  },
-  moreOptionText: {
-    fontSize: 16,
-    fontFamily: 'Inter-Medium',
   },
 });
