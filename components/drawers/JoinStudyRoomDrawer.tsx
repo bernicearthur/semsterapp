@@ -131,125 +131,119 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
               </TouchableOpacity>
             </View>
 
-            <ScrollView 
-              style={styles.content}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-            >
-              {/* Camera Preview */}
-              <View style={styles.cameraContainer}>
-                <View 
+            {/* Camera Preview */}
+            <View style={styles.cameraContainer}>
+              <View 
+                style={[
+                  styles.cameraPreview, 
+                  { backgroundColor: isCameraOn ? '#000000' : (isDark ? '#1E293B' : '#F3F4F6') }
+                ]}
+              >
+                {isCameraOn ? (
+                  <View style={styles.cameraContent}>
+                    <Camera size={64} color="#FFFFFF" />
+                    <Text style={styles.cameraText}>Camera Preview</Text>
+                    <Text style={styles.cameraSubtext}>
+                      {cameraFacing === 'front' ? 'Front Camera' : 'Back Camera'}
+                    </Text>
+                  </View>
+                ) : (
+                  <View style={styles.cameraContent}>
+                    <VideoOff size={64} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                    <Text style={[styles.cameraText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                      Camera Off
+                    </Text>
+                  </View>
+                )}
+              </View>
+
+              {/* Camera Controls */}
+              <View style={styles.cameraControls}>
+                <TouchableOpacity 
                   style={[
-                    styles.cameraPreview, 
-                    { backgroundColor: isCameraOn ? '#000000' : (isDark ? '#1E293B' : '#F3F4F6') }
+                    styles.controlButton,
+                    { backgroundColor: isDark ? '#374151' : '#F3F4F6' }
                   ]}
+                  onPress={switchCamera}
+                >
+                  <RotateCcw size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={[
+                    styles.controlButton,
+                    styles.primaryControl,
+                    { backgroundColor: isCameraOn ? '#3B82F6' : '#EF4444' }
+                  ]}
+                  onPress={toggleCamera}
                 >
                   {isCameraOn ? (
-                    <View style={styles.cameraContent}>
-                      <Camera size={64} color="#FFFFFF" />
-                      <Text style={styles.cameraText}>Camera Preview</Text>
-                      <Text style={styles.cameraSubtext}>
-                        {cameraFacing === 'front' ? 'Front Camera' : 'Back Camera'}
-                      </Text>
-                    </View>
+                    <Video size={28} color="#FFFFFF" />
                   ) : (
-                    <View style={styles.cameraContent}>
-                      <VideoOff size={64} color={isDark ? '#9CA3AF' : '#6B7280'} />
-                      <Text style={[styles.cameraText, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                        Camera Off
-                      </Text>
-                    </View>
+                    <VideoOff size={28} color="#FFFFFF" />
                   )}
-                </View>
+                </TouchableOpacity>
 
-                {/* Camera Controls */}
-                <View style={styles.cameraControls}>
-                  <TouchableOpacity 
-                    style={[
-                      styles.controlButton,
-                      { backgroundColor: isDark ? '#374151' : '#F3F4F6' }
-                    ]}
-                    onPress={switchCamera}
-                  >
-                    <RotateCcw size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                  </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[
+                    styles.controlButton,
+                    { backgroundColor: isMicOn ? '#3B82F6' : '#EF4444' }
+                  ]}
+                  onPress={toggleMic}
+                >
+                  {isMicOn ? (
+                    <Mic size={24} color="#FFFFFF" />
+                  ) : (
+                    <MicOff size={24} color="#FFFFFF" />
+                  )}
+                </TouchableOpacity>
+              </View>
+            </View>
 
-                  <TouchableOpacity 
-                    style={[
-                      styles.controlButton,
-                      styles.primaryControl,
-                      { backgroundColor: isCameraOn ? '#3B82F6' : '#EF4444' }
-                    ]}
-                    onPress={toggleCamera}
-                  >
-                    {isCameraOn ? (
-                      <Video size={28} color="#FFFFFF" />
-                    ) : (
-                      <VideoOff size={28} color="#FFFFFF" />
-                    )}
-                  </TouchableOpacity>
-
-                  <TouchableOpacity 
-                    style={[
-                      styles.controlButton,
-                      { backgroundColor: isMicOn ? '#3B82F6' : '#EF4444' }
-                    ]}
-                    onPress={toggleMic}
-                  >
-                    {isMicOn ? (
-                      <Mic size={24} color="#FFFFFF" />
-                    ) : (
-                      <MicOff size={24} color="#FFFFFF" />
-                    )}
-                  </TouchableOpacity>
+            {/* Password Input */}
+            <View style={styles.inputContainer}>
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Password
+                </Text>
+                <View style={[styles.inputWrapper, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+                  <Lock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <TextInput
+                    style={[styles.input, { color: isDark ? '#E5E7EB' : '#1F2937' }]}
+                    placeholder="Enter room password"
+                    placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
                 </View>
               </View>
+            </View>
 
-              {/* Password Input */}
-              <View style={styles.inputContainer}>
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Password
+            {/* Status Info */}
+            <View style={styles.statusContainer}>
+              <View style={styles.statusRow}>
+                <View style={styles.statusItem}>
+                  <View style={[
+                    styles.statusIndicator,
+                    { backgroundColor: isCameraOn ? '#10B981' : '#EF4444' }
+                  ]} />
+                  <Text style={[styles.statusText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Camera {isCameraOn ? 'On' : 'Off'}
                   </Text>
-                  <View style={[styles.inputWrapper, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-                    <Lock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                    <TextInput
-                      style={[styles.input, { color: isDark ? '#E5E7EB' : '#1F2937' }]}
-                      placeholder="Enter room password"
-                      placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry
-                    />
-                  </View>
+                </View>
+                
+                <View style={styles.statusItem}>
+                  <View style={[
+                    styles.statusIndicator,
+                    { backgroundColor: isMicOn ? '#10B981' : '#EF4444' }
+                  ]} />
+                  <Text style={[styles.statusText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Microphone {isMicOn ? 'On' : 'Off'}
+                  </Text>
                 </View>
               </View>
-
-              {/* Status Info */}
-              <View style={styles.statusContainer}>
-                <View style={styles.statusRow}>
-                  <View style={styles.statusItem}>
-                    <View style={[
-                      styles.statusIndicator,
-                      { backgroundColor: isCameraOn ? '#10B981' : '#EF4444' }
-                    ]} />
-                    <Text style={[styles.statusText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Camera {isCameraOn ? 'On' : 'Off'}
-                    </Text>
-                  </View>
-                  
-                  <View style={styles.statusItem}>
-                    <View style={[
-                      styles.statusIndicator,
-                      { backgroundColor: isMicOn ? '#10B981' : '#EF4444' }
-                    ]} />
-                    <Text style={[styles.statusText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Microphone {isMicOn ? 'On' : 'Off'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </ScrollView>
+            </View>
 
             {/* Join Button */}
             <View style={styles.joinContainer}>
@@ -333,18 +327,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     marginBottom: 4,
   },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 20,
-  },
   cameraContainer: {
     paddingHorizontal: 20,
     marginBottom: 20,
   },
   cameraPreview: {
-    flex: 1,
     height: 300,
     borderRadius: 16,
     justifyContent: 'center',
