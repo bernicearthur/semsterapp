@@ -186,7 +186,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                   
                   <View style={styles.headerRightControls}>
                     <TouchableOpacity 
-                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
+                   onPress={toggleMoreOptions}
                       onPress={() => onToggleSaved(event.id)}
                     >
                       <Bookmark 
@@ -382,7 +382,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                     </View>
                   </TouchableOpacity>
                   
-                  <Text style={[styles.attendingSubtext, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                 <Text style={[styles.attendingSubtext, { color: isDark ? '#9CA3AF' : '#6B7280', backgroundColor: 'transparent' }]}>
                     {event.isAttending 
                       ? `You and ${event.attendees - 1} others are attending` 
                       : `${event.attendees} people are attending`}
@@ -791,7 +791,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     marginTop: 12,
-    opacity: 0.8,
+    backgroundColor: 'transparent',
   },
   moreOptionsOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
