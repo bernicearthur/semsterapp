@@ -218,15 +218,17 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity
-              style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-              onPress={() => setShowAudienceModal(true)}
-            >
-              {getAudienceIcon()}
-              <Text style={[styles.audienceText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                {getAudienceTitle()}
-              </Text>
-            </TouchableOpacity>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity
+                style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                onPress={() => setShowAudienceModal(true)}
+              >
+                {getAudienceIcon()}
+                <Text style={[styles.audienceText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  {getAudienceTitle()}
+                </Text>
+              </TouchableOpacity>
+            </View>
             
             <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
               Create Post
@@ -244,7 +246,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             contentContainerStyle={styles.scrollContent}
           >
             {/* Text Input */}
-            <View style={styles.textInputContainer}>
+            <View style={[styles.textInputContainer, { marginTop: 80 }]}>
               <TextInput
                 style={[
                   styles.textInput, 
@@ -281,7 +283,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             )}
 
             {/* Actions */}
-            <View style={styles.actionsContainer}>
+            <View style={[styles.actionsContainer, { marginTop: 8 }]}>
               <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
                 <TouchableOpacity 
                   style={styles.actionButton}
@@ -428,29 +430,43 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 12,
     minHeight: 40,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 100,
+    backgroundColor: 'inherit',
+  },
+  headerLeft: {
+    flex: 1,
+  },
+  audienceSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    alignSelf: 'flex-start',
   },
   headerTitle: {
     fontSize: 20,
     fontFamily: 'Inter-Bold',
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    right: 0,
     textAlign: 'center',
+    zIndex: -1,
   },
   closeButton: {
     padding: 4,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingTop: 20,
   },
   scrollContent: {
+    paddingHorizontal: 20,
     paddingBottom: 40,
-  },
-  audienceSelector: {
-    marginBottom: 16,
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
   },
   audienceText: {
     fontFamily: 'Inter-SemiBold',
@@ -458,7 +474,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   textInputContainer: {
-    marginBottom: 20,
+    marginBottom: 8,
   },
   textInput: {
     borderRadius: 12,
