@@ -231,406 +231,299 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
         activeOpacity={1}
         onPress={onClose}
       />
-      <GestureDetector gesture={dragHandleGesture}>
-        <Animated.View 
-          style={[
-            styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
-            drawerStyle,
-          ]}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            {/* Drag Handle */}
-            <GestureDetector gesture={dragHandleGesture}>
-              <View style={styles.dragHandle}>
-                <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
-              </View>
-            </GestureDetector>
+      
+      <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+        <SafeAreaView style={{ flex: 1 }}>
+          {/* Drag Handle */}
+          <GestureDetector gesture={dragHandleGesture}>
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+          </GestureDetector>
 
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-              </TouchableOpacity>
-              
-              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                Create Event
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+              <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+            </TouchableOpacity>
+            
+            <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+              Create Event
+            </Text>
+            
+            <TouchableOpacity 
+              style={[
+                styles.createButton,
+                { 
+                  backgroundColor: title && description && selectedDate && selectedTime && selectedCategory ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: title && description && selectedDate && selectedTime && selectedCategory ? 1 : 0.5
+                }
+              ]}
+              onPress={handleCreateEvent}
+              disabled={!title || !description || !selectedDate || !selectedTime || !selectedCategory}
+            >
+              <Text style={[
+                styles.createButtonText,
+                { color: title && description && selectedDate && selectedTime && selectedCategory ? '#FFFFFF' : (isDark ? '#9CA3AF' : '#6B7280') }
+              ]}>
+                Create
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Event Image */}
+            <TouchableOpacity style={[styles.imageUpload, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+              <Camera size={32} color={isDark ? '#60A5FA' : '#3B82F6'} />
+              <Text style={[styles.imageUploadText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                Add Event Photo
+              </Text>
+            </TouchableOpacity>
+
+            {/* Basic Information */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Event Details
               </Text>
               
-              <TouchableOpacity 
-                style={[
-                  styles.createButton,
-                  { 
-                    backgroundColor: title && description && selectedDate && selectedTime && selectedCategory ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: title && description && selectedDate && selectedTime && selectedCategory ? 1 : 0.5
-                  }
-                ]}
-                onPress={handleCreateEvent}
-                disabled={!title || !description || !selectedDate || !selectedTime || !selectedCategory}
-              >
-                <Text style={[
-                  styles.createButtonText,
-                  { color: title && description && selectedDate && selectedTime && selectedCategory ? '#FFFFFF' : (isDark ? '#9CA3AF' : '#6B7280') }
-                ]}>
-                  Create
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Event Title *
                 </Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-              {/* Event Image */}
-              <TouchableOpacity style={[styles.imageUpload, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
-                <Camera size={32} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                <Text style={[styles.imageUploadText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                  Add Event Photo
-                </Text>
-              </TouchableOpacity>
-
-              {/* Basic Information */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Event Details
-                </Text>
-                
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Event Title *
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.textInput,
-                      { 
-                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                        color: isDark ? '#E5E7EB' : '#1F2937',
-                        borderColor: isDark ? '#374151' : '#E5E7EB'
-                      }
-                    ]}
-                    placeholder="Enter event title"
-                    placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                    value={title}
-                    onChangeText={setTitle}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Description *
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.textInput,
-                      styles.textArea,
-                      { 
-                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                        color: isDark ? '#E5E7EB' : '#1F2937',
-                        borderColor: isDark ? '#374151' : '#E5E7EB'
-                      }
-                    ]}
-                    placeholder="Describe your event"
-                    placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                    value={description}
-                    onChangeText={setDescription}
-                    multiline
-                    numberOfLines={4}
-                  />
-                </View>
-
-                <View style={styles.inputGroup}>
-                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Category *
-                  </Text>
-                  <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.categoriesContainer}
-                  >
-                    {categories.map((category) => (
-                      <TouchableOpacity
-                        key={category}
-                        style={[
-                          styles.categoryChip,
-                          { 
-                            backgroundColor: selectedCategory === category ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
-                            borderColor: selectedCategory === category ? '#3B82F6' : 'transparent'
-                          }
-                        ]}
-                        onPress={() => setSelectedCategory(category)}
-                      >
-                        <Text style={[
-                          styles.categoryChipText,
-                          { color: selectedCategory === category ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
-                        ]}>
-                          {category}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
+                <TextInput
+                  style={[
+                    styles.textInput,
+                    { 
+                      backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                      color: isDark ? '#E5E7EB' : '#1F2937',
+                      borderColor: isDark ? '#374151' : '#E5E7EB'
+                    }
+                  ]}
+                  placeholder="Enter event title"
+                  placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                  value={title}
+                  onChangeText={setTitle}
+                />
               </View>
 
-              {/* Date and Time */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  When
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Description *
                 </Text>
-                
-                <View style={styles.dateTimeRow}>
-                  <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Date *
-                    </Text>
+                <TextInput
+                  style={[
+                    styles.textInput,
+                    styles.textArea,
+                    { 
+                      backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                      color: isDark ? '#E5E7EB' : '#1F2937',
+                      borderColor: isDark ? '#374151' : '#E5E7EB'
+                    }
+                  ]}
+                  placeholder="Describe your event"
+                  placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                  value={description}
+                  onChangeText={setDescription}
+                  multiline
+                  numberOfLines={4}
+                />
+              </View>
+
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Category *
+                </Text>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.categoriesContainer}
+                >
+                  {categories.map((category) => (
                     <TouchableOpacity
+                      key={category}
                       style={[
-                        styles.selectButton,
+                        styles.categoryChip,
                         { 
-                          backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                          borderColor: isDark ? '#374151' : '#E5E7EB'
+                          backgroundColor: selectedCategory === category ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
+                          borderColor: selectedCategory === category ? '#3B82F6' : 'transparent'
                         }
                       ]}
-                      onPress={() => setShowDatePicker(!showDatePicker)}
+                      onPress={() => setSelectedCategory(category)}
                     >
-                      <Calendar size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                       <Text style={[
-                        styles.selectButtonText,
-                        { color: selectedDate ? (isDark ? '#E5E7EB' : '#1F2937') : (isDark ? '#9CA3AF' : '#6B7280') }
+                        styles.categoryChipText,
+                        { color: selectedCategory === category ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
                       ]}>
-                        {selectedDate || 'Select date'}
+                        {category}
                       </Text>
                     </TouchableOpacity>
-                    
-                    {showDatePicker && (
-                      <View style={[styles.picker, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-                        {dates.map((date) => (
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            {/* Date and Time */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                When
+              </Text>
+              
+              <View style={styles.dateTimeRow}>
+                <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
+                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Date *
+                  </Text>
+                  <TouchableOpacity
+                    style={[
+                      styles.selectButton,
+                      { 
+                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                        borderColor: isDark ? '#374151' : '#E5E7EB'
+                      }
+                    ]}
+                    onPress={() => setShowDatePicker(!showDatePicker)}
+                  >
+                    <Calendar size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[
+                      styles.selectButtonText,
+                      { color: selectedDate ? (isDark ? '#E5E7EB' : '#1F2937') : (isDark ? '#9CA3AF' : '#6B7280') }
+                    ]}>
+                      {selectedDate || 'Select date'}
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  {showDatePicker && (
+                    <View style={[styles.picker, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                      {dates.map((date) => (
+                        <TouchableOpacity
+                          key={date}
+                          style={[
+                            styles.pickerItem,
+                            selectedDate === date && { backgroundColor: '#3B82F6' }
+                          ]}
+                          onPress={() => {
+                            setSelectedDate(date);
+                            setShowDatePicker(false);
+                          }}
+                        >
+                          <Text style={[
+                            styles.pickerItemText,
+                            { color: selectedDate === date ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#1F2937') }
+                          ]}>
+                            {date}
+                          </Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
+                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Time *
+                  </Text>
+                  <TouchableOpacity
+                    style={[
+                      styles.selectButton,
+                      { 
+                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                        borderColor: isDark ? '#374151' : '#E5E7EB'
+                      }
+                    ]}
+                    onPress={() => setShowTimePicker(!showTimePicker)}
+                  >
+                    <Clock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Text style={[
+                      styles.selectButtonText,
+                      { color: selectedTime ? (isDark ? '#E5E7EB' : '#1F2937') : (isDark ? '#9CA3AF' : '#6B7280') }
+                    ]}>
+                      {selectedTime || 'Select time'}
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  {showTimePicker && (
+                    <View style={[styles.picker, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+                      <ScrollView style={{ maxHeight: 200 }}>
+                        {timeSlots.map((time) => (
                           <TouchableOpacity
-                            key={date}
+                            key={time}
                             style={[
                               styles.pickerItem,
-                              selectedDate === date && { backgroundColor: '#3B82F6' }
+                              selectedTime === time && { backgroundColor: '#3B82F6' }
                             ]}
                             onPress={() => {
-                              setSelectedDate(date);
-                              setShowDatePicker(false);
+                              setSelectedTime(time);
+                              setShowTimePicker(false);
                             }}
                           >
                             <Text style={[
                               styles.pickerItemText,
-                              { color: selectedDate === date ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#1F2937') }
+                              { color: selectedTime === time ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#1F2937') }
                             ]}>
-                              {date}
+                              {time}
                             </Text>
                           </TouchableOpacity>
                         ))}
-                      </View>
-                    )}
-                  </View>
-
-                  <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Time *
-                    </Text>
-                    <TouchableOpacity
-                      style={[
-                        styles.selectButton,
-                        { 
-                          backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                          borderColor: isDark ? '#374151' : '#E5E7EB'
-                        }
-                      ]}
-                      onPress={() => setShowTimePicker(!showTimePicker)}
-                    >
-                      <Clock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <Text style={[
-                        styles.selectButtonText,
-                        { color: selectedTime ? (isDark ? '#E5E7EB' : '#1F2937') : (isDark ? '#9CA3AF' : '#6B7280') }
-                      ]}>
-                        {selectedTime || 'Select time'}
-                      </Text>
-                    </TouchableOpacity>
-                    
-                    {showTimePicker && (
-                      <View style={[styles.picker, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-                        <ScrollView style={{ maxHeight: 200 }}>
-                          {timeSlots.map((time) => (
-                            <TouchableOpacity
-                              key={time}
-                              style={[
-                                styles.pickerItem,
-                                selectedTime === time && { backgroundColor: '#3B82F6' }
-                              ]}
-                              onPress={() => {
-                                setSelectedTime(time);
-                                setShowTimePicker(false);
-                              }}
-                            >
-                              <Text style={[
-                                styles.pickerItemText,
-                                { color: selectedTime === time ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#1F2937') }
-                              ]}>
-                                {time}
-                              </Text>
-                            </TouchableOpacity>
-                          ))}
-                        </ScrollView>
-                      </View>
-                    )}
-                  </View>
+                      </ScrollView>
+                    </View>
+                  )}
                 </View>
               </View>
+            </View>
 
-              {/* Location */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Location
-                </Text>
+            {/* Location */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Location
+              </Text>
+              
+              <View style={styles.locationTypeContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.locationTypeButton,
+                    { 
+                      backgroundColor: !isOnline ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
+                      borderColor: !isOnline ? '#3B82F6' : 'transparent'
+                    }
+                  ]}
+                  onPress={() => setIsOnline(false)}
+                >
+                  <MapPin size={20} color={!isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
+                  <Text style={[
+                    styles.locationTypeText,
+                    { color: !isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
+                  ]}>
+                    In-Person
+                  </Text>
+                </TouchableOpacity>
                 
-                <View style={styles.locationTypeContainer}>
-                  <TouchableOpacity
-                    style={[
-                      styles.locationTypeButton,
-                      { 
-                        backgroundColor: !isOnline ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
-                        borderColor: !isOnline ? '#3B82F6' : 'transparent'
-                      }
-                    ]}
-                    onPress={() => setIsOnline(false)}
-                  >
-                    <MapPin size={20} color={!isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
-                    <Text style={[
-                      styles.locationTypeText,
-                      { color: !isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
-                    ]}>
-                      In-Person
-                    </Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity
-                    style={[
-                      styles.locationTypeButton,
-                      { 
-                        backgroundColor: isOnline ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
-                        borderColor: isOnline ? '#3B82F6' : 'transparent'
-                      }
-                    ]}
-                    onPress={() => setIsOnline(true)}
-                  >
-                    <Globe size={20} color={isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
-                    <Text style={[
-                      styles.locationTypeText,
-                      { color: isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
-                    ]}>
-                      Online
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-
-                {isOnline ? (
-                  <View style={styles.inputGroup}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Online Link *
-                    </Text>
-                    <View style={styles.inputWithIcon}>
-                      <Link size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <TextInput
-                        style={[
-                          styles.textInput,
-                          styles.inputWithIconText,
-                          { 
-                            backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                            color: isDark ? '#E5E7EB' : '#1F2937',
-                            borderColor: isDark ? '#374151' : '#E5E7EB'
-                          }
-                        ]}
-                        placeholder="https://zoom.us/j/123456789"
-                        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                        value={onlineLink}
-                        onChangeText={setOnlineLink}
-                        keyboardType="url"
-                      />
-                    </View>
-                  </View>
-                ) : (
-                  <View style={styles.inputGroup}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Venue *
-                    </Text>
-                    <View style={styles.inputWithIcon}>
-                      <MapPin size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <TextInput
-                        style={[
-                          styles.textInput,
-                          styles.inputWithIconText,
-                          { 
-                            backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                            color: isDark ? '#E5E7EB' : '#1F2937',
-                            borderColor: isDark ? '#374151' : '#E5E7EB'
-                          }
-                        ]}
-                        placeholder="Enter venue address"
-                        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                        value={location}
-                        onChangeText={setLocation}
-                      />
-                    </View>
-                  </View>
-                )}
+                <TouchableOpacity
+                  style={[
+                    styles.locationTypeButton,
+                    { 
+                      backgroundColor: isOnline ? '#3B82F6' : (isDark ? '#374151' : '#F3F4F6'),
+                      borderColor: isOnline ? '#3B82F6' : 'transparent'
+                    }
+                  ]}
+                  onPress={() => setIsOnline(true)}
+                >
+                  <Globe size={20} color={isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563')} />
+                  <Text style={[
+                    styles.locationTypeText,
+                    { color: isOnline ? '#FFFFFF' : (isDark ? '#E5E7EB' : '#4B5563') }
+                  ]}>
+                    Online
+                  </Text>
+                </TouchableOpacity>
               </View>
 
-              {/* Additional Settings */}
-              <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Additional Settings
-                </Text>
-                
-                <View style={styles.settingRow}>
-                  <View style={styles.settingInfo}>
-                    <Text style={[styles.settingTitle, { color: isDark ? '#E5E7EB' : '#1F2937' }]}>
-                      Free Event
-                    </Text>
-                    <Text style={[styles.settingDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                      No charge for attendees
-                    </Text>
-                  </View>
-                  <Switch
-                    value={isFree}
-                    onValueChange={setIsFree}
-                    trackColor={{ false: isDark ? '#374151' : '#E5E7EB', true: '#3B82F6' }}
-                    thumbColor="#FFFFFF"
-                  />
-                </View>
-
-                {!isFree && (
-                  <View style={styles.inputGroup}>
-                    <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Ticket Price
-                    </Text>
-                    <View style={styles.inputWithIcon}>
-                      <DollarSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                      <TextInput
-                        style={[
-                          styles.textInput,
-                          styles.inputWithIconText,
-                          { 
-                            backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
-                            color: isDark ? '#E5E7EB' : '#1F2937',
-                            borderColor: isDark ? '#374151' : '#E5E7EB'
-                          }
-                        ]}
-                        placeholder="0.00"
-                        placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                        value={price}
-                        onChangeText={setPrice}
-                        keyboardType="numeric"
-                      />
-                    </View>
-                  </View>
-                )}
-
+              {isOnline ? (
                 <View style={styles.inputGroup}>
                   <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Max Attendees (Optional)
+                    Online Link *
                   </Text>
                   <View style={styles.inputWithIcon}>
-                    <Users size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <Link size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                     <TextInput
                       style={[
                         styles.textInput,
@@ -641,21 +534,121 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
                           borderColor: isDark ? '#374151' : '#E5E7EB'
                         }
                       ]}
-                      placeholder="No limit"
+                      placeholder="https://zoom.us/j/123456789"
                       placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                      value={maxAttendees}
-                      onChangeText={setMaxAttendees}
+                      value={onlineLink}
+                      onChangeText={setOnlineLink}
+                      keyboardType="url"
+                    />
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.inputGroup}>
+                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Venue *
+                  </Text>
+                  <View style={styles.inputWithIcon}>
+                    <MapPin size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <TextInput
+                      style={[
+                        styles.textInput,
+                        styles.inputWithIconText,
+                        { 
+                          backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                          color: isDark ? '#E5E7EB' : '#1F2937',
+                          borderColor: isDark ? '#374151' : '#E5E7EB'
+                        }
+                      ]}
+                      placeholder="Enter venue address"
+                      placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                      value={location}
+                      onChangeText={setLocation}
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+
+            {/* Additional Settings */}
+            <View style={styles.section}>
+              <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Additional Settings
+              </Text>
+              
+              <View style={styles.settingRow}>
+                <View style={styles.settingInfo}>
+                  <Text style={[styles.settingTitle, { color: isDark ? '#E5E7EB' : '#1F2937' }]}>
+                    Free Event
+                  </Text>
+                  <Text style={[styles.settingDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                    No charge for attendees
+                  </Text>
+                </View>
+                <Switch
+                  value={isFree}
+                  onValueChange={setIsFree}
+                  trackColor={{ false: isDark ? '#374151' : '#E5E7EB', true: '#3B82F6' }}
+                  thumbColor="#FFFFFF"
+                />
+              </View>
+
+              {!isFree && (
+                <View style={styles.inputGroup}>
+                  <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Ticket Price
+                  </Text>
+                  <View style={styles.inputWithIcon}>
+                    <DollarSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <TextInput
+                      style={[
+                        styles.textInput,
+                        styles.inputWithIconText,
+                        { 
+                          backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                          color: isDark ? '#E5E7EB' : '#1F2937',
+                          borderColor: isDark ? '#374151' : '#E5E7EB'
+                        }
+                      ]}
+                      placeholder="0.00"
+                      placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                      value={price}
+                      onChangeText={setPrice}
                       keyboardType="numeric"
                     />
                   </View>
                 </View>
-              </View>
+              )}
 
-              <View style={{ height: 40 }} />
-            </ScrollView>
-          </SafeAreaView>
-        </Animated.View>
-      </GestureDetector>
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Max Attendees (Optional)
+                </Text>
+                <View style={styles.inputWithIcon}>
+                  <Users size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <TextInput
+                    style={[
+                      styles.textInput,
+                      styles.inputWithIconText,
+                      { 
+                        backgroundColor: isDark ? '#1E293B' : '#F8FAFC',
+                        color: isDark ? '#E5E7EB' : '#1F2937',
+                        borderColor: isDark ? '#374151' : '#E5E7EB'
+                      }
+                    ]}
+                    placeholder="No limit"
+                    placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                    value={maxAttendees}
+                    onChangeText={setMaxAttendees}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={{ height: 40 }} />
+          </ScrollView>
+        </SafeAreaView>
+      </Animated.View>
     </View>
   );
 }
@@ -668,21 +661,11 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  dragHandle: {
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  dragIndicator: {
-    width: 36,
-    height: 4,
-    borderRadius: 2,
-  },
   drawer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
@@ -694,18 +677,30 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 12,
+    minHeight: 40,
   },
   headerButton: {
     padding: 4,
   },
   headerTitle: {
     fontFamily: 'Inter-Bold',
-    fontSize: 20,
+    fontSize: 24,
   },
   createButton: {
     paddingHorizontal: 16,
@@ -718,7 +713,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
   },
   imageUpload: {
     height: 120,
@@ -842,6 +837,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  inputWithIconText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Inter-Regular',
+    borderWidth: 0,
+    padding: 0,
+  },
+  settingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  settingInfo: {
+    flex: 1,
+  },
+  settingTitle: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+    marginBottom: 2,
+  },
+  settingDescription: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+  },
+  createButtonSection: {
+    marginTop: 24,
+    marginBottom: 16,
+  },
+});rderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
