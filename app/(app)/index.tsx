@@ -220,11 +220,7 @@ export default function HomeScreen() {
           );
         }
       }
-      return (
-        <Text key={index}>
-          {word}{' '}
-        </Text>
-      );
+      return word + ' ';
     });
   }, []);
 
