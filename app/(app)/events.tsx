@@ -6,7 +6,6 @@ import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 import Animated, { FadeIn, FadeInDown, SlideInRight } from 'react-native-reanimated';
 import { EventDetailsDrawer } from '@/components/drawers/EventDetailsDrawer';
-import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
 
 interface Event {
   id: string;
@@ -175,7 +174,6 @@ export default function EventsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [isCreateEventOpen, setIsCreateEventOpen] = useState(false);
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [showAttendingOnly, setShowAttendingOnly] = useState(false);
 
@@ -215,14 +213,6 @@ export default function EventsScreen() {
     setSelectedEvent(event);
   };
 
-  const handleCreateEvent = (newEvent: Omit<Event, 'id'>) => {
-    const event: Event = {
-      ...newEvent,
-      id: Date.now().toString(),
-    };
-    setEvents(prevEvents => [event, ...prevEvents]);
-    setIsCreateEventOpen(false);
-  };
 
   const filteredEvents = events.filter(event => {
     // Category filter
@@ -530,14 +520,6 @@ export default function EventsScreen() {
           </View>
         </ScrollView>
 
-        {/* Floating Action Button */}
-        <TouchableOpacity 
-          style={[styles.fab, { backgroundColor: '#3B82F6' }]}
-          onPress={() => setIsCreateEventOpen(true)}
-        >
-          <Plus size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-
         {/* Event Details Drawer */}
         <EventDetailsDrawer
           isOpen={!!selectedEvent}
@@ -547,12 +529,6 @@ export default function EventsScreen() {
           onToggleSaved={toggleEventSaved}
         />
 
-        {/* Create Event Drawer */}
-        <CreateEventDrawer
-          isOpen={isCreateEventOpen}
-          onClose={() => setIsCreateEventOpen(false)}
-          onCreateEvent={handleCreateEvent}
-        />
       </SafeAreaView>
     </SwipeGestureWrapper>
   );
@@ -827,22 +803,4 @@ const styles = StyleSheet.create({
   },
   attendButtonText: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Inter-SemiBold',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 48,
-  },
-  emptyStateTitle: {
-    fontSize: 18,
-    fontFamily: 'Inter-SemiBold',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptyStateText: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    textAlign: 'center',
-  },
 });
