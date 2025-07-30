@@ -362,6 +362,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 50,
+    outlineStyle: 'none',
   },
   input: {
     flex: 1,
