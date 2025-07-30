@@ -343,7 +343,12 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                 
                 <View style={styles.inputGroup}>
                   <View style={styles.inputWithIcon}>
-                    <Key size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                    <View style={styles.roomCodeIcon}>
+                      <View style={[styles.roomCodeDot, { backgroundColor: isDark ? '#60A5FA' : '#3B82F6' }]} />
+                      <View style={[styles.roomCodeDot, { backgroundColor: isDark ? '#60A5FA' : '#3B82F6' }]} />
+                      <View style={[styles.roomCodeDot, { backgroundColor: isDark ? '#60A5FA' : '#3B82F6' }]} />
+                      <View style={[styles.roomCodeDot, { backgroundColor: isDark ? '#60A5FA' : '#3B82F6' }]} />
+                    </View>
                     <TextInput
                       style={[
                         styles.textInput,
@@ -665,5 +670,15 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
+  },
+  roomCodeIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  roomCodeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
   },
 });
