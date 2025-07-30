@@ -758,6 +758,7 @@ const styles = StyleSheet.create({
   },
   moreOptionsOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
   },
   moreOptionsBottomDrawer: {
     position: 'absolute',
@@ -789,11 +790,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 16,
-    paddingHorizontal: 24,
-    gap: 16,
+    paddingHorizontal: 16,
+    gap: 12,
   },
   moreOptionText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Inter-Medium',
   },
   moreDotsIcon: {
