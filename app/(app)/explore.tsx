@@ -388,6 +388,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 16,
     marginLeft: 10,
+    outlineStyle: 'none',
   },
   section: {
     marginBottom: 24,
