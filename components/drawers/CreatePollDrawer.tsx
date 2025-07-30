@@ -31,7 +31,7 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollDuration, setPollDuration] = useState(24);
-  const [selectedAudience, setSelectedAudience] = useState<'public' | 'connections' | 'course' | 'yeargroup'>('public');
+  const [selectedAudience, setSelectedAudience] = useState<'public' | 'buddies' | 'course' | 'yeargroup'>('public');
   const [showAudienceModal, setShowAudienceModal] = useState(false);
   const [isExtended, setIsExtended] = useState(false);
   
@@ -151,10 +151,10 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
       description: 'Anyone can see this poll',
     },
     {
-      id: 'connections',
+      id: 'buddies',
       icon: <Users size={24} color={isDark ? '#60A5FA' : '#3B82F6'} />,
-      title: 'Connections',
-      description: 'Only your connections can see this poll',
+      title: 'Buddies',
+      description: 'Only your buddies can see this poll',
     },
     {
       id: 'course',
@@ -174,7 +174,7 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
     switch (selectedAudience) {
       case 'public':
         return <Globe size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
-      case 'connections':
+      case 'buddies':
         return <Users size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
       case 'course':
         return <BookOpen size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
@@ -187,8 +187,8 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
     switch (selectedAudience) {
       case 'public':
         return 'Public';
-      case 'connections':
-        return 'Connections';
+      case 'buddies':
+        return 'Buddies';
       case 'course':
         return 'Course';
       case 'yeargroup':
@@ -352,25 +352,25 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
                 </View>
               </View>
             </View>
-          </ScrollView>
 
-          {/* Create Poll Button Footer */}
-          <View style={[styles.footer, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
-            <TouchableOpacity 
-              style={[
-                styles.createButton, 
-                { 
-                  backgroundColor: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                  opacity: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? 1 : 0.5
-                }
-              ]}
-              onPress={handleCreatePoll}
-              disabled={!pollQuestion.trim() || pollOptions.some(opt => opt.trim() === '')}
-            >
-              <BarChart3 size={20} color="#FFFFFF" />
-              <Text style={styles.createButtonText}>Create Poll</Text>
-            </TouchableOpacity>
-          </View>
+            {/* Create Poll Button */}
+            <View style={styles.createButtonSection}>
+              <TouchableOpacity 
+                style={[
+                  styles.createButton, 
+                  { 
+                    backgroundColor: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                    opacity: pollQuestion.trim() && pollOptions.every(opt => opt.trim()) ? 1 : 0.5
+                  }
+                ]}
+                onPress={handleCreatePoll}
+                disabled={!pollQuestion.trim() || pollOptions.some(opt => opt.trim() === '')}
+              >
+                <BarChart3 size={20} color="#FFFFFF" />
+                <Text style={styles.createButtonText}>Create Poll</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
 
           {/* Audience Modal */}
           {showAudienceModal && (
@@ -590,6 +590,10 @@ const styles = StyleSheet.create({
     marginTop: 24,
     marginBottom: 16,
   },
+  createButtonSection: {
+    marginTop: 24,
+    marginBottom: 16,
+  },
   createButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -597,7 +601,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
-    marginHorizontal: 20,
   },
   createButtonText: {
     color: '#FFFFFF',
