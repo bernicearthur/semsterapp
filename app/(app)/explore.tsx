@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text, ScrollView, Image, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Search, TrendingUp, Users, BookOpen, ChevronRight, Plus, Hash, MessageCircle } from 'lucide-react-native';
+import { Search, TrendingUp, Users, BookOpen, ChevronRight, Plus, Hash, MessageCircle, Lock, UserPlus } from 'lucide-react-native';
 import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 
