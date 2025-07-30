@@ -23,6 +23,7 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
   const screenHeight = Dimensions.get('window').height;
   
   const [password, setPassword] = useState('');
+  const [passcode, setPasscode] = useState('');
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isMicOn, setIsMicOn] = useState(true);
   const [cameraFacing, setCameraFacing] = useState<'front' | 'back'>('front');
@@ -79,15 +80,15 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
   };
 
   const handleJoinRoom = () => {
-    if (!password.trim()) {
-      Alert.alert('Password Required', 'Please enter a password to join');
+    if (!passcode.trim()) {
+      Alert.alert('Passcode Required', 'Please enter a passcode to join');
       return;
     }
 
-    onJoinRoom(password.trim());
+    onJoinRoom(passcode.trim());
     
     // Reset form
-    setPassword('');
+    setPasscode('');
   };
 
   if (!isOpen) return null;
@@ -122,7 +123,7 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
               
               <View style={styles.headerCenter}>
                 <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                  Join Room
+                  Use Passcode
                 </Text>
               </View>
               
@@ -207,16 +208,16 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
               <View style={styles.inputContainer}>
                 <View style={styles.inputGroup}>
                   <Text style={[styles.inputLabel, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Password
+                    Passcode
                   </Text>
                   <View style={[styles.inputWrapper, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
                     <Lock size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                     <TextInput
                       style={[styles.input, { color: isDark ? '#E5E7EB' : '#1F2937' }]}
-                      placeholder="Enter room password"
+                      placeholder="Enter room passcode"
                       placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                      value={password}
-                      onChangeText={setPassword}
+                      value={passcode}
+                      onChangeText={setPasscode}
                       secureTextEntry
                       outlineStyle="none"
                     />
@@ -256,12 +257,12 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
                 style={[
                   styles.joinButton, 
                   { 
-                    backgroundColor: password.trim() ? '#10B981' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: password.trim() ? 1 : 0.5
+                    backgroundColor: passcode.trim() ? '#10B981' : (isDark ? '#374151' : '#E5E7EB'),
+                    opacity: passcode.trim() ? 1 : 0.5
                   }
                 ]}
                 onPress={handleJoinRoom}
-                disabled={!password.trim()}
+                disabled={!passcode.trim()}
               >
                 <Video size={24} color="#FFFFFF" />
                 <Text style={styles.joinButtonText}>Join Room</Text>
