@@ -228,6 +228,8 @@ export default function StudyRoomsScreen() {
               </View>
             )}
           </View>
+        </View>
+        
         <View style={styles.roomStatus}>
           <View style={[
             styles.statusBadge,
@@ -610,6 +612,13 @@ const styles = StyleSheet.create({
   hostName: {
     fontSize: 14,
     fontFamily: 'Inter-Regular',
+  },
+  subjectBadge: {
+    // Subject badge styles
+  },
+  subjectText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
   },
   roomStatus: {
     alignItems: 'flex-end',
