@@ -205,22 +205,52 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
         activeOpacity={1}
         onPress={onClose}
       />
-      <GestureDetector gesture={dragHandleGesture}>
-        <Animated.View 
-          style={[
-            styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
-            drawerStyle,
-          ]}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            {/* Drag Handle */}
+      <Animated.View 
+        style={[
+          styles.drawer,
+          { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
+          drawerStyle,
+        ]}
+      >
+        <SafeAreaView style={{ flex: 1 }}>
+          {/* Drag Handle */}
+          <GestureDetector gesture={dragHandleGesture}>
             <View style={styles.dragHandle}>
               <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
             </View>
+          </GestureDetector>
 
-            {/* Header */}
-            <View style={styles.header}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={onClose} style={styles.headerButton}>
+              <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+            </TouchableOpacity>
+            
+            <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+              Create Study Room
+            </Text>
+            
+            <TouchableOpacity 
+              style={[
+                styles.createButton,
+                { 
+                  backgroundColor: roomName && description ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: roomName && description ? 1 : 0.5
+                }
+              ]}
+              onPress={handleCreateRoom}
+              disabled={!roomName || !description}
+            >
+              <Text style={[
+                styles.createButtonText,
+                { color: roomName && description ? '#FFFFFF' : (isDark ? '#9CA3AF' : '#6B7280') }
+              ]}>
+                Create
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
               <TouchableOpacity onPress={onClose} style={styles.headerButton}>
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
@@ -249,7 +279,7 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
               </TouchableOpacity>
             </View>
 
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
               {/* Basic Information */}
               <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -698,7 +728,7 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: -2,
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
