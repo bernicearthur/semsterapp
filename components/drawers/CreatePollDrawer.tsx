@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView, Dimensions, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, ChartBar as BarChart3, Plus, Minus, Clock, Globe, Users, BookOpen, GraduationCap } from 'lucide-react-native';
+import { X, ChartBar as BarChart3, Plus, Minus, Clock, Globe, Users, BookOpen, GraduationCap, Camera, Paperclip, AtSign, Hash } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
@@ -353,6 +353,39 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
               </View>
             </View>
 
+            {/* Action Tools */}
+            <View style={styles.actionsContainer}>
+              <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+                <TouchableOpacity style={styles.actionButton}>
+                  <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Photo
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton}>
+                  <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    File
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton}>
+                  <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Mention
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton}>
+                  <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Tag
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
             {/* Create Poll Button */}
             <View style={styles.createButtonSection}>
               <TouchableOpacity 
@@ -606,6 +639,23 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
+  },
+  actionsContainer: {
+    marginBottom: 16,
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    borderRadius: 16,
+    padding: 16,
+  },
+  actionButton: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  actionText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
   },
   modalOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
