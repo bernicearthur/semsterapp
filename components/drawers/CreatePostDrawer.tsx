@@ -390,7 +390,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 1000,
+    zIndex: 2000,
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -421,17 +421,19 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'row', 
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingTop: 4,
     paddingBottom: 12,
     minHeight: 40,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontFamily: 'Inter-Bold',
+    flex: 1,
+    textAlign: 'center',
   },
   closeButton: {
     padding: 4,
@@ -443,16 +445,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
   },
-  audienceSelectorContainer: {
-    marginBottom: 20,
-  },
   audienceSelector: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
-    alignSelf: 'flex-start',
   },
   audienceText: {
     fontFamily: 'Inter-SemiBold',
@@ -491,21 +489,26 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   actionsContainer: {
+    marginTop: 16,
+  },
+  actionButtonsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-around',
+    paddingHorizontal: 8,
   },
   actionButton: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     borderRadius: 20,
     gap: 8,
+    minWidth: 70,
   },
   actionText: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Inter-Medium',
+    textAlign: 'center',
   },
   footer: {
     padding: 16,
@@ -529,7 +532,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     padding: 16,
-    zIndex: 2000,
+    zIndex: 3000,
   },
   modalContent: {
     borderRadius: 16,
