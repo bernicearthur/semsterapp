@@ -7,6 +7,7 @@ import { Search, Filter, Users, Video, Mic, MicOff, VideoOff, Clock, MapPin, Loc
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { JoinStudyRoomDrawer } from '@/components/drawers/JoinStudyRoomDrawer';
 import { CreateStudyRoomDrawer } from '@/components/drawers/CreateStudyRoomDrawer';
+import { CameraPreviewDrawer } from '@/components/drawers/CameraPreviewDrawer';
 
 interface StudyRoom {
   id: string;
@@ -150,6 +151,8 @@ export default function StudyRoomsScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [isJoinRoomOpen, setIsJoinRoomOpen] = useState(false);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
+  const [isCameraPreviewOpen, setIsCameraPreviewOpen] = useState(false);
+  const [selectedRoomForJoin, setSelectedRoomForJoin] = useState<StudyRoom | null>(null);
 
   const handleJoinRoom = (roomId: string, password?: string) => {
     const room = rooms.find(r => r.id === roomId);
@@ -164,6 +167,19 @@ export default function StudyRoomsScreen() {
   const handleCreateRoom = (roomData: any) => {
     setRooms(prevRooms => [roomData, ...prevRooms]);
     Alert.alert('Room Created', `"${roomData.name}" has been created successfully!`);
+  };
+
+  const handleRoomPress = (room: StudyRoom) => {
+    setSelectedRoomForJoin(room);
+    setIsCameraPreviewOpen(true);
+  };
+
+  const handleJoinFromCamera = () => {
+    if (selectedRoomForJoin) {
+      Alert.alert('Joining Room', `Joining "${selectedRoomForJoin.name}"...`);
+    }
+    setIsCameraPreviewOpen(false);
+    setSelectedRoomForJoin(null);
   };
 
   const filteredRooms = rooms.filter(room => {
@@ -199,7 +215,7 @@ export default function StudyRoomsScreen() {
         { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' },
         room.status === 'live' && styles.liveRoomCard
       ]}
-      onPress={() => setIsJoinRoomOpen(true)}
+      onPress={() => handleRoomPress(room)}
     >
       <View style={styles.roomHeader}>
         <View style={styles.roomInfo}>
@@ -306,7 +322,7 @@ export default function StudyRoomsScreen() {
             styles.joinButton,
             { backgroundColor: room.status === 'live' ? '#EF4444' : '#3B82F6' }
           ]}
-          onPress={() => setIsJoinRoomOpen(true)}
+          onPress={() => handleRoomPress(room)}
         >
           <Video size={16} color="#FFFFFF" />
           <Text style={styles.joinButtonText}>
@@ -455,6 +471,17 @@ export default function StudyRoomsScreen() {
           isOpen={isJoinRoomOpen}
           onClose={() => setIsJoinRoomOpen(false)}
           onJoinRoom={handleJoinRoom}
+        />
+
+        {/* Camera Preview Drawer */}
+        <CameraPreviewDrawer
+          isOpen={isCameraPreviewOpen}
+          onClose={() => {
+            setIsCameraPreviewOpen(false);
+            setSelectedRoomForJoin(null);
+          }}
+          onJoinRoom={handleJoinFromCamera}
+          roomName={selectedRoomForJoin?.name}
         />
 
       </SafeAreaView>
