@@ -6,6 +6,7 @@ import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 import Animated, { FadeIn, FadeInDown, SlideInRight } from 'react-native-reanimated';
 import { EventDetailsDrawer } from '@/components/drawers/EventDetailsDrawer';
+import { CreateEventDrawer } from '@/components/drawers/CreateEventDrawer';
 
 interface Event {
   id: string;
