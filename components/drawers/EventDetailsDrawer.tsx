@@ -400,43 +400,53 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
               <Animated.View 
                 style={[
                   styles.moreOptionsMenu,
-                  { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
-                  moreOptionsStyle
-                ]}
-              >
+              <View style={[StyleSheet.absoluteFill, styles.moreOptionsOverlay]}>
                 <TouchableOpacity 
-                  style={styles.moreOptionItem}
-                  onPress={handleContactOrganizer}
+                  style={StyleSheet.absoluteFill}
+                  onPress={toggleMoreOptions}
+                />
+                <Animated.View 
+                  style={[
+                    styles.moreOptionsBottomDrawer,
+                    { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
+                    moreOptionsStyle
+                  ]}
                 >
-                  <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                  <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                  <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Contact Organizer
-                  </Text>
-                </TouchableOpacity>
+                  <View style={styles.moreOptionsHandle}>
+                    <View style={[styles.moreOptionsIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+                  </View>
+                  
+                  <TouchableOpacity 
+                    style={styles.moreOptionItem}
+                    onPress={handleContactOrganizer}
+                  >
+                    <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Contact Organizer
+                    </Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={styles.moreOptionItem}
-                  onPress={handleCopyLink}
-                >
-                  <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                  <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                  <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Copy Event Link
-                  </Text>
-                </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.moreOptionItem}
+                    onPress={handleCopyLink}
+                  >
+                    <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Copy Event Link
+                    </Text>
+                  </TouchableOpacity>
 
-                <TouchableOpacity 
-                  style={styles.moreOptionItem}
-                  onPress={handleReportEvent}
-                >
-                  <Flag size={20} color="#F59E0B" />
-                  <Flag size={20} color="#F59E0B" />
-                  <Text style={[styles.moreOptionText, { color: '#F59E0B' }]}>
-                    Report Event
-                  </Text>
-                </TouchableOpacity>
-              </Animated.View>
+                  <TouchableOpacity 
+                    style={styles.moreOptionItem}
+                    onPress={handleReportEvent}
+                  >
+                    <Flag size={20} color="#F59E0B" />
+                    <Text style={[styles.moreOptionText, { color: '#F59E0B' }]}>
+                      Report Event
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
+              </View>
             )}
 
           </SafeAreaView>
@@ -749,12 +759,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     marginTop: 12,
   },
-  moreOptionsMenu: {
+  moreOptionsOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+  },
+  moreOptionsBottomDrawer: {
     position: 'absolute',
-    top: 80,
-    right: 16,
-    borderRadius: 12,
-    padding: 8,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 40,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -763,12 +779,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    minWidth: 200,
+  },
+  moreOptionsHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  moreOptionsIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
   },
   moreOptionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 16,
     gap: 12,
   },
