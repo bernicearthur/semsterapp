@@ -586,9 +586,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     fontSize: 14,
   },
-  footer: {
-    padding: 20,
-    paddingTop: 16,
+  createButtonSection: {
+    marginTop: 24,
+    marginBottom: 16,
   },
   createButton: {
     flexDirection: 'row',
@@ -597,6 +597,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
+    marginHorizontal: 20,
   },
   createButtonText: {
     color: '#FFFFFF',
