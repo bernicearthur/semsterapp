@@ -363,7 +363,6 @@ export default function StudyRoomsScreen() {
             {/* Filters */}
             {showFilters && (
               <View style={styles.filtersContainer}>
-                    { backgroundColor: '#FFFFFF' }
                 <View style={styles.filterSection}>
                   <Text style={[styles.filterLabel, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                     Status
