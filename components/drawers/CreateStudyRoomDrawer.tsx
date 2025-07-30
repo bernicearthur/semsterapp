@@ -537,6 +537,9 @@ export function CreateStudyRoomDrawer({ isOpen, onClose, onCreateRoom }: CreateS
 
               <View style={{ height: 40 }} />
             </ScrollView>
+          </SafeAreaView>
+        </Animated.View>
+      </GestureDetector>
     </View>
   );
 }
