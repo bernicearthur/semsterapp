@@ -246,7 +246,7 @@ export default function ExploreScreen() {
                       {group.name}
                     </Text>
                     {group.isPrivate && (
-                      <View style={{ marginLeft: 4 }}>
+                      <View>
                         <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
                       </View>
                     )}
@@ -294,7 +294,7 @@ export default function ExploreScreen() {
                       {channel.name}
                     </Text>
                     {channel.isPrivate && (
-                      <View style={{ marginLeft: 4 }}>
+                      <View>
                         <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
                       </View>
                     )}
