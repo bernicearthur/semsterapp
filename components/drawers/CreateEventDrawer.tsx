@@ -243,8 +243,18 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
           </GestureDetector>
 
           {/* Header */}
-          <View style={styles.header}>
-            <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+          <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
+            <View style={styles.headerLeft}>
+              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                Create Event
+              </Text>
+            </View>
+            <View style={styles.headerRight}>
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+              </TouchableOpacity>
+            </View>
+          </View>
               Create Event
             </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
