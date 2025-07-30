@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { SwipeGestureWrapper } from '@/components/SwipeGestureWrapper';
 import { useTheme } from '@/context/ThemeContext';
 import { Search, Filter, Users, Video, Mic, MicOff, VideoOff, Clock, MapPin, Lock, Plus, Calendar, User, Settings, Phone, MessageCircle } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { JoinStudyRoomDrawer } from '@/components/drawers/JoinStudyRoomDrawer';
 import { CreateStudyRoomDrawer } from '@/components/drawers/CreateStudyRoomDrawer';
@@ -457,6 +458,19 @@ export default function StudyRoomsScreen() {
           )}
         </ScrollView>
 
+        {/* Join with Code Button */}
+        <View style={styles.joinWithCodeContainer}>
+          <TouchableOpacity 
+            style={[styles.joinWithCodeButton, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
+            onPress={() => setIsJoinRoomOpen(true)}
+          >
+            <Text style={[styles.joinWithCodeText, { color: isDark ? '#60A5FA' : '#3B82F6' }]}>
+              Join with Code
+            </Text>
+            <ChevronRight size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+          </TouchableOpacity>
+        </View>
+
         {/* Floating Action Buttons */}
         <View style={styles.fabContainer}>
           <TouchableOpacity 
@@ -761,6 +775,30 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     textAlign: 'center',
+  },
+  joinWithCodeContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  joinWithCodeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  joinWithCodeText: {
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
   },
   fabContainer: {
     position: 'absolute',
