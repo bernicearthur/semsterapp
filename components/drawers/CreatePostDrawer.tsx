@@ -244,7 +244,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             contentContainerStyle={styles.scrollContent}
           >
             {/* Text Input */}
-            <View style={[styles.textInputContainer, { marginHorizontal: 20 }]}>
+            <View style={styles.textInputContainer}>
               <TextInput
                 style={[
                   styles.textInput, 
@@ -263,7 +263,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 
             {/* Selected Images */}
             {selectedImages.length > 0 && (
-              <View style={[styles.imagesContainer, { marginHorizontal: 20 }]}>
+              <View style={styles.imagesContainer}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {selectedImages.map((image, index) => (
                     <View key={index} style={styles.imagePreviewContainer}>
@@ -281,8 +281,8 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             )}
 
             {/* Actions */}
-            <View style={[styles.actionsContainer, { marginHorizontal: 20 }]}>
-              <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC', borderRadius: 16, padding: 16 }]}>
+            <View style={styles.actionsContainer}>
+              <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
                 <TouchableOpacity 
                   style={styles.actionButton}
                   onPress={handleAddPhoto}
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   audienceSelector: {
-    flexDirection: 'row',
+    marginBottom: 16,
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 6,
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   imagesContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   imagePreviewContainer: {
     position: 'relative',
@@ -489,12 +489,14 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   actionsContainer: {
-    marginTop: 16,
+    marginTop: 4,
   },
   actionButtonsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 8,
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 0,
   },
   actionButton: {
     flexDirection: 'column',
