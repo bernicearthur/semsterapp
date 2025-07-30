@@ -205,7 +205,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                     
                     <TouchableOpacity 
                       style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
-                      onPress={handleMoreOptions}
+                     onPress={toggleMoreOptions}
                     >
                       <MoreVertical size={24} color="#FFFFFF" />
                     </TouchableOpacity>
@@ -791,7 +791,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
     marginTop: 12,
-    backgroundColor: 'transparent',
   },
   moreOptionsOverlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
