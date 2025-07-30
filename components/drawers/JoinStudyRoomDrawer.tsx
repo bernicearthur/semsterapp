@@ -14,7 +14,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 interface JoinStudyRoomDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onJoinRoom: (roomId: string, password?: string) => void;
+  onJoinRoom: (roomId: string, password?: string, roomName?: string) => void;
 }
 
 interface ActiveRoom {
@@ -71,6 +71,7 @@ const activeRooms: ActiveRoom[] = [
 export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRoomDrawerProps) {
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
+  const screenHeight = Dimensions.get('window').height;
   
   const [roomId, setRoomId] = useState('');
   const [password, setPassword] = useState('');
@@ -80,23 +81,23 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   
-  const translateX = useSharedValue(screenWidth);
+  const translateY = useSharedValue(screenHeight);
   const videoRef = useRef<View>(null);
 
   const drawerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   const gesture = Gesture.Pan()
-    .activeOffsetX([0, 15])
+    .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationX > 0) {
-        translateX.value = event.translationX;
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
       }
     })
     .onEnd((event) => {
-      if (event.translationX > screenWidth * 0.3 || event.velocityX > 500) {
-        translateX.value = withSpring(screenWidth, {
+      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+        translateY.value = withSpring(screenHeight, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -104,7 +105,7 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
           runOnJS(onClose)();
         });
       } else {
-        translateX.value = withSpring(0, {
+        translateY.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -113,7 +114,7 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
     });
 
   React.useEffect(() => {
-    translateX.value = withSpring(isOpen ? 0 : screenWidth, {
+    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
@@ -182,15 +183,25 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
       <GestureDetector gesture={gesture}>
         <Animated.View 
           style={[
             styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
+            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
             drawerStyle,
           ]}
         >
           <SafeAreaView style={{ flex: 1 }}>
+            {/* Drag Handle */}
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+
             <View style={styles.header}>
               <TouchableOpacity onPress={onClose} style={styles.closeButton}>
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
@@ -445,20 +456,34 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 1000,
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   drawer: {
-    flex: 1,
     position: 'absolute',
-    top: 0,
-    right: 0,
     bottom: 0,
+    left: 0,
+    right: 0,
+    height: '90%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     shadowColor: '#000',
     shadowOffset: {
-      width: -2,
-      height: 0,
+      width: 0,
+      height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
   },
   header: {
     flexDirection: 'row',
