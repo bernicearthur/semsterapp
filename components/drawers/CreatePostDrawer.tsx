@@ -203,10 +203,13 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
               <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
             </View>
           </GestureDetector>
-
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
+          <ScrollView 
+            style={styles.content} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Header integrated with content */}
+            <View style={styles.integratedHeader}>
               <TouchableOpacity
                 style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
                 onPress={() => setShowAudienceModal(true)}
@@ -216,23 +219,12 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                   {getAudienceTitle()}
                 </Text>
               </TouchableOpacity>
+              
+              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+              </TouchableOpacity>
             </View>
-            
-            <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-              Create Post
-            </Text>
-            
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-            </TouchableOpacity>
-          </View>
 
-          {/* Content */}
-          <ScrollView 
-            style={styles.content} 
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-          >
             {/* Text Input */}
             <View style={styles.textInputContainer}>
               <TextInput
@@ -309,7 +301,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
           </ScrollView>
 
           {/* Footer */}
-          <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+          <View style={[styles.footer, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
             <TouchableOpacity 
               style={[
                 styles.postButton, 
@@ -503,27 +495,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  actionButton: {
-    flexDirection: 'column',
+  integratedHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    gap: 8,
-    flex: 1,
-  },
-  actionText: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-    textAlign: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
   footer: {
     padding: 20,
