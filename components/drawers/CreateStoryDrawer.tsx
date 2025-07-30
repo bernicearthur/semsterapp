@@ -491,9 +491,6 @@ export function CreateStoryDrawer({ isOpen, onClose, onCreateStory }: CreateStor
     </View>
   );
 }
-    </View>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
