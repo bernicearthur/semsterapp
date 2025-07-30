@@ -871,4 +871,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
   },
+  createButtonSection: {
+    marginTop: 24,
+    marginBottom: 16,
+  },
+  createButton: {
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createButtonText: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+  },
 });
