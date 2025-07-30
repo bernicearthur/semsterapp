@@ -245,84 +245,42 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
               </TouchableOpacity>
             </View>
 
-            {/* Audience Modal */}
-            {showAudienceModal && (
-              <View style={[StyleSheet.absoluteFill, styles.modalOverlay]}>
-                <TouchableOpacity
-                  style={StyleSheet.absoluteFill}
-                  onPress={() => setShowAudienceModal(false)}
-                />
-                <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
-                  <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Choose Audience
-                  </Text>
-                  {audienceOptions.map((option) => (
-                    <TouchableOpacity
-                      key={option.id}
-                      style={[
-                        styles.audienceOption,
-                        selectedAudience === option.id && styles.selectedAudienceOption,
-                        { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }
-                      ]}
-                      onPress={() => {
-                        setSelectedAudience(option.id as typeof selectedAudience);
-                        setShowAudienceModal(false);
-                      }}
-                    >
-                      <View style={styles.audienceOptionIcon}>
-                        {option.icon}
-                      </View>
-                      <View style={styles.audienceOptionText}>
-                        <Text style={[styles.audienceOptionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                          {option.title}
-                        </Text>
-                        <Text style={[styles.audienceOptionDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                          {option.description}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
+            {/* Text Input */}
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={[
+                  styles.textInput, 
+                  { 
+                    backgroundColor: isDark ? '#1E293B' : '#F9FAFB', 
+                    color: isDark ? '#E5E7EB' : '#1F2937' 
+                  }
+                ]}
+                placeholder="What's on your mind?"
+                placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
+                multiline
+                value={postText}
+                onChangeText={setPostText}
+              />
+            </View>
+
+            {/* Selected Images */}
+            {selectedImages.length > 0 && (
+              <View style={styles.imagesContainer}>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {selectedImages.map((image, index) => (
+                    <View key={index} style={styles.imagePreviewContainer}>
+                      <Image source={{ uri: image }} style={styles.imagePreview} />
+                      <TouchableOpacity 
+                        style={styles.removeImageButton}
+                        onPress={() => handleRemoveImage(index)}
+                      >
+                        <X size={16} color="#FFFFFF" />
+                      </TouchableOpacity>
+                    </View>
                   ))}
-                </View>
+                </ScrollView>
               </View>
             )}
-
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-              {/* Text Input */}
-              <View style={styles.textInputContainer}>
-                <TextInput
-                  style={[
-                    styles.textInput, 
-                    { 
-                      backgroundColor: isDark ? '#1E293B' : '#F9FAFB', 
-                      color: isDark ? '#E5E7EB' : '#1F2937' 
-                    }
-                  ]}
-                  placeholder="What's on your mind?"
-                  placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
-                  multiline
-                  value={postText}
-                  onChangeText={setPostText}
-                />
-              </View>
-
-              {/* Selected Images */}
-              {selectedImages.length > 0 && (
-                <View style={styles.imagesContainer}>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {selectedImages.map((image, index) => (
-                      <View key={index} style={styles.imagePreviewContainer}>
-                        <Image source={{ uri: image }} style={styles.imagePreview} />
-                        <TouchableOpacity 
-                          style={styles.removeImageButton}
-                          onPress={() => handleRemoveImage(index)}
-                        >
-                          <X size={16} color="#FFFFFF" />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </ScrollView>
-                </View>
-              )}
 
             {/* Actions */}
             <View style={styles.actionsContainer}>
