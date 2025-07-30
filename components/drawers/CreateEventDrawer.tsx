@@ -277,35 +277,6 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
           </View>
 
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-              </TouchableOpacity>
-              
-              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                Create Event
-              </Text>
-              
-              <TouchableOpacity 
-                style={[
-                  styles.createButton,
-                  { 
-                    backgroundColor: title && description && selectedDate && selectedTime && selectedCategory ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: title && description && selectedDate && selectedTime && selectedCategory ? 1 : 0.5
-                  }
-                ]}
-                onPress={handleCreateEvent}
-                disabled={!title || !description || !selectedDate || !selectedTime || !selectedCategory}
-              >
-                <Text style={[
-                  styles.createButtonText,
-                  { color: title && description && selectedDate && selectedTime && selectedCategory ? '#FFFFFF' : (isDark ? '#9CA3AF' : '#6B7280') }
-                ]}>
-                  Create
-                </Text>
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
               {/* Event Image */}
               <TouchableOpacity style={[styles.imageUpload, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
                 <Camera size={32} color={isDark ? '#60A5FA' : '#3B82F6'} />
