@@ -867,43 +867,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
   },
-  createButtonSection: {
-    marginTop: 24,
-    marginBottom: 16,
-  },
-});rderWidth: 1,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  inputWithIconText: {
-    flex: 1,
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
-    borderWidth: 0,
-    padding: 0,
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  settingInfo: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontFamily: 'Inter-Medium',
-    marginBottom: 2,
-  },
-  settingDescription: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-  },
-  createButtonSection: {
-    marginTop: 24,
-    marginBottom: 16,
-  },
 });
