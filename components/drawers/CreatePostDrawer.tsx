@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView, Dimensions, Alert, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, ScrollView, Dimensions, Alert, Image, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { X, Camera, Image as ImageIcon, Send, Paperclip, AtSign, Hash } from 'lucide-react-native';
 import { Globe, Users, BookOpen, GraduationCap } from 'lucide-react-native';
@@ -58,35 +58,66 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedAudience, setSelectedAudience] = useState<'public' | 'connections' | 'course' | 'yeargroup'>('public');
   const [showAudienceModal, setShowAudienceModal] = useState(false);
+  const [isExtended, setIsExtended] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const drawerHeight = useSharedValue(0.85);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    height: `${drawerHeight.value * 100}%`,
   }));
 
-  const gesture = Gesture.Pan()
+  const dragHandleGesture = Gesture.Pan()
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      if (isExtended) {
+        // When extended, allow dragging down to collapse
+        if (event.translationY > 0) {
+          const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
+          drawerHeight.value = 1 - (progress * 0.15);
+        }
+      } else {
+        // When collapsed, allow dragging up to extend or down to close
+        if (event.translationY < 0) {
+          const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
+          drawerHeight.value = 0.85 + (progress * 0.15);
+        } else if (event.translationY > 0) {
+          translateY.value = event.translationY;
+        }
       }
     })
     .onEnd((event) => {
-      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-        translateY.value = withSpring(screenHeight, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        }, () => {
-          runOnJS(onClose)();
-        });
+      if (isExtended) {
+        // When extended, decide whether to stay extended or collapse
+        if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
+          // Collapse to 85%
+          drawerHeight.value = withSpring(0.85);
+          runOnJS(setIsExtended)(false);
+        } else {
+          // Stay extended
+          drawerHeight.value = withSpring(1);
+        }
       } else {
-        translateY.value = withSpring(0, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        });
+        // When collapsed, decide whether to extend, stay collapsed, or close
+        if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
+          // Extend to 100%
+          drawerHeight.value = withSpring(1);
+          runOnJS(setIsExtended)(true);
+        } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+          // Close drawer
+          translateY.value = withSpring(screenHeight, {
+            damping: 20,
+            stiffness: 90,
+            mass: 0.4,
+          }, () => {
+            runOnJS(onClose)();
+          });
+        } else {
+          // Stay at current position
+          translateY.value = withSpring(0);
+          drawerHeight.value = withSpring(0.85);
+        }
       }
     });
 
@@ -96,6 +127,12 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
       stiffness: 90,
       mass: 0.4,
     });
+    
+    if (!isOpen) {
+      // Reset to collapsed state when drawer closes
+      setIsExtended(false);
+      drawerHeight.value = 0.85;
+    }
   }, [isOpen]);
 
   const handleAddPhoto = () => {
@@ -169,27 +206,36 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
         activeOpacity={1}
         onPress={onClose}
       />
-      <GestureDetector gesture={gesture}>
-        <Animated.View 
-          style={[
-            styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth },
-            drawerStyle,
-          ]}
-        >
-          <SafeAreaView style={{ flex: 1 }}>
-            {/* Header */}
-            <View style={[styles.header, { borderBottomColor: isDark ? '#334155' : '#E5E7EB' }]}>
-              <TouchableOpacity onPress={onClose} style={styles.headerButton}>
-                <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-              </TouchableOpacity>
-              
-              <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                Create Post
-              </Text>
-              
+      
+      <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+        <SafeAreaView style={{ flex: 1 }}>
+          {/* Drag Handle */}
+          <GestureDetector gesture={dragHandleGesture}>
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+          </GestureDetector>
+
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+              Create Post
+            </Text>
+            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+              <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
+            </TouchableOpacity>
+          </View>
+
+          {/* Scrollable Content */}
+          <ScrollView 
+            style={styles.content} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Audience Selector */}
+            <View style={styles.audienceSelectorContainer}>
               <TouchableOpacity
-                style={[styles.audienceSelector, { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }]}
+                style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
                 onPress={() => setShowAudienceModal(true)}
               >
                 {getAudienceIcon()}
@@ -278,67 +324,107 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 </View>
               )}
 
-              {/* Actions */}
-              <View style={styles.actionsContainer}>
-                <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                  onPress={handleAddPhoto}
-                >
-                  <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Photo
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                >
-                  <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    File
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                >
-                  <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Mention
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
-                >
-                  <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Tag
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </ScrollView>
-
-            {/* Footer */}
-            <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+            {/* Actions */}
+            <View style={styles.actionsContainer}>
               <TouchableOpacity 
-                style={[
-                  styles.postButton,
-                  { 
-                    backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
-                  }
-                ]}
-                onPress={handleCreatePost}
-                disabled={!postText.trim() && selectedImages.length === 0}
+                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                onPress={handleAddPhoto}
               >
-                <Send size={18} color="#FFFFFF" />
-                <Text style={styles.postButtonText}>Post</Text>
+                <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Photo
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+              >
+                <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  File
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+              >
+                <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Mention
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+              >
+                <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                  Tag
+                </Text>
               </TouchableOpacity>
             </View>
-          </SafeAreaView>
-        </Animated.View>
-      </GestureDetector>
+          </ScrollView>
+
+          {/* Footer */}
+          <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+            <TouchableOpacity 
+              style={[
+                styles.postButton, 
+                { 
+                  backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
+                }
+              ]}
+              onPress={handleCreatePost}
+              disabled={!postText.trim() && selectedImages.length === 0}
+            >
+              <Send size={18} color="#FFFFFF" />
+              <Text style={styles.postButtonText}>Post</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Animated.View>
+
+      {/* Audience Modal */}
+      {showAudienceModal && (
+        <View style={[StyleSheet.absoluteFill, styles.modalOverlay]}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFill}
+            onPress={() => setShowAudienceModal(false)}
+          />
+          <View style={[styles.modalContent, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
+            <Text style={[styles.modalTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+              Choose Audience
+            </Text>
+            {audienceOptions.map((option) => (
+              <TouchableOpacity
+                key={option.id}
+                style={[
+                  styles.audienceOption,
+                  selectedAudience === option.id && styles.selectedAudienceOption,
+                  { backgroundColor: isDark ? '#0F172A' : '#F3F4F6' }
+                ]}
+                onPress={() => {
+                  setSelectedAudience(option.id as typeof selectedAudience);
+                  setShowAudienceModal(false);
+                }}
+              >
+                <View style={styles.audienceOptionIcon}>
+                  {option.icon}
+                </View>
+                <View style={styles.audienceOptionText}>
+                  <Text style={[styles.audienceOptionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
+                    {option.title}
+                  </Text>
+                  <Text style={[styles.audienceOptionDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                    {option.description}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -356,7 +442,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    height: '80%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
@@ -368,18 +453,40 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-  },
-  headerButton: {
-    padding: 4,
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 12,
+    minHeight: 40,
   },
   headerTitle: {
+    fontSize: 24,
     fontFamily: 'Inter-Bold',
-    fontSize: 20,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  scrollContent: {
+    paddingBottom: 40,
+  },
+  audienceSelectorContainer: {
+    marginBottom: 20,
   },
   audienceSelector: {
     flexDirection: 'row',
@@ -387,15 +494,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
+    alignSelf: 'flex-start',
   },
   audienceText: {
     fontFamily: 'Inter-SemiBold',
     fontSize: 14,
     marginLeft: 8,
-  },
-  content: {
-    flex: 1,
-    padding: 20,
   },
   textInputContainer: {
     marginBottom: 20,
@@ -467,6 +571,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     padding: 16,
+    zIndex: 2000,
   },
   modalContent: {
     borderRadius: 16,
