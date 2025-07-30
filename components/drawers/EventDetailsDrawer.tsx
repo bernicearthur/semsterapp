@@ -54,6 +54,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   
   const translateY = useSharedValue(screenHeight);
   const moreOptionsOpacity = useSharedValue(0);
+  const moreOptionsTranslateY = useSharedValue(screenHeight);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -64,6 +65,10 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     transform: [{ 
       translateY: interpolate(moreOptionsOpacity.value, [0, 1], [20, 0])
     }],
+  }));
+
+  const moreOptionsDrawerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: moreOptionsTranslateY.value }],
   }));
 
   const gesture = Gesture.Pan()
@@ -97,8 +102,43 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
       stiffness: 90,
       mass: 0.4,
     });
+    
+    // Close more options when main drawer closes
+    if (!isOpen && showMoreOptions) {
+      setShowMoreOptions(false);
+      moreOptionsOpacity.value = withTiming(0);
+      moreOptionsTranslateY.value = withSpring(screenHeight);
+    }
   }, [isOpen]);
 
+  // Gesture for more options drawer (close only)
+  const moreOptionsGesture = Gesture.Pan()
+    .activeOffsetY([0, 15])
+    .onUpdate((event) => {
+      if (event.translationY > 0) {
+        moreOptionsTranslateY.value = event.translationY;
+      }
+    })
+    .onEnd((event) => {
+      if (event.translationY > 100 || event.velocityY > 500) {
+        // Close the more options drawer
+        moreOptionsTranslateY.value = withSpring(screenHeight, {
+          damping: 20,
+          stiffness: 90,
+          mass: 0.4,
+        }, () => {
+          runOnJS(setShowMoreOptions)(false);
+          runOnJS(() => moreOptionsOpacity.value = withTiming(0))();
+        });
+      } else {
+        // Snap back to open position
+        moreOptionsTranslateY.value = withSpring(0, {
+          damping: 20,
+          stiffness: 90,
+          mass: 0.4,
+        });
+      }
+    });
 
   const handleJoinOnlineEvent = () => {
     if (event?.onlineLink) {
@@ -127,17 +167,24 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   const toggleMoreOptions = () => {
     setShowMoreOptions(!showMoreOptions);
     moreOptionsOpacity.value = withTiming(showMoreOptions ? 0 : 1);
+    moreOptionsTranslateY.value = withSpring(showMoreOptions ? screenHeight : 0, {
+      damping: 20,
+      stiffness: 90,
+      mass: 0.4,
+    });
   };
 
   const handleContactOrganizer = () => {
     setShowMoreOptions(false);
     moreOptionsOpacity.value = withTiming(0);
+    moreOptionsTranslateY.value = withSpring(screenHeight);
     Alert.alert('Contact Organizer', `Send a message to ${event?.organizer.name}?`);
   };
 
   const handleReportEvent = () => {
     setShowMoreOptions(false);
     moreOptionsOpacity.value = withTiming(0);
+    moreOptionsTranslateY.value = withSpring(screenHeight);
     Alert.alert('Report Event', 'Report this event for inappropriate content?');
   };
 
@@ -402,47 +449,49 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                   style={StyleSheet.absoluteFill}
                   onPress={toggleMoreOptions}
                 />
-                <Animated.View 
-                  style={[
-                    styles.moreOptionsBottomDrawer,
-                    { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
-                    moreOptionsStyle
-                  ]}
-                >
-                  <View style={styles.moreOptionsHandle}>
-                    <View style={[styles.moreOptionsIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
-                  </View>
-                  
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleContactOrganizer}
+                <GestureDetector gesture={moreOptionsGesture}>
+                  <Animated.View 
+                    style={[
+                      styles.moreOptionsBottomDrawer,
+                      { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
+                      moreOptionsDrawerStyle
+                    ]}
                   >
-                    <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Contact Organizer
-                    </Text>
-                  </TouchableOpacity>
+                    <View style={styles.moreOptionsHandle}>
+                      <View style={[styles.moreOptionsIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+                    </View>
+                    
+                    <TouchableOpacity 
+                      style={styles.moreOptionItem}
+                      onPress={handleContactOrganizer}
+                    >
+                      <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                      <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                        Contact Organizer
+                      </Text>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleCopyLink}
-                  >
-                    <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
-                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Copy Event Link
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity 
+                      style={styles.moreOptionItem}
+                      onPress={handleCopyLink}
+                    >
+                      <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                      <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                        Copy Event Link
+                      </Text>
+                    </TouchableOpacity>
 
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleReportEvent}
-                  >
-                    <Flag size={20} color="#F59E0B" />
-                    <Text style={[styles.moreOptionText, { color: '#F59E0B' }]}>
-                      Report Event
-                    </Text>
-                  </TouchableOpacity>
-                </Animated.View>
+                    <TouchableOpacity 
+                      style={styles.moreOptionItem}
+                      onPress={handleReportEvent}
+                    >
+                      <Flag size={20} color="#F59E0B" />
+                      <Text style={[styles.moreOptionText, { color: '#F59E0B' }]}>
+                        Report Event
+                      </Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+                </GestureDetector>
               </View>
             )}
 
