@@ -867,4 +867,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
   },
+  createButtonSection: {
+    marginTop: 24,
+    marginBottom: 16,
+  },
 });
