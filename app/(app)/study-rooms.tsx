@@ -479,9 +479,10 @@ export default function StudyRoomsScreen() {
           onClose={() => {
             setIsCameraPreviewOpen(false);
             setSelectedRoomForJoin(null);
+            setJoinRoomData(null);
           }}
           onJoinRoom={handleJoinFromCamera}
-          roomName={selectedRoomForJoin?.name}
+          roomName={selectedRoomForJoin?.name || joinRoomData?.roomName}
         />
 
       </SafeAreaView>
