@@ -245,7 +245,11 @@ export default function ExploreScreen() {
                     <Text style={[styles.groupName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                       {group.name}
                     </Text>
-                    {group.isPrivate && <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />}
+                    {group.isPrivate && (
+                      <View style={{ marginLeft: 4 }}>
+                        <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                      </View>
+                    )}
                   </View>
                   <Text style={[styles.groupDescription, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
                     {group.description}
@@ -289,9 +293,13 @@ export default function ExploreScreen() {
                     <Text style={[styles.channelName, { color: isDark ? '#FFFFFF' : '#111827' }]}>
                       {channel.name}
                     </Text>
-                    {channel.isPrivate && <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />}
+                    {channel.isPrivate && (
+                      <View style={{ marginLeft: 4 }}>
+                        <Lock size={16} color={isDark ? '#9CA3AF' : '#6B7280'} />
+                      </View>
+                    )}
                     {channel.isVerified && (
-                      <View style={[styles.verifiedBadge, { backgroundColor: '#3B82F6' }]}>
+                      <View style={[styles.verifiedBadge, { backgroundColor: '#3B82F6', marginLeft: 4 }]}>
                         <Text style={styles.verifiedBadgeText}>✓</Text>
                       </View>
                     )}
@@ -501,7 +509,6 @@ const styles = StyleSheet.create({
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     marginBottom: 4,
   },
   groupName: {
@@ -552,7 +559,6 @@ const styles = StyleSheet.create({
   channelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
     marginBottom: 4,
   },
   channelName: {
@@ -565,7 +571,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    marginLeft: 8,
   },
   verifiedBadgeText: {
     color: '#FFFFFF',
