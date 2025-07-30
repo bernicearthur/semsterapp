@@ -199,17 +199,14 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
         <SafeAreaView style={{ flex: 1 }}>
           {/* Drag Handle */}
           <GestureDetector gesture={dragHandleGesture}>
-            <View style={styles.dragHandle}>
+            <View style={[styles.dragHandle, { paddingVertical: 8 }]}>
               <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
             </View>
           </GestureDetector>
-          <ScrollView 
-            style={styles.content} 
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-          >
-            {/* Header integrated with content */}
-            <View style={styles.integratedHeader}>
+          
+          {/* Header Section */}
+          <View style={[styles.headerSection, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+            <View style={styles.headerContent}>
               <TouchableOpacity
                 style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
                 onPress={() => setShowAudienceModal(true)}
@@ -224,7 +221,13 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 <X size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
               </TouchableOpacity>
             </View>
+          </View>
 
+          <ScrollView 
+            style={styles.content} 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
             {/* Text Input */}
             <View style={styles.textInputContainer}>
               <TextInput
@@ -263,24 +266,6 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
               </View>
             )}
 
-            {/* Post Button */}
-            <View style={styles.postButtonContainer}>
-              <TouchableOpacity 
-                style={[
-                  styles.postButton, 
-                  { 
-                    backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                    opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
-                  }
-                ]}
-                onPress={handleCreatePost}
-                disabled={!postText.trim() && selectedImages.length === 0}
-              >
-                <Send size={18} color="#FFFFFF" />
-                <Text style={styles.postButtonText}>Post</Text>
-              </TouchableOpacity>
-            </View>
-
             {/* Action Tools */}
             <View style={styles.actionsContainer}>
               <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
@@ -317,6 +302,24 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
               </View>
             </View>
           </ScrollView>
+          
+          {/* Post Button at Bottom */}
+          <View style={[styles.postButtonFooter, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+            <TouchableOpacity 
+              style={[
+                styles.postButton, 
+                { 
+                  backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                  opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
+                }
+              ]}
+              onPress={handleCreatePost}
+              disabled={!postText.trim() && selectedImages.length === 0}
+            >
+              <Send size={18} color="#FFFFFF" />
+              <Text style={styles.postButtonText}>Post</Text>
+            </TouchableOpacity>
+          </View>
 
         </SafeAreaView>
       </Animated.View>
@@ -445,8 +448,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 16,
     paddingBottom: 40,
+  },
+  headerSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   textInputContainer: {
     marginBottom: 8,
@@ -485,15 +498,9 @@ const styles = StyleSheet.create({
     top: 4,
     right: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 12,
-    padding: 4,
-  },
-  actionsContainer: {
-    marginTop: 4,
-  },
-  postButtonContainer: {
-    marginTop: 16,
-    marginBottom: 8,
+  postButtonFooter: {
+    padding: 20,
+    paddingTop: 16,
   },
   actionButtonsRow: {
     flexDirection: 'row',
