@@ -322,7 +322,6 @@ export default function StudyRoomsScreen() {
           ]}
           onPress={() => handleRoomPress(room)}
         >
-          onPress={() => setIsUsePasscodeOpen(true)}
           <Text style={styles.joinButtonText}>
             {room.isPrivate && room.status === 'live' ? 'Request' : room.status === 'live' ? 'Join' : 'Schedule'}
           </Text>
@@ -468,8 +467,8 @@ export default function StudyRoomsScreen() {
 
         {/* Join Room Drawer */}
         <JoinStudyRoomDrawer
-          isOpen={isUsePasscodeOpen}
-          onClose={() => setIsUsePasscodeOpen(false)}
+          isOpen={isJoinRoomOpen}
+          onClose={() => setIsJoinRoomOpen(false)}
           onJoinRoom={handleJoinRoom}
         />
 
