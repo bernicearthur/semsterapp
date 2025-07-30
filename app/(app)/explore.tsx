@@ -514,7 +514,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 12,
-    marginLeft: 8,
   },
   privateBadgeText: {
     fontFamily: 'Inter-Medium',
