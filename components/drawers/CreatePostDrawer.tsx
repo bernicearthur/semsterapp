@@ -498,6 +498,12 @@ const styles = StyleSheet.create({
     top: 4,
     right: 4,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 12,
+    padding: 4,
+  },
+  actionsContainer: {
+    marginBottom: 16,
+  },
   postButtonFooter: {
     padding: 20,
     paddingTop: 16,
