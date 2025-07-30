@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Linking, Alert, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy, MoveVertical as MoreVertical, UserPlus, Flag } from 'lucide-react-native';
+import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy, UserPlus, Flag } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
@@ -207,7 +207,11 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                       style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
                      onPress={toggleMoreOptions}
                     >
-                      <MoreVertical size={24} color="#FFFFFF" />
+                      <View style={styles.moreDotsIcon}>
+                        <View style={styles.moreDot} />
+                        <View style={styles.moreDot} />
+                        <View style={styles.moreDot} />
+                      </View>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -396,7 +400,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
               <Animated.View 
                 style={[
                   styles.moreOptionsMenu,
-                  { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' },
+                  { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
                   moreOptionsStyle
                 ]}
               >
@@ -441,7 +445,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                 />
                 <View style={[
                   styles.moreOptionsMenu,
-                  { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }
+                  { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }
                 ]}>
                   <TouchableOpacity 
                     style={styles.moreOptionItem}
@@ -822,5 +826,16 @@ const styles = StyleSheet.create({
   moreOptionText: {
     fontSize: 16,
     fontFamily: 'Inter-Medium',
+  },
+  moreDotsIcon: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 3,
+  },
+  moreDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#FFFFFF',
   },
 });
