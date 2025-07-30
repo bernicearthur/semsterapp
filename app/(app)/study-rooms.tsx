@@ -229,7 +229,7 @@ export default function StudyRoomsScreen() {
             )}
           </View>
         </View>
-
+          { backgroundColor: room.status === 'live' ? '#EF4444' : '#F59E0B' }
         <View style={styles.roomStatus}>
           <View style={[
             styles.statusBadge,
@@ -305,7 +305,7 @@ export default function StudyRoomsScreen() {
         <TouchableOpacity 
           style={[
             styles.joinButton,
-            { backgroundColor: room.status === 'live' ? '#10B981' : '#3B82F6' }
+            { backgroundColor: room.status === 'live' ? '#EF4444' : '#3B82F6' }
           ]}
           onPress={() => setIsJoinRoomOpen(true)}
         >
