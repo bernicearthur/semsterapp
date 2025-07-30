@@ -153,7 +153,6 @@ export default function StudyRoomsScreen() {
   const [isJoinRoomOpen, setIsJoinRoomOpen] = useState(false);
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
   const [isCameraPreviewOpen, setIsCameraPreviewOpen] = useState(false);
-  const [isUsePasscodeOpen, setIsUsePasscodeOpen] = useState(false);
   const [selectedRoomForJoin, setSelectedRoomForJoin] = useState<StudyRoom | null>(null);
   const [joinRoomData, setJoinRoomData] = useState<{ roomId: string; roomName?: string; password?: string } | null>(null);
 
@@ -322,7 +321,7 @@ export default function StudyRoomsScreen() {
           ]}
           onPress={() => handleRoomPress(room)}
         >
-          onPress={() => setIsUsePasscodeOpen(true)}
+          <Video size={16} color="#FFFFFF" />
           <Text style={styles.joinButtonText}>
             {room.isPrivate && room.status === 'live' ? 'Request' : room.status === 'live' ? 'Join' : 'Schedule'}
           </Text>
@@ -468,8 +467,8 @@ export default function StudyRoomsScreen() {
 
         {/* Join Room Drawer */}
         <JoinStudyRoomDrawer
-          isOpen={isUsePasscodeOpen}
-          onClose={() => setIsUsePasscodeOpen(false)}
+          isOpen={isJoinRoomOpen}
+          onClose={() => setIsJoinRoomOpen(false)}
           onJoinRoom={handleJoinRoom}
         />
 
