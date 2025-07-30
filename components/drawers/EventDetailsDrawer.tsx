@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Linking, Alert, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy, MoreVertical } from 'lucide-react-native';
+import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy, MoveVertical as MoreVertical } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
@@ -48,7 +48,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
-  const [showMoreOptions, setShowMoreOptions] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
 
@@ -115,19 +114,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     }
   };
 
-  const handleMoreOptions = () => {
-    setShowMoreOptions(!showMoreOptions);
-  };
-
-  const handleReportEvent = () => {
-    Alert.alert('Report Event', 'This event has been reported for review.');
-    setShowMoreOptions(false);
-  };
-
-  const handleContactOrganizer = () => {
-    Alert.alert('Contact Organizer', `Message sent to ${event?.organizer.name}`);
-    setShowMoreOptions(false);
-  };
 
 
   if (!isOpen || !event) return null;
@@ -156,7 +142,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
 
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header Image */}
-              <View style={[styles.headerImageContainer, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+              <View style={styles.headerImageContainer}>
                 <Image source={{ uri: event.image }} style={styles.headerImage} />
                 
                 {/* Header Controls */}
@@ -186,13 +172,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                     >
                       <Share2 size={24} color="#FFFFFF" />
                     </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
-                      onPress={handleMoreOptions}
-                    >
-                      <MoreVertical size={24} color="#FFFFFF" />
-                    </TouchableOpacity>
                   </View>
                 </View>
 
@@ -220,7 +199,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
               </View>
 
               {/* Content */}
-              <View style={[styles.content, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+              <View style={styles.content}>
                 {/* Title and Category */}
                 <View style={styles.titleSection}>
                   <Text style={[styles.eventTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -338,84 +317,14 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                 )}
 
                 {/* Integrated Attending Section */}
-                <View style={[styles.integratedAttendingSection, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+                <View style={[styles.integratedAttendingSection, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
                   <TouchableOpacity
                     style={[
                       styles.integratedAttendButton,
-                      { 
-                        backgroundColor: event.isAttending ? '#10B981' : '#3B82F6',
-                        shadowColor: event.isAttending ? '#10B981' : '#3B82F6',
-                      }
+                      { backgroundColor: event.isAttending ? '#10B981' : '#3B82F6' }
                     ]}
                     onPress={() => onToggleAttendance(event.id)}
                   >
-                    <View style={styles.attendButtonContent}>
-                      {event.isAttending && (
-                        <View style={styles.attendingIndicator}>
-                          <View style={styles.attendingDot} />
-                        </View>
-                      )}
-                      <Text style={styles.integratedAttendButtonText}>
-                        {event.isAttending ? '✓ Attending' : 'Attend Event'}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  
-                  <Text style={[styles.attendingSubtext, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-                    {event.isAttending 
-                      ? `You and ${event.attendees - 1} others are attending` 
-                      : `${event.attendees} people are attending`}
-                  </Text>
-                </View>
-              </View>
-            </ScrollView>
-
-            {/* More Options Menu */}
-            {showMoreOptions && (
-              <View style={[StyleSheet.absoluteFill, styles.moreOptionsOverlay]}>
-                <TouchableOpacity
-                  style={StyleSheet.absoluteFill}
-                  onPress={() => setShowMoreOptions(false)}
-                />
-                <View style={[
-                  styles.moreOptionsMenu,
-                  { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }
-                ]}>
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleContactOrganizer}
-                  >
-                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Contact Organizer
-                    </Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleCopyLink}
-                  >
-                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Copy Event Link
-                    </Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleReportEvent}
-                  >
-                    <Text style={[styles.moreOptionText, { color: '#EF4444' }]}>
-                      Report Event
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
-          </SafeAreaView>
-        </Animated.View>
-      </GestureDetector>
-    </View>
-  );
-}
                     <Text style={styles.integratedAttendButtonText}>
                       {event.isAttending ? 'Attending' : 'Attend Event'}
                     </Text>
@@ -483,10 +392,15 @@ const styles = StyleSheet.create({
   headerImageContainer: {
     position: 'relative',
     height: 280,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    overflow: 'hidden',
   },
   headerImage: {
     width: '100%',
     height: '100%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
   headerControls: {
     position: 'absolute',
@@ -545,12 +459,8 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 24,
-    paddingTop: 0,
-    marginTop: -20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    position: 'relative',
-    zIndex: 1,
+    paddingTop: 20,
+    backgroundColor: 'inherit',
   },
   titleSection: {
     marginBottom: 24,
@@ -680,87 +590,37 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
   integratedAttendingSection: {
-    marginTop: 24,
+    marginTop: 32,
     marginBottom: 24,
-  },
-  integratedAttendButton: {
-    paddingVertical: 20,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  attendButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  attendingIndicator: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  attendingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FFFFFF',
-  },
-  integratedAttendButtonText: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontFamily: 'Inter-SemiBold',
-    letterSpacing: 0.3,
-  },
-  attendingSubtext: {
-    fontSize: 14,
-    fontFamily: 'Inter-Regular',
-    textAlign: 'center',
-    marginTop: 12,
-    opacity: 0.8,
-  },
-  moreOptionsOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-    padding: 16,
-    zIndex: 1000,
-  },
-  moreOptionsMenu: {
-    position: 'absolute',
-    top: 80,
-    right: 16,
-    borderRadius: 12,
-    padding: 8,
+    padding: 20,
+    borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  integratedAttendButton: {
+    paddingVertical: 18,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
     elevation: 5,
-    minWidth: 180,
   },
-  moreOptionItem: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  moreOptionText: {
-    fontSize: 16,
-    fontFamily: 'Inter-Medium',
+  integratedAttendButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
+    letterSpacing: 0.5,
   },
 });
