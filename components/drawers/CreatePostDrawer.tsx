@@ -353,7 +353,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 2000,
+    zIndex: 1000,
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
