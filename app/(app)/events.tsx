@@ -215,6 +215,15 @@ export default function EventsScreen() {
     setSelectedEvent(event);
   };
 
+  const handleCreateEvent = (newEvent: Omit<Event, 'id'>) => {
+    const event: Event = {
+      ...newEvent,
+      id: Date.now().toString(),
+    };
+    setEvents(prevEvents => [event, ...prevEvents]);
+    setIsCreateEventOpen(false);
+  };
+
   const filteredEvents = events.filter(event => {
     // Category filter
     if (selectedCategory !== 'All') {
