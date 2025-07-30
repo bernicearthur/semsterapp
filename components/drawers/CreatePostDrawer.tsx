@@ -263,6 +263,24 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
               </View>
             )}
 
+            {/* Post Button */}
+            <View style={styles.postButtonContainer}>
+              <TouchableOpacity 
+                style={[
+                  styles.postButton, 
+                  { 
+                    backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
+                    opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
+                  }
+                ]}
+                onPress={handleCreatePost}
+                disabled={!postText.trim() && selectedImages.length === 0}
+              >
+                <Send size={18} color="#FFFFFF" />
+                <Text style={styles.postButtonText}>Post</Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Action Tools */}
             <View style={styles.actionsContainer}>
               <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
@@ -300,23 +318,6 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             </View>
           </ScrollView>
 
-          {/* Footer */}
-          <View style={[styles.footer, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
-            <TouchableOpacity 
-              style={[
-                styles.postButton, 
-                { 
-                  backgroundColor: postText.trim() || selectedImages.length > 0 ? '#3B82F6' : (isDark ? '#374151' : '#E5E7EB'),
-                  opacity: postText.trim() || selectedImages.length > 0 ? 1 : 0.5
-                }
-              ]}
-              onPress={handleCreatePost}
-              disabled={!postText.trim() && selectedImages.length === 0}
-            >
-              <Send size={18} color="#FFFFFF" />
-              <Text style={styles.postButtonText}>Post</Text>
-            </TouchableOpacity>
-          </View>
         </SafeAreaView>
       </Animated.View>
 
@@ -490,6 +491,10 @@ const styles = StyleSheet.create({
   actionsContainer: {
     marginTop: 4,
   },
+  postButtonContainer: {
+    marginTop: 16,
+    marginBottom: 8,
+  },
   actionButtonsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -509,19 +514,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
-  },
-  footer: {
-    padding: 20,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
   },
   postButton: {
     flexDirection: 'row',
