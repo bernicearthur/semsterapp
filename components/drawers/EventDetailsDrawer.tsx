@@ -409,6 +409,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                   onPress={handleContactOrganizer}
                 >
                   <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                  <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
                   <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
                     Contact Organizer
                   </Text>
@@ -419,6 +420,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                   onPress={handleCopyLink}
                 >
                   <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                  <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
                   <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
                     Copy Event Link
                   </Text>
@@ -428,6 +430,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                   style={styles.moreOptionItem}
                   onPress={handleReportEvent}
                 >
+                  <Flag size={20} color="#F59E0B" />
                   <Flag size={20} color="#F59E0B" />
                   <Text style={[styles.moreOptionText, { color: '#F59E0B' }]}>
                     Report Event
@@ -747,10 +750,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   moreOptionsMenu: {
-    position: 'absolute', 
-    top: 60,
+    position: 'absolute',
+    top: 80,
     right: 16,
-    paddingHorizontal: 16,
+    borderRadius: 12,
+    padding: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -759,18 +763,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    minWidth: 200,
   },
   moreOptionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    marginBottom: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     gap: 12,
   },
   moreOptionText: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Inter-Medium',
   },
   moreDotsIcon: {
