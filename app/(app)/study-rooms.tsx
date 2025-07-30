@@ -25,7 +25,6 @@ interface StudyRoom {
   startTime?: string;
   endTime?: string;
   description: string;
-  subject?: string;
 }
 
 const initialRooms: StudyRoom[] = [
@@ -49,7 +48,6 @@ const initialRooms: StudyRoom[] = [
     isPrivate: false,
     status: 'live',
     description: 'Going over data structures and algorithms for the final exam. All welcome!',
-    subject: 'Computer Science',
   },
   {
     id: '2',
@@ -70,7 +68,6 @@ const initialRooms: StudyRoom[] = [
     isPrivate: true,
     status: 'live',
     description: 'Working through integration problems and preparing for midterm.',
-    subject: 'Mathematics',
   },
   {
     id: '3',
@@ -90,7 +87,6 @@ const initialRooms: StudyRoom[] = [
     isPrivate: false,
     status: 'live',
     description: 'Discussing lab results and preparing lab reports.',
-    subject: 'Physics',
   },
   {
     id: '4',
@@ -113,7 +109,6 @@ const initialRooms: StudyRoom[] = [
     startTime: 'Today, 3:00 PM',
     endTime: 'Today, 5:00 PM',
     description: 'Collaborative essay writing and peer review session.',
-    subject: 'English',
   },
   {
     id: '5',
@@ -136,7 +131,6 @@ const initialRooms: StudyRoom[] = [
     startTime: 'Tomorrow, 10:00 AM',
     endTime: 'Tomorrow, 12:00 PM',
     description: 'Review session for upcoming organic chemistry exam.',
-    subject: 'Chemistry',
   },
 ];
 
@@ -348,7 +342,7 @@ export default function StudyRoomsScreen() {
                 <Search size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
                 <TextInput
                   style={[styles.searchInput, { color: isDark ? '#E5E7EB' : '#1F2937' }]}
-                  placeholder="Search rooms, subjects, or hosts"
+                  placeholder="Search rooms or hosts"
                   placeholderTextColor={isDark ? '#9CA3AF' : '#6B7280'}
                   value={searchQuery}
                   onChangeText={setSearchQuery}
