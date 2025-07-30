@@ -186,7 +186,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                   
                   <View style={styles.headerRightControls}>
                     <TouchableOpacity 
-                   onPress={toggleMoreOptions}
+                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
                       onPress={() => onToggleSaved(event.id)}
                     >
                       <Bookmark 
