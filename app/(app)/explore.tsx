@@ -509,6 +509,7 @@ const styles = StyleSheet.create({
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 4,
     flex: 1,
   },
   groupName: {
@@ -520,12 +521,11 @@ const styles = StyleSheet.create({
   groupDescription: {
     fontFamily: 'Inter-Regular',
     fontSize: 14,
-   marginTop: 4,
+    marginBottom: 4,
   },
   groupMembers: {
     fontFamily: 'Inter-Regular',
     fontSize: 12,
-   marginTop: 2,
   },
   joinButton: {
     paddingVertical: 8,
@@ -562,6 +562,7 @@ const styles = StyleSheet.create({
   channelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 4,
     flex: 1,
   },
   channelName: {
@@ -585,12 +586,11 @@ const styles = StyleSheet.create({
   channelDescription: {
     fontFamily: 'Inter-Regular',
     fontSize: 14,
-   marginTop: 4,
+    marginBottom: 4,
   },
   channelSubscribers: {
     fontFamily: 'Inter-Regular',
     fontSize: 12,
-   marginTop: 2,
   },
   subscribeButton: {
     paddingVertical: 8,
