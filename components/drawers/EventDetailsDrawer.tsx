@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, Dimensions, Linking, Alert, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy, MoveVertical as MoreVertical } from 'lucide-react-native';
+import { X, Calendar, Clock, MapPin, Users, Globe, Link, Bookmark, Share2, ExternalLink, Copy, MoveVertical as MoreVertical, UserPlus, Flag } from 'lucide-react-native';
 import Animated, { 
   useAnimatedStyle, 
   withSpring,
   useSharedValue,
   runOnJS,
+  withTiming,
+  interpolate
 } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -48,13 +50,22 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const moreOptionsOpacity = useSharedValue(0);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
 
+  const moreOptionsStyle = useAnimatedStyle(() => ({
+    opacity: moreOptionsOpacity.value,
+    transform: [{ 
+      translateY: interpolate(moreOptionsOpacity.value, [0, 1], [20, 0])
+    }],
+  }));
 
   const gesture = Gesture.Pan()
     .activeOffsetY([0, 15])
@@ -114,6 +125,35 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     }
   };
 
+  const toggleMoreOptions = () => {
+    setShowMoreOptions(!showMoreOptions);
+    moreOptionsOpacity.value = withTiming(showMoreOptions ? 0 : 1);
+  };
+
+  const handleContactOrganizer = () => {
+    setShowMoreOptions(false);
+    moreOptionsOpacity.value = withTiming(0);
+    Alert.alert('Contact Organizer', `Send a message to ${event?.organizer.name}?`);
+  };
+
+  const handleReportEvent = () => {
+    setShowMoreOptions(false);
+    moreOptionsOpacity.value = withTiming(0);
+    Alert.alert('Report Event', 'Report this event for inappropriate content?');
+  };
+  const handleMoreOptions = () => {
+    setShowMoreOptions(!showMoreOptions);
+  };
+
+  const handleReportEvent = () => {
+    Alert.alert('Report Event', 'This event has been reported for review.');
+    setShowMoreOptions(false);
+  };
+
+  const handleContactOrganizer = () => {
+    Alert.alert('Contact Organizer', `Message sent to ${event?.organizer.name}`);
+    setShowMoreOptions(false);
+  };
 
 
   if (!isOpen || !event) return null;
@@ -142,7 +182,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
 
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header Image */}
-              <View style={styles.headerImageContainer}>
+              <View style={[styles.headerImageContainer, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
                 <Image source={{ uri: event.image }} style={styles.headerImage} />
                 
                 {/* Header Controls */}
@@ -172,6 +212,20 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                     >
                       <Share2 size={24} color="#FFFFFF" />
                     </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
+                      onPress={toggleMoreOptions}
+                    >
+                      <MoreVertical size={24} color="#FFFFFF" />
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[styles.headerButton, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}
+                      onPress={handleMoreOptions}
+                    >
+                      <MoreVertical size={24} color="#FFFFFF" />
+                    </TouchableOpacity>
                   </View>
                 </View>
 
@@ -199,7 +253,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
               </View>
 
               {/* Content */}
-              <View style={styles.content}>
+              <View style={[styles.content, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
                 {/* Title and Category */}
                 <View style={styles.titleSection}>
                   <Text style={[styles.eventTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -317,21 +371,134 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                 )}
 
                 {/* Integrated Attending Section */}
-                <View style={[styles.integratedAttendingSection, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+                <View style={[styles.integratedAttendingSection, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
                   <TouchableOpacity
                     style={[
                       styles.integratedAttendButton,
-                      { backgroundColor: event.isAttending ? '#10B981' : '#3B82F6' }
+                      { 
+                        backgroundColor: event.isAttending ? '#10B981' : '#3B82F6',
+                        shadowColor: event.isAttending ? '#10B981' : '#3B82F6',
+                      }
+                        backgroundColor: event.isAttending ? '#10B981' : '#3B82F6',
+                        shadowColor: event.isAttending ? '#10B981' : '#3B82F6',
+                      }
                     ]}
                     onPress={() => onToggleAttendance(event.id)}
                   >
-                    <Text style={styles.integratedAttendButtonText}>
-                      {event.isAttending ? 'Attending' : 'Attend Event'}
+                    <View style={styles.attendButtonContent}>
+                      {event.isAttending && (
+                        <View style={styles.attendingIndicator}>
+                          <View style={styles.attendingDot} />
+                        </View>
+                      )}
+                      <View style={styles.attendButtonTextContainer}>
+                        <Text style={styles.integratedAttendButtonText}>
+                          {event.isAttending ? 'Attending' : 'Attend Event'}
+                        </Text>
+                        <Text style={styles.attendButtonSubtext}>
+                          {event.attendees} {event.maxAttendees ? `/ ${event.maxAttendees}` : ''} people attending
+                        </Text>
+                      </View>
+                    </View>
+                          <View style={styles.attendingDot} />
+                        </View>
+                      )}
+                      <Text style={styles.integratedAttendButtonText}>
+                        {event.isAttending ? '✓ Attending' : 'Attend Event'}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  
+                  <Text style={[styles.attendingSubtext, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                    {event.isAttending 
+                      ? `You and ${event.attendees - 1} others are attending` 
+                      : `${event.attendees} people are attending`}
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+
+            {/* More Options Menu */}
+            {showMoreOptions && (
+              <Animated.View 
+                style={[
+                  styles.moreOptionsMenu,
+                  { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' },
+                  moreOptionsStyle
+                ]}
+              >
+                <TouchableOpacity 
+                  style={styles.moreOptionItem}
+                  onPress={handleContactOrganizer}
+                >
+                  <UserPlus size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                  <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Contact Organizer
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.moreOptionItem}
+                  onPress={handleCopyLink}
+                >
+                  <Copy size={20} color={isDark ? '#E5E7EB' : '#4B5563'} />
+                  <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Copy Event Link
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={styles.moreOptionItem}
+                  onPress={handleReportEvent}
+                >
+                  <Flag size={20} color="#F59E0B" />
+                  <Text style={[styles.moreOptionText, { color: '#F59E0B' }]}>
+                    Report Event
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
+            )}
+
+            {/* More Options Menu */}
+            {showMoreOptions && (
+              <View style={[StyleSheet.absoluteFill, styles.moreOptionsOverlay]}>
+                <TouchableOpacity
+                  style={StyleSheet.absoluteFill}
+                  onPress={() => setShowMoreOptions(false)}
+                />
+                <View style={[
+                  styles.moreOptionsMenu,
+                  { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }
+                ]}>
+                  <TouchableOpacity 
+                    style={styles.moreOptionItem}
+                    onPress={handleContactOrganizer}
+                  >
+                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Contact Organizer
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={styles.moreOptionItem}
+                    onPress={handleCopyLink}
+                  >
+                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                      Copy Event Link
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={styles.moreOptionItem}
+                    onPress={handleReportEvent}
+                  >
+                    <Text style={[styles.moreOptionText, { color: '#EF4444' }]}>
+                      Report Event
                     </Text>
                   </TouchableOpacity>
                 </View>
               </View>
-            </ScrollView>
+            )}
           </SafeAreaView>
         </Animated.View>
       </GestureDetector>
@@ -392,15 +559,10 @@ const styles = StyleSheet.create({
   headerImageContainer: {
     position: 'relative',
     height: 280,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    overflow: 'hidden',
   },
   headerImage: {
     width: '100%',
     height: '100%',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
   },
   headerControls: {
     position: 'absolute',
@@ -590,37 +752,140 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
   integratedAttendingSection: {
-    marginTop: 32,
+    marginTop: 24,
     marginBottom: 24,
-    padding: 20,
+    padding: 0,
     borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
   },
   integratedAttendButton: {
-    paddingVertical: 18,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
     borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 3,
+      height: 4,
     },
-    shadowOpacity: 0.12,
-    shadowRadius: 5,
-    elevation: 5,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  attendButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  attendingIndicator: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  attendingDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+  },
+  attendButtonTextContainer: {
+    alignItems: 'center',
+  },
+  attendButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  attendingIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  attendingDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#FFFFFF',
   },
   integratedAttendButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontFamily: 'Inter-SemiBold',
     letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  attendButtonSubtext: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 13,
+    fontFamily: 'Inter-Regular',
+  },
+  moreOptionsMenu: {
+    position: 'absolute',
+    top: 80,
+    right: 16,
+    borderRadius: 12,
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    minWidth: 180,
+    zIndex: 1000,
+  },
+  moreOptionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  moreOptionText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+  },
+  attendingSubtext: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    marginTop: 12,
+    opacity: 0.8,
+  },
+  moreOptionsOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  moreOptionsMenu: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  moreOptionItem: {
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 8,
+  },
+  moreOptionText: {
+    fontSize: 16,
+    fontFamily: 'Inter-Medium',
+    textAlign: 'center',
   },
 });
