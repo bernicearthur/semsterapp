@@ -344,6 +344,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cameraPreview: {
+    flex: 1,
     height: 300,
     borderRadius: 16,
     justifyContent: 'center',
