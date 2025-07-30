@@ -21,7 +21,7 @@ interface ProfileDrawerProps {
 
 export function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
   const { isDark, toggleTheme } = useTheme();
-  const { userProfile, signOut, getInitials } = useAuth();
+  const { userProfile, signOut } = useAuth();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
   const [avatarError, setAvatarError] = useState(false);
