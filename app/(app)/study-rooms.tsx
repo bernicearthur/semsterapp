@@ -152,7 +152,6 @@ export default function StudyRoomsScreen() {
   const { isDark } = useTheme();
   const [rooms, setRooms] = useState<StudyRoom[]>(initialRooms);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('All');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [showFilters, setShowFilters] = useState(false);
   const [isJoinRoomOpen, setIsJoinRoomOpen] = useState(false);
@@ -179,15 +178,9 @@ export default function StudyRoomsScreen() {
       const query = searchQuery.toLowerCase();
       if (!room.name.toLowerCase().includes(query) &&
           !room.description.toLowerCase().includes(query) &&
-          !room.host.name.toLowerCase().includes(query) &&
-          !(room.subject && room.subject.toLowerCase().includes(query))) {
+          !room.host.name.toLowerCase().includes(query)) {
         return false;
       }
-    }
-
-    // Subject filter
-    if (selectedSubject !== 'All' && room.subject !== selectedSubject) {
-      return false;
     }
 
     // Status filter
@@ -377,42 +370,6 @@ export default function StudyRoomsScreen() {
             {/* Filters */}
             {showFilters && (
               <View style={styles.filtersContainer}>
-                <View style={styles.filterSection}>
-                  <Text style={[styles.filterLabel, { color: isDark ? '#FFFFFF' : '#111827' }]}>
-                    Subject
-                  </Text>
-                  <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={styles.filterOptions}
-                  >
-                    {subjects.map((subject) => (
-                      <TouchableOpacity
-                        key={subject}
-                        style={[
-                          styles.filterOption,
-                          { 
-                            backgroundColor: selectedSubject === subject ? 
-                              '#3B82F6' : 
-                              (isDark ? '#374151' : '#F3F4F6')
-                          }
-                        ]}
-                        onPress={() => setSelectedSubject(subject)}
-                      >
-                        <Text style={[
-                          styles.filterOptionText,
-                          { 
-                            color: selectedSubject === subject ? 
-                              '#FFFFFF' : 
-                              (isDark ? '#E5E7EB' : '#4B5563')
-                          }
-                        ]}>
-                          {subject}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
 
                 <View style={styles.filterSection}>
                   <Text style={[styles.filterLabel, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -494,17 +451,10 @@ export default function StudyRoomsScreen() {
         {/* Floating Action Buttons */}
         <View style={styles.fabContainer}>
           <TouchableOpacity 
-            style={[styles.fab, styles.secondaryFab, { backgroundColor: isDark ? '#374151' : '#F3F4F6' }]}
+            style={[styles.fab, styles.primaryFab, { backgroundColor: '#3B82F6' }]}
             onPress={() => setIsJoinRoomOpen(true)}
           >
-            <Users size={24} color={isDark ? '#E5E7EB' : '#4B5563'} />
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.fab, styles.primaryFab, { backgroundColor: '#3B82F6' }]}
-            onPress={() => setIsCreateRoomOpen(true)}
-          >
-            <Plus size={24} color="#FFFFFF" />
+            <Users size={24} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
 
@@ -515,12 +465,6 @@ export default function StudyRoomsScreen() {
           onJoinRoom={handleJoinRoom}
         />
 
-        {/* Create Room Drawer */}
-        <CreateStudyRoomDrawer
-          isOpen={isCreateRoomOpen}
-          onClose={() => setIsCreateRoomOpen(false)}
-          onCreateRoom={handleCreateRoom}
-        />
       </SafeAreaView>
     </SwipeGestureWrapper>
   );
