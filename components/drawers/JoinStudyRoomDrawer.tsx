@@ -255,31 +255,31 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
               </View>
             </ScrollView>
 
+            {/* Join Button - Unified with main drawer */}
+            <View style={[styles.joinContainer, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+              <TouchableOpacity 
+                style={[
+                  styles.joinButton, 
+                  { 
+                    backgroundColor: password.trim() ? '#10B981' : (isDark ? '#374151' : '#E5E7EB'),
+                    opacity: password.trim() ? 1 : 0.5
+                  }
+                ]}
+                onPress={handleJoinRoom}
+                disabled={!password.trim()}
+              >
+                <Video size={24} color="#FFFFFF" />
+                <Text style={styles.joinButtonText}>Join Room</Text>
+              </TouchableOpacity>
+              
+              <Text style={[styles.joinHint, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
+                You can adjust your camera and microphone settings anytime during the call
+              </Text>
+            </View>
+
           </SafeAreaView>
 
           {/* Join Button - Unified with main drawer */}
-          <View style={[styles.joinContainer, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
-            <TouchableOpacity 
-              style={[
-                styles.joinButton, 
-                { 
-                  backgroundColor: password.trim() ? '#10B981' : (isDark ? '#374151' : '#E5E7EB'),
-                  opacity: password.trim() ? 1 : 0.5
-                }
-              ]}
-              onPress={handleJoinRoom}
-              disabled={!password.trim()}
-            >
-              <Video size={24} color="#FFFFFF" />
-              <Text style={styles.joinButtonText}>Join Room</Text>
-            </TouchableOpacity>
-            
-            <Text style={[styles.joinHint, { color: isDark ? '#9CA3AF' : '#6B7280' }]}>
-              You can adjust your camera and microphone settings anytime during the call
-            </Text>
-          </View>
-        </Animated.View>
-      </GestureDetector>
     </View>
   );
 }
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   cameraPreview: {
-    height: 200,
+    height: 160,
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
