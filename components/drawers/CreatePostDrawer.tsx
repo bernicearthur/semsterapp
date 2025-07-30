@@ -495,6 +495,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     borderRadius: 16,
     padding: 16,
+  },
+  actionButton: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  actionText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+  },
   integratedHeader: {
     flexDirection: 'row',
     alignItems: 'center',
