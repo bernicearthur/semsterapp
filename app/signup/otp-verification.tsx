@@ -341,6 +341,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     fontSize: 24,
     fontFamily: 'Inter-Bold',
+    outlineStyle: 'none',
   },
   verificationSuccess: {
     alignItems: 'center',

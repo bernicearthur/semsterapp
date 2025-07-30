@@ -391,6 +391,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
+    outlineStyle: 'none',
   },
   errorContainer: {
     flexDirection: 'row',

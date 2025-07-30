@@ -339,6 +339,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
+    outlineStyle: 'none',
   },
   loadingContainer: {
     flex: 1,
