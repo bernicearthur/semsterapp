@@ -52,11 +52,11 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   const screenHeight = Dimensions.get('window').height;
   const [showMoreOptions, setShowMoreOptions] = useState(false);
   
-  const translateX = useSharedValue(screenWidth);
+  const translateY = useSharedValue(screenHeight);
   const moreOptionsOpacity = useSharedValue(0);
 
   const drawerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+    transform: [{ translateY: translateY.value }],
   }));
 
   const moreOptionsStyle = useAnimatedStyle(() => ({
@@ -67,15 +67,15 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
   }));
 
   const gesture = Gesture.Pan()
-    .activeOffsetX([0, 15])
+    .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationX > 0) {
-        translateX.value = event.translationX;
+      if (event.translationY > 0) {
+        translateY.value = event.translationY;
       }
     })
     .onEnd((event) => {
-      if (event.translationX > screenWidth * 0.3 || event.velocityX > 500) {
-        translateX.value = withSpring(screenWidth, {
+      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+        translateY.value = withSpring(screenHeight, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -83,7 +83,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
           runOnJS(onClose)();
         });
       } else {
-        translateX.value = withSpring(0, {
+        translateY.value = withSpring(0, {
           damping: 20,
           stiffness: 90,
           mass: 0.4,
@@ -92,7 +92,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
     });
 
   React.useEffect(() => {
-    translateX.value = withSpring(isOpen ? 0 : screenWidth, {
+    translateY.value = withSpring(isOpen ? 0 : screenHeight, {
       damping: 20,
       stiffness: 90,
       mass: 0.4,
@@ -149,15 +149,26 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
 
   return (
     <View style={[StyleSheet.absoluteFill, styles.container]}>
+      <TouchableOpacity 
+        style={[StyleSheet.absoluteFill, styles.overlay]}
+        activeOpacity={1}
+        onPress={onClose}
+      />
+      
       <GestureDetector gesture={gesture}>
         <Animated.View 
           style={[
             styles.drawer,
-            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF', width: screenWidth, height: screenHeight },
+            { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' },
             drawerStyle,
           ]}
         >
           <SafeAreaView style={{ flex: 1 }}>
+            {/* Drag Handle */}
+            <View style={styles.dragHandle}>
+              <View style={[styles.dragIndicator, { backgroundColor: isDark ? '#4B5563' : '#D1D5DB' }]} />
+            </View>
+
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header Image */}
               <View style={styles.headerImageContainer}>
@@ -408,20 +419,34 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 1000,
   },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
   drawer: {
-    flex: 1,
     position: 'absolute',
-    top: 0,
-    right: 0,
     bottom: 0,
+    left: 0,
+    right: 0,
+    height: '90%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     shadowColor: '#000',
     shadowOffset: {
-      width: -2,
-      height: 0,
+      width: 0,
+      height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
   },
   headerImageContainer: {
     position: 'relative',

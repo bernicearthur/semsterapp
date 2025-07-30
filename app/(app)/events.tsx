@@ -297,7 +297,6 @@ export default function EventsScreen() {
             {event.title}
           </Text>
           <TouchableOpacity>
-            <MoreVertical size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
           </TouchableOpacity>
         </View>
 
