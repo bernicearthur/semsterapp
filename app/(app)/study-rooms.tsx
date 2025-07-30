@@ -232,11 +232,11 @@ export default function StudyRoomsScreen() {
         <View style={styles.roomStatus}>
           <View style={[
             styles.statusBadge,
-            { backgroundColor: room.status === 'live' ? '#10B981' : '#F59E0B' }
+            { backgroundColor: room.status === 'live' ? '#EF4444' : '#F59E0B' }
           ]}>
             <View style={[
               styles.statusDot,
-              { backgroundColor: room.status === 'live' ? '#FFFFFF' : '#FFFFFF' }
+              { backgroundColor: '#FFFFFF' }
             ]} />
             <Text style={styles.statusText}>
               {room.status === 'live' ? 'LIVE' : 'SCHEDULED'}
