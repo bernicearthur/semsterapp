@@ -620,16 +620,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter-Regular',
   },
-  subjectBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-  },
-  subjectText: {
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
-  },
   roomStatus: {
     alignItems: 'flex-end',
   },
