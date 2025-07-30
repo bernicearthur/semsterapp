@@ -461,15 +461,22 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   drawer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    bottom: 0,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -483,7 +490,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 12,
+    minHeight: 40,
   },
   headerButton: {
     padding: 4,
@@ -507,7 +517,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
+    paddingBottom: 40,
   },
   typeSelector: {
     flexDirection: 'row',

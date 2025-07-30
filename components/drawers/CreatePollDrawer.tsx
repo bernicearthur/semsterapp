@@ -27,6 +27,7 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
+  const [isExtended, setIsExtended] = useState(false);
   
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
@@ -35,33 +36,63 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
   const [showAudienceModal, setShowAudienceModal] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const drawerHeight = useSharedValue(0.85);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    height: `${drawerHeight.value * 100}%`,
   }));
 
-  const gesture = Gesture.Pan()
+  const dragHandleGesture = Gesture.Pan()
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      if (isExtended) {
+        // When extended, allow dragging down to collapse
+        if (event.translationY > 0) {
+          const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
+          drawerHeight.value = 1 - (progress * 0.15);
+        }
+      } else {
+        // When collapsed, allow dragging up to extend or down to close
+        if (event.translationY < 0) {
+          const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
+          drawerHeight.value = 0.85 + (progress * 0.15);
+        } else if (event.translationY > 0) {
+          translateY.value = event.translationY;
+        }
       }
     })
     .onEnd((event) => {
-      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-        translateY.value = withSpring(screenHeight, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        }, () => {
-          runOnJS(onClose)();
-        });
+      if (isExtended) {
+        // When extended, decide whether to stay extended or collapse
+        if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
+          // Collapse to 85%
+          drawerHeight.value = withSpring(0.85);
+          runOnJS(setIsExtended)(false);
+        } else {
+          // Stay extended
+          drawerHeight.value = withSpring(1);
+        }
       } else {
-        translateY.value = withSpring(0, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        });
+        // When collapsed, decide whether to extend, stay collapsed, or close
+        if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
+          // Extend to 100%
+          drawerHeight.value = withSpring(1);
+          runOnJS(setIsExtended)(true);
+        } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+          // Close drawer
+          translateY.value = withSpring(screenHeight, {
+            damping: 20,
+            stiffness: 90,
+            mass: 0.4,
+          }, () => {
+            runOnJS(onClose)();
+          });
+        } else {
+          // Stay at current position
+          translateY.value = withSpring(0);
+          drawerHeight.value = withSpring(0.85);
+        }
       }
     });
 
@@ -71,6 +102,12 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
       stiffness: 90,
       mass: 0.4,
     });
+    
+    if (!isOpen) {
+      // Reset to collapsed state when drawer closes
+      setIsExtended(false);
+      drawerHeight.value = 0.85;
+    }
   }, [isOpen]);
 
   const handleAddPollOption = () => {
@@ -388,12 +425,20 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  dragIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
   drawer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: '85%',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     shadowColor: '#000',
@@ -409,7 +454,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 12,
+    minHeight: 40,
   },
   headerButton: {
     padding: 4,
@@ -432,7 +480,10 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
+    paddingBottom: 40,
   },
   section: {
     marginBottom: 24,
