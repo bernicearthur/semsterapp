@@ -138,10 +138,12 @@ export function JoinStudyRoomDrawer({ isOpen, onClose, onJoinRoom }: JoinStudyRo
           Alert.alert('Password Required', 'Please enter the password for this private room');
           return;
         }
-        onJoinRoom(room.id, room.isPrivate ? password : undefined);
+        // Pass room data to parent for camera preview
+        onJoinRoom(room.id, room.isPrivate ? password : undefined, room.name);
       }
     } else if (roomId.trim()) {
-      onJoinRoom(roomId.trim(), password.trim() || undefined);
+      // Pass room ID to parent for camera preview
+      onJoinRoom(roomId.trim(), password.trim() || undefined, `Room ${roomId.trim()}`);
     } else {
       Alert.alert('Room ID Required', 'Please enter a room ID or select an active room');
     }
