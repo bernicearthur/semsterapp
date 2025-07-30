@@ -55,7 +55,6 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
-  const screenHeight = Dimensions.get('window').height;
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
