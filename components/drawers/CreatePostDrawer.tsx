@@ -30,10 +30,10 @@ const audienceOptions = [
     description: 'Anyone can see this post',
   },
   {
-    id: 'connections',
+    id: 'buddies',
     icon: <Users size={24} color="#3B82F6" />,
-    title: 'Connections',
-    description: 'Only your connections can see this post',
+    title: 'Buddies',
+    description: 'Only your buddies can see this post',
   },
   {
     id: 'course',
@@ -175,7 +175,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     switch (selectedAudience) {
       case 'public':
         return <Globe size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
-      case 'connections':
+      case 'buddies':
         return <Users size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
       case 'course':
         return <BookOpen size={22} color={isDark ? '#60A5FA' : '#3B82F6'} />;
@@ -188,8 +188,8 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     switch (selectedAudience) {
       case 'public':
         return 'Public';
-      case 'connections':
-        return 'Connections';
+      case 'buddies':
+        return 'Buddies';
       case 'course':
         return 'Course';
       case 'yeargroup':
@@ -244,7 +244,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             contentContainerStyle={styles.scrollContent}
           >
             {/* Text Input */}
-            <View style={styles.textInputContainer}>
+            <View style={[styles.textInputContainer, { marginHorizontal: 20 }]}>
               <TextInput
                 style={[
                   styles.textInput, 
@@ -263,7 +263,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 
             {/* Selected Images */}
             {selectedImages.length > 0 && (
-              <View style={styles.imagesContainer}>
+              <View style={[styles.imagesContainer, { marginHorizontal: 20 }]}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {selectedImages.map((image, index) => (
                     <View key={index} style={styles.imagePreviewContainer}>
@@ -281,10 +281,10 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             )}
 
             {/* Actions */}
-            <View style={styles.actionsContainer}>
-              <View style={styles.actionButtonsRow}>
+            <View style={[styles.actionsContainer, { marginHorizontal: 20 }]}>
+              <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC', borderRadius: 16, padding: 16 }]}>
                 <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                  style={styles.actionButton}
                   onPress={handleAddPhoto}
                 >
                   <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
@@ -294,7 +294,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                  style={styles.actionButton}
                 >
                   <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                   <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
@@ -303,7 +303,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                  style={styles.actionButton}
                 >
                   <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                   <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
@@ -312,7 +312,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
-                  style={[styles.actionButton, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                  style={styles.actionButton}
                 >
                   <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                   <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
@@ -390,7 +390,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    zIndex: 2000,
+    zIndex: 10000,
   },
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -499,11 +499,10 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: 'column',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
     gap: 8,
-    minWidth: 70,
+    flex: 1,
   },
   actionText: {
     fontSize: 12,
@@ -532,7 +531,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     padding: 16,
-    zIndex: 3000,
+    zIndex: 15000,
   },
   modalContent: {
     borderRadius: 16,
