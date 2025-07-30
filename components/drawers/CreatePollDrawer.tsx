@@ -261,6 +261,38 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
               />
             </View>
 
+            {/* Action Tools */}
+            <View style={styles.actionsContainer}>
+              <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
+                <TouchableOpacity style={styles.actionButton}>
+                  <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Photo
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton}>
+                  <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    File
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton}>
+                  <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Mention
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton}>
+                  <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
+                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
+                    Tag
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             {/* Poll Options */}
             <View style={styles.section}>
               <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#111827' }]}>
@@ -353,38 +385,6 @@ export function CreatePollDrawer({ isOpen, onClose, onCreatePoll }: CreatePollDr
               </View>
             </View>
 
-            {/* Action Tools */}
-            <View style={styles.actionsContainer}>
-              <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
-                <TouchableOpacity style={styles.actionButton}>
-                  <Camera size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Photo
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.actionButton}>
-                  <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    File
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.actionButton}>
-                  <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Mention
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.actionButton}>
-                  <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
-                  <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                    Tag
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
 
             {/* Create Poll Button */}
             <View style={styles.createButtonSection}>
