@@ -153,6 +153,7 @@ export default function StudyRoomsScreen() {
   const [isCreateRoomOpen, setIsCreateRoomOpen] = useState(false);
   const [isCameraPreviewOpen, setIsCameraPreviewOpen] = useState(false);
   const [selectedRoomForJoin, setSelectedRoomForJoin] = useState<StudyRoom | null>(null);
+  const [joinRoomData, setJoinRoomData] = useState<{ roomId: string; roomName?: string; password?: string } | null>(null);
 
   const handleJoinRoom = (roomId: string, password?: string) => {
     const room = rooms.find(r => r.id === roomId);
