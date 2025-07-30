@@ -56,7 +56,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
   
   const [postText, setPostText] = useState('');
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
-  const [selectedAudience, setSelectedAudience] = useState<'public' | 'connections' | 'course' | 'yeargroup'>('public');
+  const [selectedAudience, setSelectedAudience] = useState<'public' | 'buddies' | 'course' | 'yeargroup'>('public');
   const [showAudienceModal, setShowAudienceModal] = useState(false);
   const [isExtended, setIsExtended] = useState(false);
   
@@ -72,13 +72,11 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
       if (isExtended) {
-        // When extended, allow dragging down to collapse
         if (event.translationY > 0) {
           const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
           drawerHeight.value = 1 - (progress * 0.15);
         }
       } else {
-        // When collapsed, allow dragging up to extend or down to close
         if (event.translationY < 0) {
           const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
           drawerHeight.value = 0.85 + (progress * 0.15);
@@ -89,23 +87,17 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     })
     .onEnd((event) => {
       if (isExtended) {
-        // When extended, decide whether to stay extended or collapse
         if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
-          // Collapse to 85%
           drawerHeight.value = withSpring(0.85);
           runOnJS(setIsExtended)(false);
         } else {
-          // Stay extended
           drawerHeight.value = withSpring(1);
         }
       } else {
-        // When collapsed, decide whether to extend, stay collapsed, or close
         if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
-          // Extend to 100%
           drawerHeight.value = withSpring(1);
           runOnJS(setIsExtended)(true);
         } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-          // Close drawer
           translateY.value = withSpring(screenHeight, {
             damping: 20,
             stiffness: 90,
@@ -114,7 +106,6 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             runOnJS(onClose)();
           });
         } else {
-          // Stay at current position
           translateY.value = withSpring(0);
           drawerHeight.value = withSpring(0.85);
         }
@@ -129,14 +120,12 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
     });
     
     if (!isOpen) {
-      // Reset to collapsed state when drawer closes
       setIsExtended(false);
       drawerHeight.value = 0.85;
     }
   }, [isOpen]);
 
   const handleAddPhoto = () => {
-    // Simulate image picker
     const sampleImages = [
       'https://images.pexels.com/photos/3755761/pexels-photo-3755761.jpeg?auto=compress&cs=tinysrgb&w=800',
       'https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&w=800',
@@ -164,7 +153,6 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
 
     onCreatePost(postData);
     
-    // Reset form
     setPostText('');
     setSelectedImages([]);
     setSelectedAudience('public');
@@ -207,7 +195,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
         onPress={onClose}
       />
       
-      <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+      <Animated.View style={[styles.drawer, drawerStyle, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
         <SafeAreaView style={{ flex: 1 }}>
           {/* Drag Handle */}
           <GestureDetector gesture={dragHandleGesture}>
@@ -220,7 +208,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <TouchableOpacity
-                style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#F3F4F6' }]}
+                style={[styles.audienceSelector, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}
                 onPress={() => setShowAudienceModal(true)}
               >
                 {getAudienceIcon()}
@@ -239,20 +227,21 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
             </TouchableOpacity>
           </View>
 
-          {/* Scrollable Content */}
+          {/* Content */}
           <ScrollView 
             style={styles.content} 
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
             {/* Text Input */}
-            <View style={[styles.textInputContainer, { marginTop: 80 }]}>
+            <View style={styles.textInputContainer}>
               <TextInput
                 style={[
                   styles.textInput, 
                   { 
-                    backgroundColor: isDark ? '#1E293B' : '#F9FAFB', 
-                    color: isDark ? '#E5E7EB' : '#1F2937' 
+                    backgroundColor: isDark ? '#1E293B' : '#FFFFFF', 
+                    color: isDark ? '#E5E7EB' : '#1F2937',
+                    borderColor: isDark ? '#374151' : '#E5E7EB'
                   }
                 ]}
                 placeholder="What's on your mind?"
@@ -282,8 +271,8 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
               </View>
             )}
 
-            {/* Actions */}
-            <View style={[styles.actionsContainer, { marginTop: 8 }]}>
+            {/* Action Tools */}
+            <View style={styles.actionsContainer}>
               <View style={[styles.actionButtonsRow, { backgroundColor: isDark ? '#0F172A' : '#F1F5F9' }]}>
                 <TouchableOpacity 
                   style={styles.actionButton}
@@ -295,27 +284,21 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
                   </Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity 
-                  style={styles.actionButton}
-                >
+                <TouchableOpacity style={styles.actionButton}>
                   <Paperclip size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                   <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
                     File
                   </Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity 
-                  style={styles.actionButton}
-                >
+                <TouchableOpacity style={styles.actionButton}>
                   <AtSign size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                   <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
                     Mention
                   </Text>
                 </TouchableOpacity>
                 
-                <TouchableOpacity 
-                  style={styles.actionButton}
-                >
+                <TouchableOpacity style={styles.actionButton}>
                   <Hash size={20} color={isDark ? '#60A5FA' : '#3B82F6'} />
                   <Text style={[styles.actionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
                     Tag
@@ -326,7 +309,7 @@ export function CreatePostDrawer({ isOpen, onClose, onCreatePost }: CreatePostDr
           </ScrollView>
 
           {/* Footer */}
-          <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#F8FAFC' }]}>
+          <View style={[styles.footer, { backgroundColor: isDark ? '#1E293B' : '#FFFFFF' }]}>
             <TouchableOpacity 
               style={[
                 styles.postButton, 
@@ -423,19 +406,13 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   header: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 4,
-    paddingBottom: 12,
-    minHeight: 40,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-    backgroundColor: 'inherit',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
   },
   headerLeft: {
     flex: 1,
@@ -444,9 +421,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 20,
     alignSelf: 'flex-start',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  audienceText: {
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 14,
+    marginLeft: 8,
   },
   headerTitle: {
     fontSize: 20,
@@ -462,27 +452,30 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 20,
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    padding: 20,
     paddingBottom: 40,
   },
-  audienceText: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 14,
-    marginLeft: 8,
-  },
   textInputContainer: {
-    marginBottom: 8,
+    marginBottom: 16,
   },
   textInput: {
-    borderRadius: 12,
+    borderWidth: 1,
+    borderRadius: 16,
     padding: 16,
     fontSize: 16,
     fontFamily: 'Inter-Regular',
     minHeight: 120,
     textAlignVertical: 'top',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   imagesContainer: {
     marginBottom: 16,
@@ -505,14 +498,21 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   actionsContainer: {
-    marginTop: 4,
+    marginTop: 8,
   },
   actionButtonsRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     borderRadius: 16,
     padding: 16,
-    marginHorizontal: 0,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   actionButton: {
     flexDirection: 'column',
@@ -528,15 +528,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: {
-    padding: 16,
-    borderTopWidth: 1,
+    padding: 20,
+    borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(0, 0, 0, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   postButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderRadius: 12,
     gap: 8,
   },
@@ -554,6 +562,14 @@ const styles = StyleSheet.create({
   modalContent: {
     borderRadius: 16,
     padding: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   modalTitle: {
     fontFamily: 'Inter-Bold',
