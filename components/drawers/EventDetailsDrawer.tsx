@@ -358,7 +358,7 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
                 )}
 
                 {/* Integrated Attending Section */}
-                <View style={[styles.integratedAttendingSection, { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }]}>
+                <View style={styles.integratedAttendingSection}>
                   <TouchableOpacity
                     style={[
                       styles.integratedAttendButton,
@@ -436,46 +436,6 @@ export function EventDetailsDrawer({ isOpen, onClose, event, onToggleAttendance,
               </Animated.View>
             )}
 
-            {/* More Options Menu */}
-            {showMoreOptions && (
-              <View style={[StyleSheet.absoluteFill, styles.moreOptionsOverlay]}>
-                <TouchableOpacity
-                  style={StyleSheet.absoluteFill}
-                  onPress={() => setShowMoreOptions(false)}
-                />
-                <View style={[
-                  styles.moreOptionsMenu,
-                  { backgroundColor: isDark ? '#0F172A' : '#FFFFFF' }
-                ]}>
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleContactOrganizer}
-                  >
-                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Contact Organizer
-                    </Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleCopyLink}
-                  >
-                    <Text style={[styles.moreOptionText, { color: isDark ? '#E5E7EB' : '#4B5563' }]}>
-                      Copy Event Link
-                    </Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity 
-                    style={styles.moreOptionItem}
-                    onPress={handleReportEvent}
-                  >
-                    <Text style={[styles.moreOptionText, { color: '#EF4444' }]}>
-                      Report Event
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
           </SafeAreaView>
         </Animated.View>
       </GestureDetector>
@@ -729,18 +689,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
   integratedAttendingSection: {
-    marginTop: 32,
+    marginTop: 24,
     marginBottom: 24,
-    padding: 20,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
   },
   integratedAttendButton: {
     paddingVertical: 18,
@@ -796,14 +746,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     marginTop: 12,
   },
-  moreOptionsOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
   moreOptionsMenu: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingVertical: 20,
+    position: 'absolute', 
+    top: 60,
+    right: 16,
     paddingHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: {
