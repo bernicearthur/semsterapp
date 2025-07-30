@@ -55,6 +55,7 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
   const { isDark } = useTheme();
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
+  const screenHeight = Dimensions.get('window').height;
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -69,35 +70,66 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
   const [maxAttendees, setMaxAttendees] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [isExtended, setIsExtended] = useState(false);
   
   const translateY = useSharedValue(screenHeight);
+  const drawerHeight = useSharedValue(0.85);
 
   const drawerStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
+    height: `${drawerHeight.value * 100}%`,
   }));
 
-  const gesture = Gesture.Pan()
+  const dragHandleGesture = Gesture.Pan()
     .activeOffsetY([0, 15])
     .onUpdate((event) => {
-      if (event.translationY > 0) {
-        translateY.value = event.translationY;
+      if (isExtended) {
+        // When extended, allow dragging down to collapse
+        if (event.translationY > 0) {
+          const progress = Math.min(event.translationY / (screenHeight * 0.15), 1);
+          drawerHeight.value = 1 - (progress * 0.15);
+        }
+      } else {
+        // When collapsed, allow dragging up to extend or down to close
+        if (event.translationY < 0) {
+          const progress = Math.min(Math.abs(event.translationY) / (screenHeight * 0.15), 1);
+          drawerHeight.value = 0.85 + (progress * 0.15);
+        } else if (event.translationY > 0) {
+          translateY.value = event.translationY;
+        }
       }
     })
     .onEnd((event) => {
-      if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
-        translateY.value = withSpring(screenHeight, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        }, () => {
-          runOnJS(onClose)();
-        });
+      if (isExtended) {
+        // When extended, decide whether to stay extended or collapse
+        if (event.translationY > screenHeight * 0.1 || event.velocityY > 500) {
+          // Collapse to 85%
+          drawerHeight.value = withSpring(0.85);
+          runOnJS(setIsExtended)(false);
+        } else {
+          // Stay extended
+          drawerHeight.value = withSpring(1);
+        }
       } else {
-        translateY.value = withSpring(0, {
-          damping: 20,
-          stiffness: 90,
-          mass: 0.4,
-        });
+        // When collapsed, decide whether to extend, stay collapsed, or close
+        if (event.translationY < -screenHeight * 0.1 || event.velocityY < -500) {
+          // Extend to 100%
+          drawerHeight.value = withSpring(1);
+          runOnJS(setIsExtended)(true);
+        } else if (event.translationY > screenHeight * 0.3 || event.velocityY > 500) {
+          // Close drawer
+          translateY.value = withSpring(screenHeight, {
+            damping: 20,
+            stiffness: 90,
+            mass: 0.4,
+          }, () => {
+            runOnJS(onClose)();
+          });
+        } else {
+          // Stay at current position
+          translateY.value = withSpring(0);
+          drawerHeight.value = withSpring(0.85);
+        }
       }
     });
 
@@ -107,6 +139,12 @@ export function CreateEventDrawer({ isOpen, onClose, onCreateEvent }: CreateEven
       stiffness: 90,
       mass: 0.4,
     });
+    
+    if (!isOpen) {
+      // Reset to collapsed state when drawer closes
+      setIsExtended(false);
+      drawerHeight.value = 0.85;
+    }
   }, [isOpen]);
 
   const resetForm = () => {
