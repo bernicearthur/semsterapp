@@ -444,13 +444,13 @@ export default function StudyRoomsScreen() {
 
         {/* Floating Action Buttons */}
         <View style={styles.fabContainer}>
-             { backgroundColor: room.status === 'live' ? '#EF4444' : '#3B82F6' }
+          <TouchableOpacity 
             style={[styles.fab, styles.primaryFab, { backgroundColor: '#3B82F6' }]}
             onPress={() => setIsJoinRoomOpen(true)}
           >
             <Users size={24} color="#FFFFFF" />
           </TouchableOpacity>
-             {room.status === 'live' ? (room.isPrivate ? 'Request' : 'Join') : 'Schedule'}
+        </View>
 
         {/* Join Room Drawer */}
         <JoinStudyRoomDrawer
